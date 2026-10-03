@@ -359,8 +359,8 @@ PLANNER_JS = """<script>
     e.preventDefault();
     if(!validate()) return;
     var o=collect(), clientRef=ref();
-    function lines(id){ return 'Trip request '+id+'\n'+
-      Object.keys(o).map(function(k){return k.replace(/_/g,' ')+': '+o[k];}).join('\n'); }
+    function lines(id){ return 'Trip request '+id+'\\n'+
+      Object.keys(o).map(function(k){return k.replace(/_/g,' ')+': '+o[k];}).join('\\n'); }
     function waFor(id){ return WA?('https://wa.me/'+WA+'?text='+encodeURIComponent(lines(id))):''; }
     function done(id, serverOk){
       try{ localStorage.setItem('lastTripRef',id); }catch(err){}
