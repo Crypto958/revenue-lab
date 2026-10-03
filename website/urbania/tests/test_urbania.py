@@ -288,8 +288,17 @@ class NewArchitectureTests(unittest.TestCase):
     """The new sections, funnel entry point and SEO architecture."""
 
     def test_hero_carries_the_primary_keyword(self):
+        """The H1 must carry the keyword as TEXT. Asserting the exact markup made
+        this break on a presentational change — the headline is now split across
+        two lines with the second in the accent colour — even though the heading
+        itself is unchanged. Compare the rendered text instead.
+        """
         home = (SITE / "index.html").read_text(encoding="utf-8")
-        self.assertIn("<h1>Force Urbania rental in Hyderabad</h1>", home)
+        m = re.search(r"<h1[^>]*>(.*?)</h1>", home, re.S)
+        self.assertIsNotNone(m, "no <h1> found on the homepage")
+        text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", m.group(1))).strip()
+        self.assertIn("Force Urbania rental in Hyderabad", text,
+                      f"H1 text does not carry the primary keyword: {text!r}")
         self.assertIn("Premium group travel for up to 17 passengers", home)
 
     def test_journey_bar_is_step_one_only(self):
@@ -698,6 +707,66 @@ class ShippedMediaTests(unittest.TestCase):
                 if not (SITE / url.lstrip("/")).exists():
                     missing.append((page.relative_to(SITE).as_posix(), url))
         self.assertEqual(missing, [], f"built pages reference missing media: {missing}")
+
+
+class BrandWiringTests(unittest.TestCase):
+    """The identity in brand/logo/ must actually be wired into the pages.
+
+    The identity was built and then never used: every page shipped as
+    "Urbania Hyderabad" behind a "17" tile while the real wordmark sat unread in
+    brand/logo/. Nothing failed, because no test asserted the wiring.
+    """
+
+    def setUp(self):
+        import build_ui
+        self.UI = build_ui
+
+    def test_brand_name_is_the_locked_name(self):
+        self.assertEqual(self.UI.BRAND, "UrbanLoop")
+        self.assertEqual(self.UI.TAGLINE, "Premium Group Mobility")
+
+    def test_header_inlines_the_real_mark_not_a_tile(self):
+        h = self.UI.header()
+        self.assertIn('class="brandmark"', h, "header does not use the master mark")
+        self.assertIn("<path", h, "mark is not inline vector artwork")
+        self.assertNotIn('class="mk"', h, "header still renders the placeholder tile")
+        self.assertNotIn(">17<", h)
+
+    def test_footer_inlines_the_real_mark(self):
+        f = self.UI.footer()
+        self.assertIn('class="brandmark"', f)
+        self.assertNotIn('class="mk"', f)
+
+    def test_missing_brand_asset_raises_instead_of_falling_back(self):
+        """A silent placeholder is exactly the failure that shipped."""
+        orig = self.UI.BRAND_DIR
+        try:
+            self.UI.BRAND_DIR = "/nonexistent/brand/dir"
+            with self.assertRaises(SystemExit):
+                self.UI.brand_svg("urbanloop-lockup-horizontal-dark.svg")
+        finally:
+            self.UI.BRAND_DIR = orig
+
+    def test_no_built_page_carries_the_old_brand_or_tile(self):
+        offenders = []
+        for page in SITE.rglob("*.html"):
+            text = page.read_text(encoding="utf-8")
+            rel = page.relative_to(SITE).as_posix()
+            if "Urbania Hyderabad" in text:
+                offenders.append((rel, "old brand name"))
+            if 'class="mk"' in text:
+                offenders.append((rel, "placeholder 17 tile"))
+        self.assertEqual(offenders, [], f"stale branding in built pages: {offenders}")
+
+    def test_dial_links_are_well_formed(self):
+        """Numeric strings get masked as **** in tool output, so a hand-typed
+        href silently corrupts every call button. Derive it and assert it."""
+        digits = self.UI.PHONE_HREF.replace("tel:+", "")
+        self.assertTrue(digits.isdigit(), f"PHONE_HREF has non-digits: {digits!r}")
+        self.assertEqual(len(digits), 12, f"expected 12 digits, got {len(digits)}")
+        self.assertNotIn("*", self.UI.PHONE_HREF)
+        # and it must actually appear on the pages
+        self.assertIn(self.UI.PHONE_HREF, (SITE / "index.html").read_text(encoding="utf-8"))
 
 
 class ServerContractTests(unittest.TestCase):

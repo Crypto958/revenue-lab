@@ -85,27 +85,57 @@ def build_home():
     facthtml = "".join(f'<div class="fact">{tick}<span>{f}</span></div>' for f in facts)
     usecases = ["Airport", "Outstation", "Corporate", "Weddings", "Family trips",
                 "Pilgrimage", "Events"]
-    chips = "".join(f'<a class="uc" href="#find-your-urbania">{u}</a>' for u in usecases)
+    chips = "".join(f'<a class="uc" href="#find-your-urbania-vehicles">{u}</a>' for u in usecases)
+    hero_img = SEC.find_image("hero", "hero-split")
+    if hero_img:
+        # Template cloned from the primary reference: full-bleed photograph, dark
+        # scrim, centred two-line headline with the second line in the accent, and
+        # the quote bar floating over the hero's bottom edge as the single CTA.
+        hero = (
+            '<section class="hx">'
+            f'<img class="hx-bg" src="{hero_img}" alt="" aria-hidden="true" '
+            f'width="747" height="685" fetchpriority="high" decoding="async">'
+            '<div class="hx-scrim"></div>'
+            '<div class="hx-in">'
+            '<span class="eyebrow" style="color:#8FD3CB">Force Urbania specialist &middot; '
+            + CITY + '</span>'
+            '<h1 style="margin-top:16px">Force Urbania rental'
+            '<span class="l2">in Hyderabad</span></h1>'
+            '<p class="lede">Premium group travel for up to 17 passengers. One Force Urbania, '
+            'used for pre-booked group trips &mdash; airport runs, weddings, corporate days, '
+            'outstation travel and sightseeing.</p>'
+            '<p class="hx-cap">' + SEC._media_caption("Photograph") + '</p>'
+            f'<div class="qwrap">{SEC.journey_bar()}</div>'
+            '</div></section>'
+            # The bar hangs below the hero, so this section starts clear of it.
+            f'<section class="hx-follow" id="find-your-urbania"><div class="wrap">'
+            + SEC.fleet_status_note()
+            + f'<div class="ucs" style="margin-top:22px">{chips}</div>'
+            + '</div></section>'
+        )
+    else:
+        # No wide crop supplied yet — keep the two-column layout with the visual panel.
+        intro = (
+            '<span class="eyebrow">Force Urbania specialist &middot; ' + CITY + '</span>'
+            '<h1>Force Urbania rental in Hyderabad</h1>'
+            '<p class="lede">Premium group travel for up to 17 passengers. One Force Urbania, '
+            'used for pre-booked group trips &mdash; airport runs, weddings, corporate days, '
+            'outstation travel and sightseeing.</p>'
+            '<div class="heroacts">'
+            '<a class="btn" href="/request-quote/">Get a quote</a>'
+            f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE_TXT}</a>'
+            '</div>'
+            f'<div class="ucs">{chips}</div>'
+        )
+        hero = ('<section class="hero"><div class="wrap"><div class="hv"><div>' + intro
+                + '</div><div>' + SEC.hero_visual() + '</div>'
+                '</div></div></section>'
+                + '<section style="padding-top:0"><div class="wrap">'
+                  + SEC.fleet_status_note() + SEC.journey_bar() + '</div></section>')
     body = (
-        '<section class="hero"><div class="wrap"><div class="hv"><div>'
-        '<span class="eyebrow">Force Urbania specialist &middot; ' + CITY + '</span>'
-        '<h1>Force Urbania rental in Hyderabad</h1>'
-        '<p class="lede" style="margin-top:16px;font-size:clamp(18px,1.9vw,21px)">'
-        'Premium group travel for up to 17 passengers. One Force Urbania, used for pre-booked group '
-        'trips &mdash; airport runs, weddings, corporate days, outstation travel and sightseeing. '
-        'Tell us the trip and we check what suits your group before sending a quotation.</p>'
-        '<div class="heroacts" style="margin-top:22px">'
-        '<a class="btn" href="/request-quote/">Get a quote</a>'
-        f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE_TXT}</a>'
-        '</div>'
-        f'<div class="ucs">{chips}</div>'
-        '</div><div>' + SEC.hero_visual() + '</div>'
-        '</div></div></section>'
-        # STEP 1 of the funnel, above the fold: trip details only, no personal data.
-        + '<section style="padding-top:0"><div class="wrap">'
-          + SEC.fleet_status_note() + SEC.journey_bar() + '</div></section>'
+        hero
         + f'<section class="alt"><div class="wrap"><div class="facts">{facthtml}</div></div></section>'
-        + '<section id="find-your-urbania"><div class="wrap"><div class="shead">'
+        + '<section id="find-your-urbania-vehicles"><div class="wrap"><div class="shead">'
           '<span class="eyebrow">Configuration</span><h2>Find your Urbania</h2>'
           '<p class="lede">Tell us how many people are travelling. We recommend a configuration &mdash; '
           'and we will say honestly when a group cannot be carried in one vehicle.</p></div>'

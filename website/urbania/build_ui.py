@@ -11,9 +11,13 @@ import os, json, html, datetime
 
 # ------------------------------------------------------------------ config
 BASE = "https://urbania-hyderabad.example"      # [VERIFY BEFORE PUBLISHING: real domain]
-BRAND = "Urbania Hyderabad"                     # WORKING NAME — owner decision required
+BRAND = "UrbanLoop"                             # LOCKED — never alter, abbreviate or respell
+TAGLINE = "Premium Group Mobility"              # the descriptor; used with the mark, not instead of it
+BRAND_LINE = "Move Together, Better."           # working brand line — not yet published in the header
 PHONE = "+91 62020 66104"                       # owner-supplied
-PHONE_HREF = "tel:+916202066104"
+# Derived, never typed. Numeric strings are masked as **** in tool output, so a
+# hand-copied href silently corrupts the dial link on every page. Digits only.
+PHONE_HREF = "tel:+" + "".join(ch for ch in PHONE if ch.isdigit())
 PHONE_TXT = "+91&nbsp;62020&nbsp;66104"          # display form: never wraps mid-number on mobile
 WHATSAPP = "919182126104"                        # owner-supplied via WhatsApp Business profile
                                                   # NOTE: differs from PHONE (+91 62020 66104) — see OWNER_DECISIONS #4
@@ -22,6 +26,41 @@ CITY = "Hyderabad"
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app", "site")
 TODAY = datetime.date.today().isoformat()
 YEAR = datetime.date.today().year
+
+# ------------------------------------------------------------- brand assets
+# The master marks live in one place — brand/logo/ at the repo root — and are
+# inlined at build time, so the built HTML carries no font or file dependency and
+# no second copy of the artwork can drift. Colours are rewritten to currentColor
+# so one file works on light AND dark surfaces.
+BRAND_DIR = os.path.abspath(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "brand", "logo"))
+
+
+def brand_svg(filename, cls="", label=""):
+    """Inline a master mark from brand/logo/.
+
+    Deliberately raises instead of falling back: this is the brand mark in the
+    header of every page. A silent placeholder here is how the site ended up
+    branded "Urbania Hyderabad" with a "17" tile for months while the real
+    identity sat unused in brand/logo/.
+    """
+    path = os.path.join(BRAND_DIR, filename)
+    if not os.path.exists(path):
+        raise SystemExit(
+            f"\nBRAND ASSET MISSING: {path}\n"
+            f"  Every page header depends on it. Rebuild the identity with:\n"
+            f"      python3 brand/build_wordmark.py && python3 brand/build_marks.py\n")
+    svg = open(path, encoding="utf-8").read()
+    for c in ("#111518", "#FFFFFF", "#0F6A63", "#FAFBFC"):
+        svg = svg.replace(f'fill="{c}"', 'fill="currentColor"')
+        svg = svg.replace(f'stroke="{c}"', 'stroke="currentColor"')
+    if cls:
+        svg = svg.replace("<svg ", f'<svg class="{cls}" ', 1)
+    if label:
+        svg = svg.replace('aria-label="UrbanLoop"', f'aria-label="{html.escape(label)}"', 1)
+    else:
+        svg = svg.replace('role="img"', 'role="img" aria-hidden="true"', 1)
+    return svg
 
 NAV = [
     ("Vehicles", "/find-a-vehicle/"),
@@ -86,9 +125,10 @@ border:2px solid var(--accent-2);border-radius:6px;transform:translateY(-160%);t
 /* header */
 header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:18px;height:72px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:19px;letter-spacing:-.02em}
-.logo .mk{width:30px;height:30px;border-radius:7px;background:var(--accent);color:#fff;display:flex;align-items:center;
-justify-content:center;font-size:14px;font-weight:700;flex:none}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
+.logo .brandmark{height:29px;width:auto;display:block}
+@media(max-width:640px){.logo .brandmark{height:25px}}
 nav.main{display:flex;gap:24px;align-items:center}
 nav.main a{font-size:15px;color:var(--ink-2);text-decoration:none;font-weight:500}
 nav.main a:hover,nav.main a[aria-current]{color:var(--accent)}
@@ -122,6 +162,79 @@ nav.main a:hover,nav.main a[aria-current]{color:var(--accent)}
 .fact svg{flex:none;margin-top:3px}
 .vwrap{background:var(--alt);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px}
 .vcap{font-size:12.5px;color:var(--ink-3);margin-top:10px;text-align:center}
+/* ---- hero cloned from the reference: full-bleed image, centred headline,
+        floating quote bar overlapping the bottom edge ---- */
+.hx{position:relative;background:#101820}
+.hx-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 45%;z-index:0}
+.hx-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+background:linear-gradient(180deg,rgba(11,16,21,.60) 0%,rgba(11,16,21,.30) 38%,rgba(11,16,21,.72) 100%)}
+/* A radial pool of shade directly behind the copy keeps the headline contrast
+   high without darkening the whole photograph — a flat scrim over a dusk shot
+   goes muddy. */
+.hx-in::before{content:"";position:absolute;left:50%;top:8%;transform:translateX(-50%);
+width:min(920px,86%);height:64%;z-index:-1;pointer-events:none;
+background:radial-gradient(58% 62% at 50% 45%,rgba(9,13,18,.62) 0%,rgba(9,13,18,.30) 55%,rgba(9,13,18,0) 100%)}
+.hx-in{position:relative;z-index:2;max-width:1180px;margin:0 auto;
+padding:clamp(52px,7vw,104px) 24px 26px;text-align:center;color:#fff}
+.hx-in h1{color:#fff;font-size:clamp(31px,5.1vw,63px);letter-spacing:-.032em;line-height:1.03}
+.hx-in h1 .l2{display:block;color:#7FCFC6}
+.hx-in .lede{color:#D2DAE1;margin:20px auto 0;max-width:54ch}
+.hx-mini{margin-top:14px;font-size:13px;color:#A3B2BD}
+.hx-mini span+span::before{content:"·";margin:0 8px;color:#6C7C88}
+.hx-cap{margin:14px auto 0;max-width:56ch;font-size:11.5px;line-height:1.5;color:#93A2AE}
+.hx-cap b{color:#B9C6D0;font-weight:600}
+/* the floating quote bar */
+.qwrap{position:relative;z-index:3;max-width:1180px;margin:34px auto -58px;padding:0 24px}
+.qwrap .jbar{background:#fff;border:1px solid var(--line);border-radius:14px;
+box-shadow:0 18px 44px rgba(12,22,32,.20);padding:14px;margin:0}
+.qwrap .jbar-grid{display:grid;grid-template-columns:1.25fr 1.25fr 1fr .85fr auto;gap:0;align-items:stretch}
+.qwrap .jf{display:flex;flex-direction:column;gap:4px;padding:8px 16px;border-right:1px solid var(--line);min-width:0}
+.qwrap .jf:last-of-type{border-right:0}
+.qwrap .jf span{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.qwrap .jf input{border:0;outline:0;background:transparent;font-family:inherit;font-size:15.5px;
+color:var(--ink);padding:0;width:100%;min-width:0}
+.qwrap .jf input::placeholder{color:#9AA7B0}
+.qwrap .jbar button{background:var(--accent);color:#fff;border:0;border-radius:10px;
+font-family:inherit;font-size:15.5px;font-weight:650;padding:0 26px;cursor:pointer;
+display:inline-flex;align-items:center;gap:9px;white-space:nowrap;min-height:54px;align-self:stretch}
+.qwrap .jbar button:hover{background:var(--accent-2)}
+.hx-follow{padding-top:88px}
+@media(max-width:900px){
+  .qwrap .jbar-grid{grid-template-columns:1fr 1fr}
+  .qwrap .jf{border-right:0;border-bottom:1px solid var(--line);padding:10px 14px}
+  .qwrap .jbar button{grid-column:1/-1;min-height:50px;justify-content:center;margin-top:6px}
+}
+@media(max-width:640px){
+  .hx-in{padding:34px 20px 22px}
+  .hx-in h1{font-size:29px}
+  .qwrap{margin:24px auto -34px;padding:0 16px}
+  .qwrap .jbar-grid{grid-template-columns:1fr}
+  .hx-follow{padding-top:60px}
+}
+/* ---- premium split hero (kept for deep pages) ---- */
+.hsplit{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);background:#0E1316}
+.hsplit .hcopy{color:#fff;display:flex;flex-direction:column;justify-content:center;
+padding:clamp(40px,5.4vw,78px) clamp(24px,3vw,56px) clamp(40px,5.4vw,78px) max(24px,calc((100vw - 1180px)/2 + 24px))}
+.hsplit .hcopy .eyebrow{color:#8FD3CB}
+.hsplit .hcopy h1{color:#fff;font-size:clamp(31px,4.1vw,52px);letter-spacing:-.03em;line-height:1.05}
+.hsplit .hcopy .lede{color:#B4C0C7;margin-top:18px;max-width:46ch}
+.hsplit .hcopy .heroacts{margin-top:26px}
+.hsplit .hcopy .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.32)}
+.hsplit .hcopy .btn.ghost:hover{background:rgba(255,255,255,.1)}
+.hsplit .hcopy .ucs{margin-top:24px}
+.hsplit .hcopy .uc{border-color:rgba(255,255,255,.22);color:#C6D0D6;background:transparent}
+.hsplit .hcopy .uc:hover{background:rgba(255,255,255,.1);color:#fff}
+.hsplit .hshot{position:relative;min-height:min(76vh,640px);overflow:hidden}
+.hsplit .hshot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:64% 50%}
+.hsplit .hshot::after{content:"";position:absolute;inset:0;pointer-events:none;
+background:linear-gradient(90deg,rgba(14,19,22,.80) 0%,rgba(14,19,22,.28) 22%,rgba(14,19,22,0) 46%)}
+@media(max-width:900px){
+  .hsplit{grid-template-columns:1fr}
+  .hsplit .hshot{min-height:290px;order:-1}
+  .hsplit .hshot::after{background:linear-gradient(180deg,rgba(14,19,22,0) 40%,rgba(14,19,22,.85) 100%)}
+  .hsplit .hcopy{padding:30px 22px 38px}
+  .hsplit .hcopy h1{font-size:29px}
+}
 /* cards */
 .grid{display:grid;gap:18px}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
@@ -261,9 +374,10 @@ def header(active=""):
         for t, h in NAV
     )
     mlinks = "".join(f'<a href="{h}">{html.escape(t)}</a>' for t, h in NAV)
+    mark = brand_svg("urbanloop-lockup-horizontal-dark.svg", cls="brandmark")
     return f"""<header>
   <div class="wrap bar">
-    <a class="logo" href="/"><span class="mk">17</span>{html.escape(BRAND)}</a>
+    <a class="logo" href="/">{mark}<span class="sr">{html.escape(BRAND)} &mdash; {html.escape(TAGLINE)}. Home.</span></a>
     <nav class="main">{links}</nav>
     <div class="hact">
       <a class="calllink" href="{PHONE_HREF}">{call_svg()}<span>{PHONE_TXT}</span></a>
@@ -294,7 +408,7 @@ def footer():
 <footer><div class="wrap">
 <div class="fgrid">
   <div>
-    <div class="logo" style="color:#fff;margin-bottom:12px"><span class="mk">17</span>{html.escape(BRAND)}</div>
+    <div class="logo" style="color:#fff;margin-bottom:12px">{brand_svg("urbanloop-lockup-horizontal-dark.svg", cls="brandmark")}<span class="sr">{html.escape(BRAND)} &mdash; {html.escape(TAGLINE)}</span></div>
     <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">Pre-booked private group transport with a 17-seat Force Urbania. Quotation on request — submitting an enquiry does not confirm a booking.</p>
     <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{PHONE_TXT}</a></p>
   </div>
