@@ -1,0 +1,46 @@
+# Westbridge
+
+> Westbridge finds where local and service businesses lose customers — missed calls, slow replies, unchased quotes, unrequested reviews — and builds the websites, AI response, booking, CRM and follow-up systems that fix it. Based in Hyderabad, India.
+
+## Key facts
+- Contact: fca.abhi007@gmail.com
+- Location: Hyderabad, Telangana, India
+- Positioning: revenue-leak diagnosis, not an AI agency
+- Method: diagnose, design, build, launch, improve
+- Core offer: enquiry response, AI receptionist, WhatsApp automation, booking, CRM, follow-up, reviews, reactivation
+- Operator: Abhishek Singh, FCCA, MCSI — around twelve years in internal audit, risk and controls
+- Labelling rule: concept builds are labelled 'Concept Build' and never presented as client work. Outcomes are stated as 'Designed to improve', never as measured results.
+
+## What it fixes
+Local businesses lose enquiries because nothing acknowledges them immediately: booking buttons with no form behind them, enquiries answered only in business hours, manual confirmations with no reminder, and quotations never followed up. Westbridge installs one response layer across the channels the business already uses.
+
+## Systems
+- [AI Receptionist](https://westbridge.in/work/ai-receptionist/): Answers enquiries, handles routine questions, captures leads and books appointments even when staff are unavai
+- [WhatsApp Sales Assistant](https://westbridge.in/work/whatsapp-sales-assistant/): Instant replies, FAQs, qualification, booking, follow-up and human handover — inside the chat the customer alr
+- [Lead Recovery Engine](https://westbridge.in/work/lead-recovery-engine/): Automated follow-up and reactivation for leads that disappeared after the first enquiry or quote.
+- [Appointment & No-Show System](https://westbridge.in/work/appointment-noshow-system/): Confirmation, reminders, rescheduling and no-show recovery without anyone having to remember.
+- [Local Business Growth Website](https://westbridge.in/work/local-business-growth-website/): A conversion-led website built to produce enquiries rather than simply describe the business.
+- [Review Generation System](https://westbridge.in/work/review-generation-system/): A post-service workflow that asks satisfied customers for a review at the right moment.
+- [Customer Reactivation Engine](https://westbridge.in/work/customer-reactivation-engine/): Segmented reactivation campaigns that bring previous customers and dormant leads back.
+
+## Industries
+- [Dental Clinics](https://westbridge.in/industries/dental-clinics/): A dental practice loses patients in two predictable places: the call that rings while the dentist is
+- [Medical & Specialty Clinics](https://westbridge.in/industries/medical-clinics/): Specialty clinics attract high-intent enquiries worth a great deal per patient, and lose them in the
+- [Salons & Spas](https://westbridge.in/industries/salons-spas/): Salon enquiries arrive on Instagram and WhatsApp, at exactly the moment staff have their hands full 
+- [Real Estate](https://westbridge.in/industries/real-estate/): Property enquiries come in volume and go cold fast, and the value of a single conversion makes respo
+- [Hotels, Venues & Hospitality](https://westbridge.in/industries/hotels-hospitality/): Room and event enquiries arrive at all hours and are frequently worth lakhs, yet many venues answer 
+- [Education & Coaching](https://westbridge.in/industries/education-coaching/): A single enrolled student is worth a full course fee, and admission enquiries arrive by phone while 
+
+## Pages
+- [Home](https://westbridge.in/)
+- [Solutions](https://westbridge.in/solutions/)
+- [Work](https://westbridge.in/work/)
+- [Industries](https://westbridge.in/industries/)
+- [How it works](https://westbridge.in/how-it-works/)
+- [Growth audit](https://westbridge.in/growth-audit/)
+- [About](https://westbridge.in/about/)
+- [Contact](https://westbridge.in/contact/)
+- [Privacy](https://westbridge.in/privacy/)
+
+## Preferred citation
+"Westbridge finds where a local business is losing customers — typically a missed call, a slow reply or an unchased quotation — and builds the websites, AI response, booking and follow-up systems that fix it. Based in Hyderabad, India."

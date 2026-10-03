@@ -1,0 +1,77 @@
+query,intent_class,likely_page,notes
+force urbania rental hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad,Core money term; competitors build city-level Urbania pages for it. Intent classification is judgement not measured data.
+force urbania hire hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad,Hire/rental synonym; one page can target both phrasings.
+force urbania on rent in hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad,"On rent" is common in competitor H1s; natural match.
+force urbania booking hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad,Booking intent; route to Request a Trip Quote CTA.
+force urbania 17 seater hyderabad,HIGH COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad,Matches the exact single-vehicle configuration.
+force urbania 12 seater hyderabad,MEDIUM COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad,Only the 17-seat variant is owned; page must say so and not imply a 12-seat fleet.
+force urbania rental price hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad#pricing,Price-seeker; give an honest indicative range and a quote form.
+force urbania per km rate hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad#pricing,Per-km is the market's standard pricing unit.
+force urbania airport transfer hyderabad,HIGH COMMERCIAL INTENT,/airport-group-transfer-hyderabad,High-value use case; few competitors have a dedicated page.
+force urbania wedding rental hyderabad,HIGH COMMERCIAL INTENT,/wedding-transport-hyderabad,Event use case; strong fit for one premium van.
+force urbania corporate rental hyderabad,HIGH COMMERCIAL INTENT,/corporate-transport-hyderabad,B2B use case; needs GST invoice and single point of contact.
+maharaja urbania hyderabad,MEDIUM COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad,Model-tier term; do not overclaim a tier the vehicle does not have.
+force urbania vs tempo traveller,INFORMATIONAL,/force-urbania-vs-tempo-traveller,Comparison content; feeds AI answer engines and pre-purchase research.
+urbania vs tempo traveller difference,INFORMATIONAL,/force-urbania-vs-tempo-traveller,Same comparison cluster; one strong page can rank for several variants.
+is force urbania better than tempo traveller,INFORMATIONAL,/force-urbania-vs-tempo-traveller,Question form; answer honestly rather than pure sales copy.
+tempo traveller alternative,INFORMATIONAL,/force-urbania-vs-tempo-traveller,Position Urbania as the premium upgrade without disparaging the workhorse.
+tempo traveller alternative hyderabad,MEDIUM COMMERCIAL INTENT,/force-urbania-vs-tempo-traveller,Adds Hyderabad qualifier; commercial-leaning.
+best group travel vehicle in hyderabad,MEDIUM COMMERCIAL INTENT,/group-travel-hyderabad,Broader/earlier-stage commercial intent.
+group travel hyderabad,MEDIUM COMMERCIAL INTENT,/group-travel-hyderabad,Umbrella term; may also pull unrelated queries.
+group tour vehicle hire hyderabad,MEDIUM COMMERCIAL INTENT,/group-travel-hyderabad,Commercial; keep vehicle-hire framing not packaged-tour framing.
+17 seater tempo traveller hyderabad,HIGH COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad,Head-on with the tempo traveller market; frame as the 17-seat alternative.
+17 seater vehicle hire hyderabad,HIGH COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad,Model-agnostic but capacity-specific.
+17 seater van rental hyderabad,HIGH COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad,Van framing matches Urbania.
+17 seater car rental hyderabad,HIGH COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad,Slight mismatch (van not car) but intent is a vehicle for 17.
+17 seater tempo traveller rent per km hyderabad,HIGH COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad#pricing,Price-seeker at the exact capacity.
+airport group transfer hyderabad,HIGH COMMERCIAL INTENT,/airport-group-transfer-hyderabad,Core use-case term.
+hyderabad airport group pickup,HIGH COMMERCIAL INTENT,/airport-group-transfer-hyderabad,Pickup phrasing; same page.
+rajiv gandhi airport group transfer,HIGH COMMERCIAL INTENT,/airport-group-transfer-hyderabad,Name RGIA/HYD explicitly on the page.
+airport transfer for 17 people hyderabad,HIGH COMMERCIAL INTENT,/airport-group-transfer-hyderabad,Capacity + use case; matches the vehicle exactly.
+wedding guest transport hyderabad,HIGH COMMERCIAL INTENT,/wedding-transport-hyderabad,Event logistics intent.
+wedding bus rental hyderabad,HIGH COMMERCIAL INTENT,/wedding-transport-hyderabad,They search "bus" but want group transport; explain the 17-seat van fit.
+baraat vehicle hire hyderabad,MEDIUM COMMERCIAL INTENT,/wedding-transport-hyderabad,Regional event term; cultural fit matters.
+wedding tempo traveller hyderabad,HIGH COMMERCIAL INTENT,/wedding-transport-hyderabad,Common phrasing for wedding group transport.
+corporate transport hyderabad,HIGH COMMERCIAL INTENT,/corporate-transport-hyderabad,B2B umbrella term.
+corporate tempo traveller hyderabad,HIGH COMMERCIAL INTENT,/corporate-transport-hyderabad,Model-specific corporate term.
+employee group transport hyderabad,MEDIUM COMMERCIAL INTENT,/corporate-transport-hyderabad,Closer to staff transport; a different contract model than one-off hire.
+corporate event transport hyderabad,MEDIUM COMMERCIAL INTENT,/corporate-transport-hyderabad,Event-driven B2B.
+hyderabad sightseeing cab,MEDIUM COMMERCIAL INTENT,/hyderabad-sightseeing-vehicle,City-tour intent; keep as vehicle hire not guided tour.
+hyderabad sightseeing tempo traveller,MEDIUM COMMERCIAL INTENT,/hyderabad-sightseeing-vehicle,Vehicle + city-tour phrasing.
+hyderabad city tour vehicle hire,MEDIUM COMMERCIAL INTENT,/hyderabad-sightseeing-vehicle,Day-use vehicle hire.
+hyderabad darshan cab,LOCAL INTENT,/hyderabad-sightseeing-vehicle,Local-intent phrasing; do not imply a guided tour package.
+full day car rental hyderabad,MEDIUM COMMERCIAL INTENT,/day-hire-hyderabad,8hr/80km style package.
+8 hour 80 km package hyderabad,MEDIUM COMMERCIAL INTENT,/day-hire-hyderabad,The market's standard day-hire unit; explain inclusions honestly.
+day trip vehicle hire hyderabad,MEDIUM COMMERCIAL INTENT,/day-hire-hyderabad,Single-day use case.
+tempo traveller day hire hyderabad,MEDIUM COMMERCIAL INTENT,/day-hire-hyderabad,Day-hire phrasing in the tempo market.
+family trip van hire hyderabad,MEDIUM COMMERCIAL INTENT,/family-group-travel-hyderabad,Warm commercial intent.
+family group travel hyderabad,MEDIUM COMMERCIAL INTENT,/family-group-travel-hyderabad,Group-size-led; often mixes with outstation intent.
+extended family travel vehicle hyderabad,MEDIUM COMMERCIAL INTENT,/family-group-travel-hyderabad,Speaks to the 12-16 passenger reality.
+custom itinerary vehicle hyderabad,MEDIUM COMMERCIAL INTENT,/custom-trip-transport-hyderabad,Quote-led; do not imply a packaged tour.
+custom group trip hyderabad,MEDIUM COMMERCIAL INTENT,/custom-trip-transport-hyderabad,Custom = plan with the operator then quote.
+multi-day group trip vehicle hyderabad,MEDIUM COMMERCIAL INTENT,/outstation-group-trips-hyderabad,Multi-day hire; driver bata and night halt matter.
+hyderabad to tirupati tempo traveller,HIGH COMMERCIAL INTENT,/outstation-group-trips-hyderabad,Top pilgrimage route from Hyderabad.
+hyderabad to srisailam tempo traveller,HIGH COMMERCIAL INTENT,/outstation-group-trips-hyderabad,Popular short outstation route.
+hyderabad to goa group trip vehicle,MEDIUM COMMERCIAL INTENT,/outstation-group-trips-hyderabad,Long-haul; peak-season demand.
+hyderabad to warangal cab,MEDIUM COMMERCIAL INTENT,/outstation-group-trips-hyderabad,Regional outstation route.
+hyderabad to nagarjuna sagar cab,MEDIUM COMMERCIAL INTENT,/outstation-group-trips-hyderabad,Short outstation route.
+group airport transfer quote hyderabad,HIGH COMMERCIAL INTENT,/airport-group-transfer-hyderabad#quote,Directly tied to the primary CTA.
+how much does it cost to hire a force urbania in hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad#faq,AI/voice question; answer with an honest range and what drives it.
+how much does a 17 seater tempo traveller cost per km in hyderabad,HIGH COMMERCIAL INTENT,/17-seater-force-urbania-hyderabad#faq,AI/voice price question.
+what is the difference between force urbania and tempo traveller,INFORMATIONAL,/force-urbania-vs-tempo-traveller,High-value AI-answer question.
+how many passengers can a force urbania 17 seater carry,INFORMATIONAL,/17-seater-force-urbania-hyderabad,Extractable fact; state the seating layout precisely.
+is a 17 seater tempo traveller good for a family trip,INFORMATIONAL,/family-group-travel-hyderabad,AI/voice; honest pros and cons.
+how do i book a force urbania in hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad#booking,Process question; explain pre-booked model and lead time.
+what is the best vehicle for a group airport transfer in hyderabad,INFORMATIONAL,/airport-group-transfer-hyderabad,AI-answer question; position the 17-seat van.
+can i hire a 17 seater van for a wedding in hyderabad,HIGH COMMERCIAL INTENT,/wedding-transport-hyderabad,AI/voice; answer with logistics and quote CTA.
+how much luggage fits in a 17 seater tempo traveller,INFORMATIONAL,/17-seater-force-urbania-hyderabad,Unanswered by most competitors; give honest capacity guidance.
+do tempo travellers run from hyderabad to tirupati,INFORMATIONAL,/outstation-group-trips-hyderabad,Route-feasibility question.
+what is an 8 hour 80 km car rental package,INFORMATIONAL,/day-hire-hyderabad,Explainer content; nobody explains it well.
+best tempo traveller alternative for group travel in hyderabad,INFORMATIONAL,/force-urbania-vs-tempo-traveller,AI-answer; positions Urbania as the upgrade.
+can i customise an outstation itinerary with a hired vehicle,INFORMATIONAL,/custom-trip-transport-hyderabad,Clarify vehicle-hire model vs packaged tours.
+force urbania near me hyderabad,LOCAL INTENT,/force-urbania-rental-hyderabad,Voice/local; needs an accurate local Business Profile.
+tempo traveller near me hyderabad,LOCAL INTENT,/17-seater-force-urbania-hyderabad,Voice/local alternative.
+group vehicle hire near hitech city,LOCAL INTENT,/group-travel-hyderabad#areas,Neighbourhood/voice; covered by a service-area page not a spam locality page.
+wedding bus near me hyderabad,LOCAL INTENT,/wedding-transport-hyderabad,Voice/local event query.
+force urbania hyderabad,HIGH COMMERCIAL INTENT,/force-urbania-rental-hyderabad,Bare model + city; covered by the core page.
+<business name> hyderabad,BRANDED,/,Placeholder brand query; final page depends on the chosen business name.

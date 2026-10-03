@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Westbridge — We Bring Clients</title>
+<meta name="description" content="Westbridge finds where a business loses enquiries — and fixes it. Free enquiry audit for Hyderabad clinics, venues, salons and coaching centres.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Azeret+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   WESTBRIDGE — editorial system
+   Deliberately NOT a SaaS template: type-led, asymmetric,
+   hairline rules, one accent used sparingly, no gradients,
+   no glow, no card grid.
+   ============================================================ */
+:root{
+  --bg:#05070e;
+  --bg-raise:#080d19;
+  --ink:#f4f7fc;
+  --ink-dim:#93a6c0;
+  --ink-faint:#63768f;
+  --line:rgba(255,255,255,.09);
+  --line-strong:rgba(255,255,255,.16);
+  --accent:#3b7bff;
+  --accent-dim:rgba(59,123,255,.16);
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'Azeret Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:16.5px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;letter-spacing:-.005em;text-wrap:pretty;
+}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:28px;max-width:1240px;margin:0 auto;padding:0 32px}
+@media(max-width:860px){.grid{grid-template-columns:repeat(6,1fr);gap:20px;padding:0 22px}}
+a{color:inherit}
+p{margin:0}
+h1,h2,h3{margin:0;font-family:var(--serif);font-weight:400;letter-spacing:-.02em;line-height:1.02}
+h1{font-size:clamp(46px,7.6vw,104px);line-height:.92}
+h2{font-size:clamp(30px,4.2vw,54px);line-height:1.02}
+h3{font-size:clamp(21px,2.2vw,28px);line-height:1.12;letter-spacing:-.015em}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+.lede{font-size:clamp(17px,1.7vw,20px);line-height:1.55;color:var(--ink-dim);font-weight:300}
+.small{font-size:14px;color:var(--ink-faint)}
+.rule{height:1px;background:var(--line);border:0;margin:0}
+
+/* text-link CTA — the only "button" language, deliberately understated */
+.tlink{display:inline-flex;align-items:baseline;gap:9px;font-size:15.5px;font-weight:500;
+  color:var(--ink);text-decoration:none;border-bottom:1px solid var(--accent);
+  padding-bottom:3px;transition:gap .2s ease,border-color .2s ease}
+.tlink:hover{gap:14px;border-color:var(--ink)}
+.tlink.accent{color:var(--accent);border-color:var(--accent-dim)}
+.tlink.accent:hover{border-color:var(--accent)}
+
+/* ---------- masthead ---------- */
+header{position:sticky;top:0;z-index:30;background:rgba(5,7,14,.86);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line)}
+.masthead{display:flex;align-items:center;justify-content:space-between;gap:24px;height:76px}
+.mark{display:flex;align-items:baseline;gap:12px;text-decoration:none}
+.mark .word{font-family:var(--serif);font-size:24px;letter-spacing:-.02em;line-height:1}
+.mark .tag{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+.masthead nav{display:flex;align-items:center;gap:30px}
+.masthead nav a{font-size:14.5px;color:var(--ink-dim);text-decoration:none}
+.masthead nav a:hover{color:var(--ink)}
+@media(max-width:900px){.masthead nav a:not(.tlink){display:none}}
+
+/* ---------- hero : asymmetric, type first ---------- */
+.hero{padding:clamp(64px,9vw,130px) 0 clamp(56px,7vw,96px)}
+.hero__label{grid-column:1/6}
+.hero__title{grid-column:1/9;margin-top:26px}
+.hero__body{grid-column:1/6;margin-top:30px}
+.hero__cta{grid-column:1/6;margin-top:38px;display:flex;gap:28px;flex-wrap:wrap;align-items:baseline}
+.hero__aside{grid-column:9/13;align-self:end;border-top:1px solid var(--line-strong);padding-top:22px}
+@media(max-width:860px){
+  .hero__label,.hero__title,.hero__body,.hero__cta,.hero__aside{grid-column:1/7}
+  .hero__aside{margin-top:44px}
+}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.tagline{margin-top:22px;font-family:var(--serif);font-size:clamp(20px,2.3vw,27px);color:var(--ink-dim);font-style:italic}
+
+/* the "leaks" list — a document, not cards */
+.leaklist{list-style:none;margin:0;padding:0}
+.leaklist li{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}
+.leaklist li:first-child{border-top:1px solid var(--line)}
+.leaklist .num{font-family:var(--mono);font-size:11px;color:var(--accent);padding-top:5px}
+.leaklist p{font-size:15px;color:var(--ink-dim)}
+
+/* ---------- section scaffolding ---------- */
+section{padding:clamp(58px,7vw,104px) 0;border-top:1px solid var(--line)}
+.shead{grid-column:1/7}
+.shead .lede{margin-top:20px}
+@media(max-width:860px){.shead{grid-column:1/7}}
+
+/* ---------- evidence : an editorial record ---------- */
+.record{grid-column:1/13;margin-top:52px;border-top:1px solid var(--line-strong)}
+.rec{display:grid;grid-template-columns:92px 1.1fr 1.5fr 1fr;gap:26px;
+  padding:24px 0;border-bottom:1px solid var(--line);align-items:start}
+.rec .id{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.rec .where{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:5px}
+.rec h3{font-size:21px;line-height:1.2}
+.rec .what{font-size:15px;color:var(--ink-dim);padding-top:3px}
+.rec .cost{font-size:14px;color:var(--ink-faint)}
+.rec .cost b{display:block;color:var(--ink);font-weight:500;font-size:15px;margin-bottom:4px}
+@media(max-width:860px){
+  .rec{grid-template-columns:1fr;gap:10px;padding:22px 0}
+  .rec .cost{padding-top:6px}
+}
+
+/* ---------- method : two-column editorial ---------- */
+.method{grid-column:1/13;margin-top:50px;display:grid;grid-template-columns:220px 1fr;gap:0}
+.mrow{display:contents}
+.mnum{grid-column:1;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);padding:26px 24px 26px 0;border-top:1px solid var(--line)}
+.mtxt{grid-column:2;padding:26px 0;border-top:1px solid var(--line)}
+.mtxt p{margin-top:9px;font-size:15.5px;color:var(--ink-dim);max-width:56ch}
+.method .mnum:last-of-type,.method .mtxt:last-of-type{border-bottom:1px solid var(--line)}
+@media(max-width:860px){
+  .method{grid-template-columns:1fr}
+  .mnum{margin-top:26px;padding:22px 0 0;border-top:1px solid var(--line-strong)}
+  .mtxt{padding:12px 0 22px;border-top:0}
+  .method .mnum:last-of-type,.method .mtxt:last-of-type{border-bottom:1px solid var(--line)}
+}
+
+/* ---------- fit ---------- */
+.fit{grid-column:1/6}
+.fitlist{grid-column:7/13;columns:2;column-gap:34px}
+.fitlist span{display:block;padding:11px 0;border-bottom:1px solid var(--line);font-size:15.5px;color:var(--ink-dim)}
+@media(max-width:860px){.fit,.fitlist{grid-column:1/7}.fitlist{columns:1;margin-top:34px}}
+
+/* ---------- terms ---------- */
+.terms{grid-column:1/6}
+.termsbox{grid-column:7/13;border-top:1px solid var(--line-strong);padding-top:26px}
+.figure{font-family:var(--serif);font-size:clamp(34px,4vw,52px);line-height:1;letter-spacing:-.02em}
+.figure span{font-family:var(--sans);font-size:15px;color:var(--ink-faint);letter-spacing:0;font-weight:300}
+.tlist{list-style:none;margin:24px 0 0;padding:0}
+.tlist li{padding:11px 0;border-top:1px solid var(--line);font-size:15px;color:var(--ink-dim)}
+@media(max-width:860px){.terms,.termsbox{grid-column:1/7}.termsbox{margin-top:34px}}
+
+/* ---------- closing ---------- */
+.closing{padding:clamp(70px,9vw,132px) 0;border-top:1px solid var(--line)}
+.closing__in{grid-column:1/9}
+.closing h2{margin-top:18px}
+.closing .lede{margin-top:22px;max-width:52ch}
+.closing .go{margin-top:38px;display:flex;gap:30px;flex-wrap:wrap;align-items:baseline}
+@media(max-width:860px){.closing__in{grid-column:1/7}}
+
+footer{border-top:1px solid var(--line);padding:36px 0 60px}
+.foot{grid-column:1/13;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.foot a{text-decoration:none}
+.foot a:hover{color:var(--ink)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none !important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="grid masthead">
+    <a class="mark" href="#top">
+      <span class="word">Westbridge</span>
+      <span class="tag">We Bring Clients</span>
+    </a>
+    <nav>
+      <a href="#evidence">Evidence</a>
+      <a href="#method">Method</a>
+      <a href="#work">See it work</a>
+      <a href="#fit">Fit</a>
+      <a href="#terms">Terms</a>
+      <a class="tlink" href="mailto:fca.abhi007@gmail.com?subject=Free%20enquiry%20audit&body=Business%20name%3A%0AWhat%20we%20want%20fixed%3A">Request the audit</a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<section class="hero">
+  <div class="grid">
+    <div class="hero__label">
+      <span class="eyebrow">Enquiry recovery · Hyderabad</span>
+    </div>
+
+    <div class="hero__title">
+      <h1>We bring <em>clients.</em></h1>
+      <p class="tagline">By finding the enquiries a business is already losing.</p>
+    </div>
+
+    <div class="hero__body">
+      <p class="lede">Most businesses we look at are not short of interest. They are short of a reply. The booking button with no form behind it, the message that arrives at 9pm and is read at 10am, the quote nobody chases — the customer simply goes elsewhere.</p>
+    </div>
+
+    <div class="hero__cta">
+      <a class="tlink accent" href="mailto:fca.abhi007@gmail.com?subject=Free%20enquiry%20audit&body=Business%20name%3A%0AWhat%20we%20want%20fixed%3A">Request a free enquiry audit</a>
+      <a class="tlink" href="#work">See how it works</a>
+    </div>
+
+    <aside class="hero__aside">
+      <span class="eyebrow">What we find, most weeks</span>
+      <ol class="leaklist" style="margin-top:16px">
+        <li><span class="num">01</span><p>An appointment page that loads — with no form on it.</p></li>
+        <li><span class="num">02</span><p>Enquiries arriving after hours, answered the next morning.</p></li>
+        <li><span class="num">03</span><p>Online bookings the branch never receives.</p></li>
+        <li><span class="num">04</span><p>Quotes sent, then never followed up.</p></li>
+      </ol>
+    </aside>
+  </div>
+</section>
+
+<section id="evidence">
+  <div class="grid">
+    <div class="shead">
+      <span class="eyebrow">Evidence</span>
+      <h2>We read the customer journey before we ever make contact.</h2>
+      <p class="lede">Each audit is built from what a customer actually sees — the site, the listings, the reviews, the enquiry flow. Three findings from Hyderabad businesses, as they were found.</p>
+    </div>
+
+    <div class="record">
+      <div class="rec">
+        <div><div class="id">Finding 01</div><div class="where">Clinic · KPHB</div></div>
+        <h3>“Make an appointment” led to a page with no form.</h3>
+        <p class="what">The button functioned and the page loaded, but there was nothing to fill in. Anyone attempting to book online had no way to proceed — and left.</p>
+        <p class="cost"><b>Why it matters</b>A treatment course is worth tens of thousands. The clinic was paying to attract interest it could not capture.</p>
+      </div>
+      <div class="rec">
+        <div><div class="id">Finding 02</div><div class="where">Spa · Gachibowli</div></div>
+        <h3>A customer booked online, and the centre never received it.</h3>
+        <p class="what">They arrived expecting a confirmed appointment, were told the booking had not come through, and later left a public one-star review naming the booking system.</p>
+        <p class="cost"><b>Why it matters</b>One lost appointment is a few thousand rupees. A public review about a broken booking system costs considerably more.</p>
+      </div>
+      <div class="rec">
+        <div><div class="id">Finding 03</div><div class="where">Banquet venue · Karwan</div></div>
+        <h3>Thousands of reviews, and no website of its own.</h3>
+        <p class="what">All enquiries arrived through third-party portals rather than a channel the venue controlled — on bookings priced in lakhs per event.</p>
+        <p class="cost"><b>Why it matters</b>Every enquiry placed through a portal carries a commission and no relationship. Direct enquiries do not.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="grid">
+    <div class="shead">
+      <span class="eyebrow">Method</span>
+      <h2>The enquiry that is answered first usually wins.</h2>
+      <p class="lede">We do not sell software and we do not sell advertising. We install the five things that stop a business losing interest it has already paid for.</p>
+    </div>
+
+    <div class="method">
+      <div class="mnum">01 — Acknowledge</div>
+      <div class="mtxt"><h3>Every enquiry is answered within minutes.</h3><p>Website forms, messages and missed calls all receive an immediate reply, day or night — including the ones that arrive while the business is shut.</p></div>
+
+      <div class="mnum">02 — Qualify</div>
+      <div class="mtxt"><h3>Two or three questions, asked automatically.</h3><p>What the customer needs and when. Staff then spend their time on people who are ready to buy, rather than sorting the inbox.</p></div>
+
+      <div class="mnum">03 — Book</div>
+      <div class="mtxt"><h3>Appointments confirmed, then reminded.</h3><p>Confirmation and reminder messages go out without anyone having to remember — which is what removes most no-shows.</p></div>
+
+      <div class="mnum">04 — Follow up</div>
+      <div class="mtxt"><h3>Quiet quotes get chased.</h3><p>If an enquiry goes silent after a quote, it is followed up on a schedule — instead of quietly buying from someone else.</p></div>
+
+      <div class="mnum">05 — Ask</div>
+      <div class="mtxt"><h3>Reviews are requested at the right moment.</h3><p>After a good visit, not in a bulk email. The rating then reflects the work rather than the luck of who remembered to post.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================================
+     WESTBRIDGE — "What we do" animated demo  (self-contained fragment)
+     -------------------------------------------------------------------------
+     DROP-IN: paste this whole block (style + section + script) anywhere inside
+     <body>, ideally right after the "How it works" (#how) section. Suggested
+     nav link: <a href="#demo">See it work</a>
+
+     · No external JS/CSS/network calls. Vanilla JS, IIFE, no globals leaked.
+     · Uses the site's existing :root tokens (--wb-navy-900, --wb-blue-500,
+       --wb-line, --wb-sans, --wb-mono …). Fallbacks are declared on .wb-demo,
+       so it also renders standalone if the tokens are missing.
+     · Every class is prefixed .wb- / .wbd- so nothing collides with the page.
+     · prefers-reduced-motion → animation is never started; the final state of
+       every sequence is rendered statically instead.
+     ========================================================================= -->
+
+<style>
+/* ============================ TOKENS (fallbacks) ========================= */
+.wb-demo{
+  --wb-navy-950:#03060d; --wb-navy-900:#050b18; --wb-navy-800:#071229;
+  --wb-blue-600:#1f5bff; --wb-blue-500:#2f6bff; --wb-blue-400:#4d8bff;
+  --wb-glow:rgba(47,107,255,.38); --wb-glow-soft:rgba(47,107,255,.15);
+  --wb-ring:rgba(47,107,255,.22);
+  --wb-white:#ffffff; --wb-muted:#a8bcd8; --wb-ghost:rgba(255,255,255,.62);
+  --wb-faint:rgba(255,255,255,.40); --wb-frost:rgba(255,255,255,.06);
+  --wb-line:rgba(160,190,255,.14);
+  --wb-sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --wb-mono:'Azeret Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --wb-r-sm:10px; --wb-r-md:14px; --wb-r-lg:20px; --wb-pill:999px;
+  /* the surface gradient used by the site's elevated cards */
+  --wb-surface:linear-gradient(160deg,rgba(10,28,58,.90),rgba(7,18,41,.72));
+}
+
+/* ================================ LAYOUT ================================= */
+.wb-demo{
+  position:relative; overflow:hidden;
+  padding:clamp(56px,7vw,96px) 0;
+  background:
+    radial-gradient(120% 90% at 88% 6%, rgba(47,107,255,.14) 0%, transparent 58%),
+    radial-gradient(100% 110% at 10% 112%, rgba(47,107,255,.18) 0%, transparent 62%),
+    linear-gradient(180deg,var(--wb-navy-950),var(--wb-navy-900));
+  font-family:var(--wb-sans); color:var(--wb-white);
+  -webkit-font-smoothing:antialiased; letter-spacing:-.01em;
+  text-wrap:pretty;
+}
+.wb-demo *,.wb-demo *::before,.wb-demo *::after{box-sizing:border-box}
+.wb-demo__wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+/* small type utilities (mirror the page's .mono / .lede) */
+.wb-mono{font-family:var(--wb-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--wb-blue-400)}
+.wb-lede{font-size:clamp(16px,1.8vw,19px);line-height:1.55;color:var(--wb-muted);max-width:52ch;margin-top:14px}
+.wb-sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* ============================== HEAD ROW ================================= */
+.wb-demo__head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap}
+.wb-demo__head h2{margin:12px 0 0;font-size:clamp(26px,3.6vw,42px);font-weight:500;letter-spacing:-.04em;line-height:1.05;max-width:20ch}
+.wb-demo__head h2 span{color:var(--wb-blue-400)}
+.wb-toggle{
+  display:inline-flex;align-items:center;gap:9px;flex:0 0 auto;
+  font:600 13.5px/1 var(--wb-sans);letter-spacing:0;color:var(--wb-ghost);
+  padding:11px 18px;border-radius:var(--wb-pill);cursor:pointer;
+  background:var(--wb-frost);border:1px solid var(--wb-line);
+  transition:background .18s ease,color .18s ease,border-color .18s ease;
+}
+.wb-toggle:hover{background:rgba(255,255,255,.10);color:#fff;border-color:rgba(160,190,255,.28)}
+.wb-toggle svg{width:13px;height:13px;flex:0 0 auto}
+
+/* =============================== MAIN GRID =============================== */
+.wb-demo__grid{
+  display:grid;grid-template-columns:minmax(0,392px) minmax(0,1fr);
+  gap:clamp(28px,4.5vw,64px);align-items:center;margin-top:clamp(34px,4vw,56px);
+}
+@media(max-width:900px){
+  .wb-demo__grid{grid-template-columns:minmax(0,1fr);gap:34px;justify-items:center}
+  .wb-demo__head{flex-direction:column;align-items:flex-start}
+}
+
+/* ============================== PHONE FRAME ============================== */
+.wb-phone{
+  position:relative;width:100%;max-width:372px;padding:10px;border-radius:38px;
+  background:var(--wb-surface);
+  border:1px solid rgba(160,190,255,.18);
+  box-shadow:
+    0 0 0 1px rgba(47,107,255,.12),
+    0 60px 110px -50px rgba(47,107,255,.75),
+    0 30px 80px rgba(0,0,0,.55);
+}
+.wb-phone::before{ /* speaker slot */
+  content:"";position:absolute;top:20px;left:50%;transform:translateX(-50%);
+  width:58px;height:5px;border-radius:99px;background:rgba(160,190,255,.22);
+}
+.wb-phone__screen{
+  position:relative;border-radius:30px;overflow:hidden;margin-top:24px;
+  background:linear-gradient(180deg,rgba(3,6,13,.96),rgba(5,11,24,.92));
+  border:1px solid var(--wb-line);
+}
+.wb-chat{display:flex;flex-direction:column}
+
+/* chat header */
+.wb-chat__head{display:flex;align-items:center;gap:11px;padding:14px 16px;border-bottom:1px solid var(--wb-line);
+  background:linear-gradient(180deg,rgba(10,28,58,.85),rgba(7,18,41,.35))}
+.wb-avatar{flex:0 0 auto;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  font:600 13px/1 var(--wb-mono);color:#fff;
+  background:linear-gradient(150deg,var(--wb-blue-500),var(--wb-blue-600));
+  box-shadow:0 0 0 1px var(--wb-ring),0 0 18px var(--wb-glow-soft)}
+.wb-chat__id{display:flex;flex-direction:column;min-width:0}
+.wb-chat__id b{font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.wb-chat__sub{display:flex;align-items:center;gap:6px;font:500 11px/1.4 var(--wb-mono);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--wb-blue-400)}
+.wb-dot{width:6px;height:6px;border-radius:50%;background:var(--wb-blue-400);box-shadow:0 0 8px var(--wb-glow);
+  animation:wb-pulse 2.4s ease-in-out infinite}
+.wb-chat__clock{margin-left:auto;font:500 11px/1 var(--wb-mono);color:var(--wb-faint)}
+
+/* chat stream — fixed height, auto-scrolls to the newest bubble */
+.wb-chat__body{
+  display:flex;flex-direction:column;gap:9px;
+  height:392px;padding:16px 14px;overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:none;-ms-overflow-style:none;
+  transition:opacity .45s ease;
+  /* older messages fade out at the top edge instead of being cut mid-bubble */
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 20px);
+  mask-image:linear-gradient(180deg,transparent 0,#000 20px);
+}
+.wb-chat__body::-webkit-scrollbar{display:none}
+.wb-chat__body.is-fading{opacity:0}
+
+/* rows + bubbles */
+.wb-row{display:flex;flex-direction:column;max-width:84%;animation:wb-in .42s cubic-bezier(.22,.9,.3,1) both}
+.wb-row--wide{max-width:100%}   /* cards and chips need the full lane */
+.wb-row--in{align-self:flex-start;align-items:flex-start}
+.wb-row--out{align-self:flex-end;align-items:flex-end}
+.wb-bubble{position:relative;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.5;
+  word-break:break-word}
+.wb-bubble--in{background:rgba(160,190,255,.07);border:1px solid var(--wb-line);
+  border-bottom-left-radius:5px;color:#e6eefc}
+.wb-bubble--out{background:linear-gradient(165deg,var(--wb-blue-500),#1c46c4);
+  border:1px solid rgba(120,170,255,.34);border-bottom-right-radius:5px;color:#fff;
+  box-shadow:0 12px 30px -18px var(--wb-glow)}
+.wb-badge{display:inline-flex;align-items:center;gap:5px;margin-bottom:6px;
+  font:500 9.5px/1 var(--wb-mono);letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.78);background:rgba(255,255,255,.14);
+  border-radius:var(--wb-pill);padding:4px 8px}
+.wb-ico{width:12px;height:12px;flex:0 0 auto;display:block}
+
+/* typing indicator */
+.wb-typing{display:inline-flex;gap:5px;align-items:center;padding:13px 15px;border-radius:16px 16px 5px 16px;
+  background:linear-gradient(165deg,rgba(47,107,255,.55),rgba(28,70,196,.5));border:1px solid rgba(120,170,255,.28)}
+.wb-typing span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.85);
+  animation:wb-blink 1.25s ease-in-out infinite}
+.wb-typing span:nth-child(2){animation-delay:.16s}
+.wb-typing span:nth-child(3){animation-delay:.32s}
+
+/* rich bubbles: booking card, review card, chips, divider */
+.wb-card{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:16px;max-width:100%;
+  background:linear-gradient(165deg,rgba(47,107,255,.16),rgba(10,28,58,.85));
+  border:1px solid rgba(77,139,255,.38);
+  box-shadow:0 0 0 1px var(--wb-glow-soft),0 16px 40px -26px var(--wb-glow)}
+.wb-card__ico{flex:0 0 auto;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(155deg,var(--wb-blue-500),var(--wb-blue-600));color:#fff;
+  box-shadow:0 0 16px var(--wb-glow-soft)}
+.wb-card__ico .wb-ico{width:15px;height:15px}
+.wb-card__txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.wb-card__txt b{font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.wb-card__txt span{font:500 10.5px/1.5 var(--wb-mono);letter-spacing:.03em;color:var(--wb-muted);text-transform:none}
+.wb-stars{display:flex;gap:3px;margin-left:auto;color:var(--wb-blue-400)}
+.wb-stars .wb-ico{width:13px;height:13px}
+.wb-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+.wb-chip{font:500 10px/1 var(--wb-mono);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--wb-blue-400);background:rgba(47,107,255,.12);border:1px solid var(--wb-ring);
+  border-radius:var(--wb-pill);padding:5px 9px}
+.wb-divide{display:flex;align-items:center;gap:10px;margin:6px 2px;
+  font:500 9.5px/1 var(--wb-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--wb-faint)}
+.wb-divide::before,.wb-divide::after{content:"";height:1px;flex:1;
+  background:repeating-linear-gradient(90deg,var(--wb-line) 0 4px,transparent 4px 8px)}
+
+/* status line */
+.wb-chat__foot{display:flex;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid var(--wb-line);
+  background:linear-gradient(180deg,rgba(7,18,41,.25),rgba(10,28,58,.75));min-height:44px}
+.wb-status{font:500 11.5px/1.4 var(--wb-mono);letter-spacing:.05em;color:var(--wb-muted)}
+.wb-status[data-wb-state="live"]{color:var(--wb-blue-400)}
+
+/* =============================== STAGE RAIL ============================== */
+.wb-rail__list{list-style:none;margin:0;padding:0}
+.wb-rail__item{display:grid;grid-template-columns:26px 1fr;gap:14px;align-items:start;
+  padding:15px 0;border-top:1px solid var(--wb-line)}
+.wb-rail__item:last-child{border-bottom:1px solid var(--wb-line)}
+.wb-rail__dot{position:relative;width:11px;height:11px;margin:5px 0 0 4px;border-radius:50%;
+  background:rgba(160,190,255,.16);border:1px solid var(--wb-line);
+  transition:background .3s ease,box-shadow .3s ease,border-color .3s ease}
+.wb-rail__item:not(:last-child) .wb-rail__dot::after{content:"";position:absolute;left:50%;top:15px;
+  width:1px;height:calc(100% + 24px);transform:translateX(-50%);background:var(--wb-line)}
+.wb-rail__text b{display:block;font-size:15px;font-weight:600;letter-spacing:-.01em;color:var(--wb-faint);
+  transition:color .3s ease}
+.wb-rail__text span{display:block;margin-top:5px;font-size:13.5px;line-height:1.5;color:rgba(168,188,216,.5);
+  transition:color .3s ease}
+.wb-rail__item.is-active .wb-rail__dot{background:var(--wb-blue-500);border-color:var(--wb-blue-400);
+  box-shadow:0 0 0 4px rgba(47,107,255,.14),0 0 16px var(--wb-glow)}
+.wb-rail__item.is-active .wb-rail__text b{color:#fff}
+.wb-rail__item.is-active .wb-rail__text span{color:var(--wb-muted)}
+.wb-rail__item.is-done .wb-rail__dot{background:rgba(47,107,255,.55);border-color:rgba(77,139,255,.5)}
+.wb-rail__item.is-done .wb-rail__text b{color:var(--wb-ghost)}
+
+/* ============================ LEAK VS FIXED ============================== */
+.wb-compare{margin-top:clamp(48px,6vw,80px)}
+.wb-compare__title{margin:14px 0 0;font-size:clamp(19px,2.4vw,24px);font-weight:500;letter-spacing:-.03em}
+.wb-compare__grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+@media(max-width:760px){.wb-compare__grid{grid-template-columns:1fr}}
+
+.wb-panel{position:relative;display:flex;flex-direction:column;gap:18px;
+  padding:24px;border-radius:var(--wb-r-lg);border:1px solid var(--wb-line);
+  background:var(--wb-surface);overflow:hidden}
+.wb-panel__head{display:flex;flex-direction:column;gap:9px}
+.wb-panel__head h4{margin:0;font-size:17px;font-weight:600;letter-spacing:-.02em}
+.wb-panel__chat{display:flex;flex-direction:column;gap:9px;min-height:112px}
+
+/* left panel — desaturated, static, no glow */
+.wb-panel--leak{filter:saturate(.28);opacity:.72}
+.wb-panel--leak .wb-mono{color:var(--wb-faint)}
+.wb-mini{max-width:88%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;
+  opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
+.wb-mini.is-live{opacity:1;transform:none}
+.wb-mini--in{align-self:flex-start;background:rgba(160,190,255,.07);border:1px solid var(--wb-line);
+  border-bottom-left-radius:5px;color:#dfe8f7}
+.wb-mini--out{align-self:flex-end;border-bottom-right-radius:5px;background:linear-gradient(165deg,var(--wb-blue-500),#1c46c4);
+  color:#fff;border:1px solid rgba(120,170,255,.34)}
+.wb-mini--none{align-self:flex-start;display:flex;align-items:center;gap:8px;
+  border:1px dashed rgba(160,190,255,.22);color:var(--wb-faint);
+  background:repeating-linear-gradient(135deg,rgba(160,190,255,.04) 0 6px,transparent 6px 12px)}
+
+/* stat + counter */
+.wb-panel__stat{display:flex;align-items:baseline;gap:10px;margin-top:auto}
+.wb-count{font-family:var(--wb-mono);font-size:clamp(30px,4.4vw,42px);line-height:1;font-weight:500;color:var(--wb-faint)}
+.wb-panel--fixed .wb-count{color:#fff;text-shadow:0 0 26px var(--wb-glow)}
+.wb-count__label{font-size:13.5px;color:var(--wb-muted)}
+.wb-count.is-pop{animation:wb-pop .42s cubic-bezier(.22,.9,.3,1)}
+.wb-panel--fixed .wb-count.is-pop{animation:wb-pop .42s cubic-bezier(.22,.9,.3,1),wb-flash .9s ease-out}
+.wb-panel__foot{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:1px solid var(--wb-line);
+  font:500 11px/1.4 var(--wb-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--wb-faint)}
+.wb-panel--fixed .wb-panel__foot{color:var(--wb-blue-400)}
+
+/* right panel — live blue glow (the "fixed" state) */
+.wb-panel--fixed{border-color:rgba(77,139,255,.34);
+  background:linear-gradient(160deg,rgba(16,42,86,.92),rgba(7,18,41,.8));
+  animation:wb-glow 5.5s ease-in-out infinite}
+.wb-panel--fixed .wb-mono{color:var(--wb-blue-400)}
+.wb-panel--fixed .wb-mini--out{box-shadow:0 14px 34px -20px var(--wb-glow)}
+.wb-tick{display:inline-flex;align-items:center;gap:6px;color:var(--wb-blue-400)}
+
+/* restrained "paused" state — motion stops, nothing disappears */
+.wb-demo.is-paused .wb-dot{animation-play-state:paused}
+.wb-demo.is-paused .wb-typing span{animation-play-state:paused}
+.wb-demo.is-paused .wb-status{opacity:.62}
+
+/* ============================== KEYFRAMES ================================ */
+@keyframes wb-in{from{opacity:0;transform:translateY(9px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes wb-blink{0%,60%,100%{opacity:.32;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+@keyframes wb-pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--wb-glow)}50%{opacity:.55;box-shadow:0 0 14px var(--wb-glow)}}
+@keyframes wb-pop{0%{transform:scale(1)}38%{transform:scale(1.16)}100%{transform:scale(1)}}
+@keyframes wb-flash{0%{filter:brightness(1)}30%{filter:brightness(1.5)}100%{filter:brightness(1)}}
+@keyframes wb-glow{
+  0%,100%{box-shadow:0 0 0 1px var(--wb-glow-soft),0 40px 80px -52px rgba(47,107,255,.9)}
+  50%{box-shadow:0 0 0 1px var(--wb-ring),0 50px 100px -46px rgba(77,139,255,1)}
+}
+
+/* ==================== REDUCED MOTION — freeze, no motion ================= */
+/* JS also renders the finished state immediately; these rules guarantee the
+   end-state even if the script is blocked or delayed.                       */
+@media (prefers-reduced-motion: reduce){
+  .wb-demo *,.wb-demo *::before,.wb-demo *::after{animation:none !important;transition:none !important}
+  .wb-chat__body{height:auto;max-height:60vh;scroll-behavior:auto; /* full transcript shows */
+    -webkit-mask-image:none;mask-image:none}                      /* no scroll fade needed */
+  .wb-toggle{display:none}                                         /* nothing to pause */
+}
+</style>
+
+<!-- ============================== MARKUP ================================= -->
+<section class="wb-demo" id="demo" aria-labelledby="wb-demo-title" aria-describedby="wb-demo-desc">
+
+  <!-- Static description of the animation for screen readers (never shown) -->
+  <p class="wb-sr-only" id="wb-demo-desc">
+    Animated demonstration, transcript: a customer messages Westbridge at 11:42pm asking for a
+    Saturday slot. The system replies automatically in 8 seconds confirming Saturday 4:30pm and
+    offers to hold it. The customer confirms; the system asks whether it is a cut and finish or a
+    colour, tags the enquiry as cut and finish, first visit, and confirms the booking with a
+    reminder set for 10:30am Saturday. After the visit it asks for a review, and the customer
+    leaves a five-star review. The demo loops every 17 seconds and can be paused with the
+    Pause button.
+  </p>
+  <p class="wb-sr-only" data-wb-live aria-live="polite" aria-atomic="false"></p>
+
+  <div class="wb-demo__wrap">
+
+    <div class="wb-demo__head">
+      <div>
+        <span class="wb-mono">See it work</span>
+        <h2 id="wb-demo-title">An enquiry at 11:42pm. Answered before you <span>wake up</span>.</h2>
+        <p class="wb-lede">This is the whole service played out in ninety seconds — the reply, the
+          qualifying questions, the booking, and the review request that follows the visit.</p>
+      </div>
+      <button class="wb-toggle" type="button" data-wb-toggle aria-pressed="false">
+        <svg class="wb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"
+             data-wb-toggle-icon><path d="M9 5v14M15 5v14"/></svg>
+        <span data-wb-toggle-label>Pause</span>
+      </button>
+    </div>
+
+    <div class="wb-demo__grid">
+
+      <!-- ------------------------- phone simulation ------------------------ -->
+      <div class="wb-phone">
+        <div class="wb-phone__screen">
+          <!-- aria-hidden: the chat is an auto-playing animation. Its full content is
+               described by #wb-demo-desc, and stage changes are announced politely. -->
+          <div class="wb-chat" aria-hidden="true">
+            <div class="wb-chat__head">
+              <span class="wb-avatar">W</span>
+              <span class="wb-chat__id">
+                <b>Westbridge Concierge</b>
+                <span class="wb-chat__sub"><i class="wb-dot"></i>Auto-reply active</span>
+              </span>
+              <span class="wb-chat__clock">11:42pm</span>
+            </div>
+
+            <!-- messages are appended here by the script -->
+            <div class="wb-chat__body" data-wb-stream></div>
+
+            <div class="wb-chat__foot">
+              <span class="wb-status" data-wb-status>Waiting for the first enquiry…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- --------------------------- stage rail --------------------------- -->
+      <!-- Static text: kept available to screen readers. The highlight that
+           tracks the animation is decorative, so the text alone carries it. -->
+      <ol class="wb-rail__list">
+        <li class="wb-rail__item" data-wb-stage>
+          <span class="wb-rail__dot"></span>
+          <span class="wb-rail__text">
+            <b>Enquiry arrives</b>
+            <span>11:42pm — first-time customer, asking about Saturday.</span>
+          </span>
+        </li>
+        <li class="wb-rail__item" data-wb-stage>
+          <span class="wb-rail__dot"></span>
+          <span class="wb-rail__text">
+            <b>Answered in 8 seconds</b>
+            <span>Before they message the next business on their list.</span>
+          </span>
+        </li>
+        <li class="wb-rail__item" data-wb-stage>
+          <span class="wb-rail__dot"></span>
+          <span class="wb-rail__text">
+            <b>Qualified automatically</b>
+            <span>Service, visit type and intent captured — no back-and-forth for your staff.</span>
+          </span>
+        </li>
+        <li class="wb-rail__item" data-wb-stage>
+          <span class="wb-rail__dot"></span>
+          <span class="wb-rail__text">
+            <b>Booked and reminded</b>
+            <span>Confirmation sent, reminder queued for 10:30am Saturday.</span>
+          </span>
+        </li>
+        <li class="wb-rail__item" data-wb-stage>
+          <span class="wb-rail__dot"></span>
+          <span class="wb-rail__text">
+            <b>Review requested</b>
+            <span>After the visit, while the experience is still fresh.</span>
+          </span>
+        </li>
+      </ol>
+    </div>
+
+    <!-- ---------------------- leak vs fixed comparison --------------------- -->
+    <div class="wb-compare">
+      <span class="wb-mono">Same enquiry. Two outcomes.</span>
+      <h3 class="wb-compare__title" id="wb-compare-title">One of these businesses gets the booking.</h3>
+
+      <div class="wb-compare__grid" role="group" aria-labelledby="wb-compare-title">
+
+        <!-- LEFT: unanswered -->
+        <article class="wb-panel wb-panel--leak">
+          <header class="wb-panel__head">
+            <span class="wb-mono">Without a system</span>
+            <h4>The leak</h4>
+          </header>
+          <div class="wb-panel__chat" aria-hidden="true">
+            <div class="wb-mini wb-mini--in" data-wb-leak-msg>Hi, do you have a slot this Saturday?</div>
+            <div class="wb-mini wb-mini--none" data-wb-leak-none>
+              <svg class="wb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="9"/><path d="M8.5 12h7"/>
+              </svg>
+              No reply sent
+            </div>
+          </div>
+          <div class="wb-panel__stat" aria-hidden="true">
+            <span class="wb-count" data-wb-leak-count>0</span>
+            <span class="wb-count__label">enquiries missed</span>
+          </div>
+          <footer class="wb-panel__foot">Seen 2h ago · still waiting</footer>
+        </article>
+
+        <!-- RIGHT: answered -->
+        <article class="wb-panel wb-panel--fixed">
+          <header class="wb-panel__head">
+            <span class="wb-mono">With Westbridge</span>
+            <h4>Plugged</h4>
+          </header>
+          <div class="wb-panel__chat" aria-hidden="true">
+            <div class="wb-mini wb-mini--in" data-wb-fixed-msg>Hi, do you have a slot this Saturday?</div>
+            <div class="wb-mini wb-mini--out" data-wb-fixed-reply>Yes — Saturday 4:30pm is free. Shall I hold it?</div>
+          </div>
+          <div class="wb-panel__stat" aria-hidden="true">
+            <span class="wb-count" data-wb-fixed-count>0</span>
+            <span class="wb-count__label">enquiries missed</span>
+          </div>
+          <footer class="wb-panel__foot">
+            <span class="wb-tick">
+              <svg class="wb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              Replied in 8 seconds · booked 11:43pm
+            </span>
+          </footer>
+        </article>
+      </div>
+
+      <p class="wb-sr-only">Without an automatic reply, three enquiries went unanswered this week and
+        the customer booked elsewhere. With Westbridge, the same enquiry was answered in eight
+        seconds and converted into a booking.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== SCRIPT ================================= -->
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- inline SVG icons (no emoji, no external assets) ---------- */
+  var svg = function (path, sw) {
+    return '<svg class="wb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+           'stroke-width="' + (sw || 2.2) + '" stroke-linecap="round" stroke-linejoin="round" ' +
+           'aria-hidden="true" focusable="false">' + path + '</svg>';
+  };
+  var ICO = {
+    bolt:     svg('<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>', 1.9),
+    calendar: svg('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>', 1.9),
+    star:     svg('<path d="m12 3.2 2.7 5.5 6.1.9-4.4 4.2 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.6l6.1-.9z" fill="currentColor" stroke="none"/>'),
+    check:    svg('<path d="M20 6 9 17l-5-5"/>', 2.6),
+    pause:    svg('<path d="M9 5v14M15 5v14"/>', 2),
+    play:     svg('<path d="M7 4.5 19 12 7 19.5z"/>', 2)
+  };
+
+  var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ---------- tiny DOM helpers ---------- */
+  function el(html) {
+    var t = document.createElement('template');
+    t.innerHTML = html.trim();
+    return t.content.firstElementChild;
+  }
+
+  function initDemo(root) {
+    if (root.dataset.wbInit === '1') return;   // guard against double init
+    root.dataset.wbInit = '1';
+
+    var stream  = root.querySelector('[data-wb-stream]');
+    var status  = root.querySelector('[data-wb-status]');
+    var stages  = [].slice.call(root.querySelectorAll('[data-wb-stage]'));
+    var live    = root.querySelector('[data-wb-live]');
+    var toggle  = root.querySelector('[data-wb-toggle]');
+    var leakMsg = root.querySelector('[data-wb-leak-msg]');
+    var leakNone= root.querySelector('[data-wb-leak-none]');
+    var leakCt  = root.querySelector('[data-wb-leak-count]');
+    var fixMsg  = root.querySelector('[data-wb-fixed-msg]');
+    var fixRep  = root.querySelector('[data-wb-fixed-reply]');
+
+    var timers = [];        // counter timers, cleared on every reset
+    var typingJobs = [];    // in-flight character reveals
+    var gen = 0;            // generation token: stale callbacks bail out
+    var ticker = null;      // the single "next step" timeout
+    var pausedAt = 0;
+    var running = false;
+    var pass = 0;           // how many times the sequence has played
+    var typingEl = null;
+    var idx = 0, t0 = 0;
+
+    function now() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
+
+    // Finish anything mid-type so a pause never leaves a half-sentence, then
+    // drop every pending timer. Called on reset and when the sequence loops.
+    function finishTyping() {
+      typingJobs.forEach(function (j) {
+        clearInterval(j.id);
+        j.node.textContent = j.text;
+      });
+      typingJobs = [];
+    }
+
+    function clearTimers() {
+      if (ticker) { clearTimeout(ticker); ticker = null; }
+      timers.forEach(clearTimeout); timers = [];
+      finishTyping();
+    }
+
+    function scrollDown() { stream.scrollTop = stream.scrollHeight; }
+
+    /* ---------- building blocks ---------- */
+
+    // A message row. Returns the element holding the text so it can be "typed".
+    function bubble(opts) {
+      var badge = opts.badge
+        ? '<span class="wb-badge">' + (opts.icon ? opts.icon : '') + opts.badge + '</span>' : '';
+      var row = el(
+        '<div class="wb-row wb-row--' + opts.side + '">' +
+          '<div class="wb-bubble wb-bubble--' + opts.side + '">' + badge +
+            '<span class="wb-text"></span>' +
+          '</div>' +
+        '</div>');
+      stream.appendChild(row);
+      scrollDown();
+      return row.querySelector('.wb-text');
+    }
+
+    // A message built from ready-made markup (cards, chips…), no typing effect.
+    // `wide` lets cards use the full lane instead of the 84% bubble width.
+    function richRow(side, inner, wide) {
+      var row = el('<div class="wb-row wb-row--' + side + (wide ? ' wb-row--wide' : '') + '">' + inner + '</div>');
+      stream.appendChild(row);
+      scrollDown();
+      return row;
+    }
+
+    // Subtle character-by-character reveal. Skipped entirely for reduced motion.
+    function typeText(node, text, speed) {
+      if (REDUCE.matches || !speed) { node.textContent = text; scrollDown(); return; }
+      var job = { node: node, text: text, i: 0 };
+      job.id = setInterval(function () {
+        job.i++;
+        node.textContent = text.slice(0, job.i);
+        scrollDown();
+        if (job.i >= text.length) {
+          clearInterval(job.id);
+          var at = typingJobs.indexOf(job);
+          if (at > -1) typingJobs.splice(at, 1);
+        }
+      }, speed);
+      typingJobs.push(job);
+    }
+
+    function customer(text) { typeText(bubble({ side: 'in' }), text, 26); }
+
+    function agent(text, badge, icon) {
+      var node = bubble({ side: 'out', badge: badge, icon: icon });
+      typeText(node, text, 17);
+    }
+
+    function showTyping() {
+      if (typingEl || REDUCE.matches) return;
+      typingEl = richRow('out', '<div class="wb-typing"><span></span><span></span><span></span></div>');
+    }
+    function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
+
+    function setStage(n) {                       // n = index of the stage in play
+      stages.forEach(function (s, i) {
+        s.classList.toggle('is-done', i < n);
+        s.classList.toggle('is-active', i === n);
+      });
+    }
+
+    function setStatus(text, live) {
+      status.textContent = text;
+      if (live) status.setAttribute('data-wb-state', 'live');
+      else status.removeAttribute('data-wb-state');
+    }
+
+    // Announce a stage once, on the first pass only (a looping live region
+    // would repeat the same five sentences forever — that is noise, not access).
+    function announce(text) {
+      if (!live || pass !== 1) return;
+      live.textContent = text;
+    }
+
+    function setCount(node, value, pop) {
+      node.textContent = String(value);
+      if (!pop || REDUCE.matches) return;
+      node.classList.remove('is-pop');
+      void node.offsetWidth;                     // restart the CSS animation
+      node.classList.add('is-pop');
+    }
+
+    /* ---------- the scripted sequence (times are ms from cycle start) ------- */
+
+    var CYCLE = [
+      { at: 500, fn: function () {
+          customer('Hi, do you have a slot this Saturday?');
+          setStage(0);
+          announce('Enquiry received: do you have a slot this Saturday?');
+          leakMsg.classList.add('is-live');
+          fixMsg.classList.add('is-live');
+      }},
+      { at: 1150, fn: showTyping },
+      { at: 1950, fn: function () {
+          hideTyping();
+          agent('Yes — Saturday 4:30pm is free. Shall I hold it?', 'Auto-reply', ICO.bolt);
+          setStatus('Replied in 8 seconds · 11:42pm', true);
+          setStage(1);
+          announce('Auto-reply sent in 8 seconds: Saturday 4:30pm is free.');
+          fixRep.classList.add('is-live');
+      }},
+      { at: 3200, fn: function () { customer('Yes please — hold it.'); } },
+      { at: 4100, fn: showTyping },
+      { at: 4750, fn: function () {
+          hideTyping();
+          agent('Great. Just so Sam is ready — is it a cut and finish, or a colour?', 'Auto-reply', ICO.bolt);
+          setStage(2);
+          announce('Qualifying question asked: cut and finish, or colour?');
+      }},
+      { at: 6000, fn: function () { customer('Cut and finish, please.'); } },
+      { at: 6800, fn: showTyping },
+      { at: 7400, fn: function () {
+          hideTyping();
+          agent('Noted — tagged and passed to the team.');
+          richRow('out',
+            '<div class="wb-chips">' +
+              '<span class="wb-chip">Cut &amp; finish</span>' +
+              '<span class="wb-chip">First visit</span>' +
+              '<span class="wb-chip">Hot lead</span>' +
+            '</div>', true);
+          announce('Enquiry qualified: cut and finish, first visit.');
+      }},
+      { at: 8800, fn: function () {
+          richRow('out',
+            '<div class="wb-card">' +
+              '<span class="wb-card__ico">' + ICO.calendar + '</span>' +
+              '<span class="wb-card__txt">' +
+                '<b>Booked — Sat 14 Jun, 4:30pm</b>' +
+                '<span>Confirmation sent · reminder 10:30am</span>' +
+              '</span>' +
+            '</div>', true);
+          setStage(3);
+          announce('Booking confirmed for Saturday 4:30pm, with a reminder set for 10:30am.');
+      }},
+      { at: 10800, fn: function () {
+          richRow('out', '<div class="wb-divide"><span>After the visit</span></div>');
+      }},
+      { at: 11500, fn: function () {
+          richRow('out',
+            '<div class="wb-card">' +
+              '<span class="wb-card__ico">' + ICO.star + '</span>' +
+              '<span class="wb-card__txt">' +
+                '<b>How did the cut go?</b>' +
+                '<span>20 seconds to leave a review</span>' +
+              '</span>' +
+              '<span class="wb-stars">' + ICO.star + ICO.star + ICO.star + ICO.star + ICO.star + '</span>' +
+            '</div>', true);
+          announce('Review request sent after the visit.');
+      }},
+      { at: 13000, fn: function () {
+          customer('Left 5 stars — lovely job, thank you.');
+          setStage(4);
+          announce('Five-star review received. Demonstration complete.');
+      }},
+      { at: 16200, fn: function () { stream.classList.add('is-fading'); }, loop: true },
+      { at: 16900, fn: function () { startCycle(); }, loop: true }   // restart the cycle
+    ];
+
+    /* ---------- the runner: one timeout at a time, pause-aware ------------ */
+
+    function resetView() {
+      clearTimers();
+      stream.classList.remove('is-fading');
+      stream.innerHTML = '';
+      typingEl = null;
+      stages.forEach(function (s) { s.classList.remove('is-active', 'is-done'); });
+      setStatus('Waiting for the first enquiry…', false);
+      leakMsg.classList.remove('is-live');
+      leakNone.classList.remove('is-live');
+      fixMsg.classList.remove('is-live');
+      fixRep.classList.remove('is-live');
+      setCount(leakCt, 0, false);
+      setCount(root.querySelector('[data-wb-fixed-count]'), 0, false);
+    }
+
+    function startCycle() {
+      gen++;                       // invalidate anything still in flight
+      clearTimers();
+      resetView();
+      idx = 0;
+      t0 = now();
+      running = true;
+      pass++;                      // pass 1 is the only one that announces
+      tickCounters();              // re-arm the leak/fixed counter beats
+      tick(gen);
+    }
+
+    function tick(g) {
+      if (g !== gen || pausedAt) return;
+      if (idx >= CYCLE.length) return;            // last step re-enters startCycle()
+      var step = CYCLE[idx];
+      var wait = Math.max(0, step.at - (now() - t0));
+      ticker = setTimeout(function () {
+        if (g !== gen) return;
+        ticker = null;
+        idx++;
+        step.fn();
+        tick(g);
+      }, wait);
+    }
+
+    /* ---------- leak / fixed counters (share the cycle's clock) ---------- */
+
+    // The left counter ticks up as the cycle plays; the right one stays at zero.
+    function tickCounters() {
+      var marks = [2200, 5800, 9400];
+      marks.forEach(function (at, i) {
+        timers.push(setTimeout(function () {
+          if (!running) return;
+          setCount(leakCt, i + 1, true);
+          if (i === 0) leakNone.classList.add('is-live');
+        }, at));
+      });
+    }
+
+    /* ---------- pause / resume ------------------------------------------- */
+
+    function pause() {
+      if (!running || pausedAt) return;
+      pausedAt = now();
+      if (ticker) { clearTimeout(ticker); ticker = null; }
+      finishTyping();              // land the sentence instead of freezing mid-word
+      root.classList.add('is-paused');
+      updateToggle(true);
+    }
+
+    function resume() {
+      if (!running || !pausedAt) return;
+      t0 += now() - pausedAt;      // shift the cycle origin so waits continue correctly
+      pausedAt = 0;
+      root.classList.remove('is-paused');
+      updateToggle(false);
+      tick(gen);
+    }
+
+    function updateToggle(isPaused) {
+      if (!toggle) return;
+      var label = toggle.querySelector('[data-wb-toggle-label]');
+      var icon  = toggle.querySelector('[data-wb-toggle-icon]');
+      toggle.setAttribute('aria-pressed', isPaused ? 'true' : 'false');
+      if (label) label.textContent = isPaused ? 'Play' : 'Pause';
+      if (icon)  icon.innerHTML = isPaused ? ICO.play : ICO.pause;
+    }
+
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        if (pausedAt) resume(); else pause();
+      });
+    }
+
+    /* ---------- reduced motion: render the finished state, never animate -- */
+
+    function renderStatic() {
+      gen++;
+      clearTimers();
+      running = false;
+      pausedAt = 0;
+      root.classList.remove('is-paused');
+      updateToggle(false);
+      resetView();
+      // run the whole sequence synchronously; the loop steps are skipped so the
+      // chat stays on screen instead of restarting itself
+      CYCLE.forEach(function (step) { if (!step.loop) step.fn(); });
+      pass = 2;                                       // suppress live announcements
+      setStage(4);
+      setStatus('Replied in 8 seconds · 11:42pm', true);
+      stream.classList.remove('is-fading');           // never fade the final state
+      setCount(leakCt, 3, false);
+      leakNone.classList.add('is-live');
+      setCount(root.querySelector('[data-wb-fixed-count]'), 0, false);
+      stream.scrollTop = stream.scrollHeight;         // show the latest message
+    }
+
+    // Single source of truth for "should this thing move?".
+    function applyMotionPreference() {
+      if (REDUCE.matches) {
+        renderStatic();
+      } else {
+        pass = 0;            // the visitor will hear the stages announced once
+        startCycle();
+      }
+    }
+
+    /* ---------- go -------------------------------------------------------- */
+
+    applyMotionPreference();
+
+    // Pause when the tab is hidden (no wasted frames, no mid-sentence jumps).
+    document.addEventListener('visibilitychange', function () {
+      if (REDUCE.matches) return;
+      if (document.visibilityState === 'hidden') pause(); else resume();
+    });
+
+    // React if the visitor flips the OS "reduce motion" switch while on the page.
+    var onPref = function () { applyMotionPreference(); };
+    if (REDUCE.addEventListener) REDUCE.addEventListener('change', onPref);
+    else if (REDUCE.addListener) REDUCE.addListener(onPref);
+
+    // Small hook for debugging/QA; nothing is attached to window.
+    root.wbDemo = {
+      pause: pause,
+      resume: resume,
+      restart: function () { pass = 0; startCycle(); }
+    };
+  }
+
+  function boot() {
+    [].slice.call(document.querySelectorAll('[data-wb-demo], .wb-demo')).forEach(initDemo);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+
+
+<section id="fit">
+  <div class="grid">
+    <div class="fit">
+      <span class="eyebrow">Fit</span>
+      <h2>For businesses where one enquiry is worth real money.</h2>
+      <p class="lede" style="margin-top:20px">If a single customer is worth thousands, or lakhs, a missed enquiry is a loss rather than an annoyance. We start in Hyderabad.</p>
+    </div>
+    <div class="fitlist">
+      <span>Dental and skin clinics</span>
+      <span>IVF and specialty clinics</span>
+      <span>Salons and spas</span>
+      <span>Gyms and studios</span>
+      <span>Coaching centres</span>
+      <span>Wedding venues</span>
+      <span>Wedding planners</span>
+      <span>Photographers</span>
+      <span>Real-estate brokers</span>
+      <span>Home and auto services</span>
+      <span>Hotels and banquets</span>
+      <span>Recruitment firms</span>
+    </div>
+  </div>
+</section>
+
+<section id="terms">
+  <div class="grid">
+    <div class="terms">
+      <span class="eyebrow">Terms</span>
+      <h2>The audit is free.</h2>
+      <p class="lede" style="margin-top:20px">We look, we tell you what we found, and you decide. If the finding is not worth acting on, we will say so.</p>
+    </div>
+    <div class="termsbox">
+      <div class="figure">From ₹10,000 <span>one-time setup</span></div>
+      <ul class="tlist">
+        <li>The audit itself costs nothing and carries no obligation.</li>
+        <li>If you want it fixed: a fixed setup fee, then a monthly fee from ₹5,000.</li>
+        <li>Per-booking or per-qualified-enquiry terms are available instead.</li>
+        <li>No lock-in. It continues only while it is earning.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="grid">
+    <div class="closing__in">
+      <span class="eyebrow">Contact</span>
+      <h2>Send one line about your business.</h2>
+      <p class="lede">We will come back with a specific finding about how you handle enquiries — not a brochure, and not a proposal.</p>
+      <div class="go">
+        <a class="tlink accent" href="mailto:fca.abhi007@gmail.com?subject=Free%20enquiry%20audit&body=Business%20name%3A%0AWhat%20we%20want%20fixed%3A">fca.abhi007@gmail.com</a>
+        <span class="small">Hyderabad, India</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="grid">
+    <div class="foot">
+      <span>Westbridge · We Bring Clients</span>
+      <span>© <span id="yr">2026</span> · Hyderabad, India</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

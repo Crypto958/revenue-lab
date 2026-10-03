@@ -1,0 +1,20 @@
+# FAILED / DEMOTED HYPOTHESES
+- **Bid/Proposal Desk — KILLED as framed (2026-10-02).** Five axes: value sits in client-specific facts an outsider lacks; buyers trust only referred vendors; hidden firm/security gate (CUI/ITAR/FCL, vendor onboarding); AI hallucination → disqualification (42% of pros cite it #1; live test invented criteria + missed DFARS); business-hours deadline coupling ("late = 100% loss"). Commoditised by platforms (Responsive $10k+, Loopio ~$20k/yr, AutogenAI, GovDash) AND offshore labour ($10–30/hr). Survives-only-as: back-office subcontract ($15–30/hr). All prior quantitative claims UNVERIFIED.
+- **Signal Desk — KILLED as framed.** Exact product already sold at ⅕ price (Argus $99–199/mo, Spyglass $29, IndustryLens €59–249, Competiflow $19–99). Real budget is enterprise + procurement-gated (Klue $30k/yr, Crayon $15–60k; 8.4% of Crayon customers <50 staff). SMB CI budget ≈ zero. Free DIY (Visualping+Alerts+LLM) substitutes. AI-native GRR 40%. Valued output = human judgment. Survives-only-as: white-label feed ($100–300/mo).
+- **GEO/AEO for B2B — WATCH ONLY**: real spend ($1.5–3k/mo) but "snake-oil" credibility crisis; only pursue with inspectable deliverables.
+- **Audiobook AI narration — CHANNEL-LIMITED**: Audible/ACX bans external AI narration → addressable only on Spotify/Google/Kobo.
+- **Combination radars (Tender / Regulatory / Competitor / Public-Filing) — PARKED**: real buyers and prices, but 30–70 founder-hrs per ₹1L (fails leverage).
+- D2 Model Risk Validation — DEMOTED: firm-gated (juristic person, ₹50cr turnover, 10 partners); SBI RFP bans subcontracting; in-person T&M; serving-bank-employee conflict. Revisit: post-employment.
+- D3 Internal Audit/Controls — DEMOTED: 25–40 founder-hrs/₹1L; client-book access.
+- O6 Audit-firm evidence service — KILLED: competes with DataSnipper/MindBridge/Caseware.
+- Ledger Ops — KILLED: confidential financial data; bank-adjacent.
+- Healthcare prior-auth — REJECTED: PHI/HIPAA.
+- Insurance claims — REJECTED: regulated + liability.
+- D4 AI Governance standalone — WEDGE only.
+- Generic AI content / faceless YouTube / POD / drop-servicing — KILLED: commoditised or too slow.
+- AGPL product plays (Skyvern, DocuSeal, Twenty, CISO Assistant, Unstract) — REJECTED in-product (network source-disclosure).
+- LinkedIn ghostwriting ($500–9,000/mo) — KILLED: per-client voice/1:1 work = high founder hours, subjective QA, crowded.
+- Creator video localisation/dubbing — KILLED: commodity at $0.24–2.40/min (ElevenLabs/Perso); thin creator budgets; QC heavy.
+- Course-launch done-for-you ($3,000/mo) — KILLED: high-touch, launch-coupled (deadline risk), not async.
+- Cold-email inbox/infra management — KILLED: deliverability + spam-law liability, churn, commodity at $2–4/mailbox (folded into H2).
+- Standalone Etsy SEO + PR placements (Pressfarm ~$90 one-off) — KILLED: thin ACV / one-off (Etsy folded into H4).

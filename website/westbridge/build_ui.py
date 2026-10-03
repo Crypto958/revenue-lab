@@ -1,0 +1,471 @@
+#!/usr/bin/env python3
+"""
+Westbridge — design system, layout primitives and page components.
+Positioning: "We find where your business is losing customers — and build the systems that fix it."
+Visual direction: 80% premium business consultancy / 20% advanced technology.
+Palette: #0B1220 base · #F7F8FA ink · #2563EB primary · teal used sparingly.
+"""
+import os, json, html, datetime
+
+# ------------------------------------------------------------------ config
+BASE = "https://westbridge.in"          # TODO: replace with the registered domain
+BRAND = "Westbridge"
+TAGLINE = "Revenue-leak diagnosis and customer-response systems"
+EMAIL = "fca.abhi007@gmail.com"
+WHATSAPP = ""                            # e.g. "919876543210" — button hidden while blank
+CITY = "Hyderabad"
+OUT = os.path.dirname(os.path.abspath(__file__))
+TODAY = datetime.date.today().isoformat()
+
+NAV = [
+    ("Solutions", "/solutions/"),
+    ("Industries", "/industries/"),
+    ("Work", "/work/"),
+    ("How it works", "/how-it-works/"),
+    ("About", "/about/"),
+]
+
+# ------------------------------------------------------------------ tokens + CSS
+CSS = """
+:root{
+--bg:#0B1220; --bg-2:#0E1729; --surface:#111C31; --surface-2:#152238;
+--ink:#F7F8FA; --ink-2:#A9B6CB; --ink-3:#6E7E97;
+--line:rgba(255,255,255,.075); --line-2:rgba(255,255,255,.14);
+--accent:#2563EB; --accent-soft:rgba(37,99,235,.14); --accent-line:rgba(37,99,235,.45);
+--teal:#14B8A6;
+--sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+--display:'Inter Tight','Inter',system-ui,sans-serif;
+--mono:'Azeret Mono',ui-monospace,Menlo,monospace;
+--r:10px; --r-lg:16px;
+--sh:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16.5px;line-height:1.62;
+-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;text-wrap:pretty;overflow-x:hidden}
+img,video{max-width:100%;display:block}
+a{color:inherit}
+p{margin:0}
+h1,h2,h3,h4{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.022em;line-height:1.08}
+h1{font-size:clamp(36px,5.6vw,68px);line-height:1.02}
+h2{font-size:clamp(27px,3.6vw,44px);line-height:1.06}
+h3{font-size:clamp(18px,1.6vw,21px);line-height:1.2;letter-spacing:-.015em}
+h4{font-size:15px;letter-spacing:0}
+.wrap{max-width:1200px;margin:0 auto;padding:0 26px}
+@media(max-width:640px){.wrap{padding:0 20px}}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.19em;text-transform:uppercase;color:var(--ink-3)}
+.lede{font-size:clamp(17px,1.6vw,20px);line-height:1.6;color:var(--ink-2);max-width:62ch}
+.muted{color:var(--ink-3);font-size:14px}
+.small{font-size:13.5px;color:var(--ink-3)}
+section{padding:clamp(56px,7vw,104px) 0;border-top:1px solid var(--line)}
+section.hero{border-top:0}
+.shead{max-width:70ch;margin-bottom:40px}
+.shead h2{margin-top:14px}
+.shead .lede{margin-top:16px}
+.btn{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;text-decoration:none;
+padding:14px 24px;border-radius:var(--r);font-size:15.5px;font-weight:600;border:1px solid transparent;
+transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;box-shadow:0 6px 20px rgba(37,99,235,.26)}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2);box-shadow:none}
+.btn.ghost:hover{border-color:var(--ink-2);background:rgba(255,255,255,.03);filter:none}
+.btn.sm{padding:10px 16px;font-size:14px}
+.btn.wide{width:100%;justify-content:center}
+.txtlink{display:inline-flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-weight:600;font-size:15px}
+.txtlink:hover{gap:12px}
+.txtlink::after{content:"\\2192";transition:transform .16s}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+header{position:sticky;top:0;z-index:60;background:rgba(11,18,32,.86);backdrop-filter:blur(14px) saturate(1.4);
+border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;height:70px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;
+font-size:20px;letter-spacing:-.03em}
+.logo i{width:11px;height:11px;background:var(--accent);border-radius:3px;display:block;box-shadow:0 0 0 3px var(--accent-soft)}
+nav.main{display:flex;align-items:center;gap:30px}
+nav.main a{font-size:15px;color:var(--ink-2);text-decoration:none;font-weight:500}
+nav.main a:hover,nav.main a[aria-current]{color:var(--ink)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.burger{display:none;background:none;border:1px solid var(--line-2);border-radius:8px;padding:8px 10px;cursor:pointer}
+.burger span{display:block;width:17px;height:1.5px;background:var(--ink);margin:4px 0}
+#mnav{display:none;border-top:1px solid var(--line);background:var(--bg-2)}
+#mnav.open{display:block}
+#mnav a{display:block;padding:14px 26px;border-bottom:1px solid var(--line);text-decoration:none;
+font-size:16px;color:var(--ink-2);font-weight:500}
+#mnav .cta{padding:18px 26px}
+@media(max-width:960px){nav.main{display:none}.burger{display:block}}
+@media(max-width:620px){.nav-right>.btn{display:none}.bar{height:64px}}
+.hero{padding:clamp(58px,8vw,110px) 0 clamp(46px,6vw,80px);
+background:radial-gradient(1100px 520px at 78% -12%,rgba(37,99,235,.18),transparent 62%),var(--bg)}
+.hero h1{max-width:18ch}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
+.trust{display:flex;gap:26px;flex-wrap:wrap;margin-top:44px;padding-top:24px;border-top:1px solid var(--line)}
+.trust div{font-size:13.5px;color:var(--ink-3);display:flex;align-items:center;gap:9px}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex:none}
+.strap{font-family:var(--mono);font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+margin-top:32px;display:flex;gap:10px;flex-wrap:wrap}
+.strap s{text-decoration:none;color:var(--line-2)}
+.grid{display:grid;gap:20px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:1000px){.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:820px){.g3,.g2{grid-template-columns:1fr}}
+@media(max-width:620px){.g4{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;
+transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease;position:relative}
+.card:hover{border-color:var(--line-2);transform:translateY(-2px);box-shadow:var(--sh)}
+.card h3{margin-bottom:9px}
+.card p{color:var(--ink-2);font-size:15px}
+.card .txtlink{margin-top:16px}
+.card .k{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:12px}
+.card ul{list-style:none;margin:14px 0 0;padding:0}
+.card li{padding:7px 0;font-size:14.5px;color:var(--ink-2);border-top:1px solid var(--line);display:flex;gap:10px}
+.card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:8px;flex:none}
+.card .out{font-size:13.5px;color:var(--teal);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.diag{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:1000px){.diag{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.diag{grid-template-columns:1fr}}
+.dcard{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;
+cursor:pointer;font-family:inherit;color:inherit;transition:.18s ease;display:block;width:100%}
+.dcard:hover{border-color:var(--accent-line);background:var(--surface-2);transform:translateY(-2px)}
+.dcard h3{font-size:18px;margin-bottom:8px}
+.dcard p{font-size:14px;color:var(--ink-2);margin:0}
+.dcard.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 14px 34px rgba(37,99,235,.18)}
+.dpanel{display:none;margin-top:18px}
+.dpanel.on{display:block;animation:fade .32s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.dbox{background:var(--surface);border:1px solid var(--accent-line);border-radius:var(--r-lg);padding:clamp(22px,3vw,34px)}
+.dbox .row{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);font-size:15px;color:var(--ink-2)}
+.dbox .row:first-of-type{border-top:0}
+.dbox .row b{color:var(--ink);font-weight:600;min-width:20ch}
+.journey{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}
+@media(max-width:1080px){.journey{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:700px){.journey{grid-template-columns:repeat(2,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 16px}
+.stage.on{border-color:var(--accent-line);background:linear-gradient(180deg,var(--accent-soft),var(--surface) 70%)}
+.stage .n{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--accent);text-transform:uppercase}
+.stage h3{font-size:15.5px;margin:10px 0 8px;letter-spacing:-.01em}
+.stage p{font-size:13px;color:var(--ink-3);line-height:1.5}
+.flow{display:flex;flex-direction:column;max-width:560px}
+.node{display:flex;gap:14px;align-items:flex-start;padding:13px 0}
+.node .b{width:26px;height:26px;border-radius:8px;background:var(--accent-soft);border:1px solid var(--accent-line);
+display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--accent);flex:none}
+.node p{font-size:15px;color:var(--ink-2);padding-top:2px}
+.node.hi .b{background:var(--accent);color:#fff;border-color:var(--accent)}
+.node.hi p{color:var(--ink);font-weight:500}
+.node:not(:last-child){border-bottom:1px dashed var(--line)}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.ba{grid-template-columns:1fr}}
+.bacard{border-radius:var(--r-lg);padding:26px;border:1px solid var(--line);background:var(--surface)}
+.bacard.before{border-color:rgba(239,68,68,.32)}
+.bacard.after{border-color:rgba(20,184,166,.34);background:linear-gradient(180deg,rgba(20,184,166,.07),var(--surface) 55%)}
+.bacard h3{margin-bottom:18px}
+.steprow{display:flex;gap:12px;align-items:center;padding:9px 0;font-size:14.5px;color:var(--ink-2)}
+.steprow i{width:6px;height:6px;border-radius:50%;flex:none}
+.bacard.after .steprow i{background:var(--teal)}
+.bacard.before .steprow i{background:#F87171}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:34px}
+.filters button{background:transparent;border:1px solid var(--line-2);color:var(--ink-2);padding:8px 15px;
+border-radius:100px;font-size:13.5px;font-family:inherit;cursor:pointer}
+.filters button:hover{color:var(--ink)}
+.filters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.proj{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+display:flex;flex-direction:column;transition:.18s ease;height:100%}
+.proj:hover{border-color:var(--line-2);transform:translateY(-3px);box-shadow:var(--sh)}
+.pvis{aspect-ratio:16/10;background:linear-gradient(140deg,#0E1729,#152238 55%,#0B1220);
+border-bottom:1px solid var(--line);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pvis .mock{width:76%;background:rgba(11,18,32,.86);border:1px solid var(--line-2);border-radius:9px;padding:13px;
+box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.pvis .l{height:6px;border-radius:3px;background:var(--line-2);margin-bottom:7px}
+.pvis .l.a{background:var(--accent);width:56%}.pvis .l.b{width:82%}.pvis .l.c{width:38%}
+.pvis .tags{position:absolute;bottom:11px;left:13px;display:flex;gap:6px;flex-wrap:wrap}
+.pvis .tags span{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+background:rgba(11,18,32,.9);border:1px solid var(--line-2);color:var(--ink-2);padding:3px 8px;border-radius:100px}
+.pbody{padding:22px;display:flex;flex-direction:column;flex:1;gap:11px}
+.badge{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;
+border-radius:100px;border:1px solid var(--line-2);color:var(--ink-3);align-self:flex-start}
+.badge.concept{border-color:rgba(234,179,8,.42);color:#EAB308;background:rgba(234,179,8,.08)}
+.badge.client{border-color:rgba(20,184,166,.44);color:var(--teal);background:rgba(20,184,166,.09)}
+.pbody h3{font-size:19px}
+.pbody .prob{font-size:14.5px;color:var(--ink-2);flex:1}
+.pbody .sys{font-size:13.5px;color:var(--ink-3);border-top:1px solid var(--line);padding-top:11px}
+.pbody .cap{display:flex;gap:6px;flex-wrap:wrap}
+.pbody .cap span{font-size:11.5px;color:var(--ink-3);border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+.pack{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;display:flex;flex-direction:column;gap:14px}
+.pack.feat{border-color:var(--accent-line);background:linear-gradient(180deg,var(--accent-soft),var(--surface) 45%);position:relative}
+.pack .pop{position:absolute;top:-11px;left:26px;background:var(--accent);color:#fff;font-family:var(--mono);
+font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border-radius:100px}
+.pack ul{list-style:none;margin:0;padding:0;flex:1}
+.pack li{padding:8px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink-2);display:flex;gap:10px}
+.pack li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:8px;flex:none}
+.pack .out{font-size:13.5px;color:var(--teal);border-top:1px solid var(--line);padding-top:13px}
+.pack .price{font-family:var(--display);font-size:15px;color:var(--ink-2);font-weight:600}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+@media(max-width:980px){.steps{grid-template-columns:1fr}}
+.stepc{padding:24px 22px 24px 0;border-top:1px solid var(--line-2)}
+.stepc .n{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--accent)}
+.stepc h3{font-size:17px;margin:11px 0 8px}
+.stepc p{font-size:14px;color:var(--ink-3)}
+.faq details{border-top:1px solid var(--line);padding:4px 0}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;padding:18px 30px 18px 0;font-size:16.5px;font-weight:500;font-family:var(--display);
+list-style:none;position:relative;letter-spacing:-.01em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:6px;top:16px;color:var(--accent);font-size:20px}
+.faq details[open] summary::after{content:"\\2013"}
+.faq p{padding:0 0 20px;color:var(--ink-2);font-size:15px;max-width:80ch}
+.audit{display:grid;gap:22px;max-width:780px}
+.fprog{display:flex;gap:6px}
+.fprog i{height:3px;flex:1;background:var(--line-2);border-radius:2px;transition:background .28s}
+.fprog i.on{background:var(--accent)}
+.fstep{display:none}.fstep.on{display:block}
+.fstep h3{margin-bottom:6px;font-size:22px}
+.fstep>span{display:block;margin-bottom:18px;font-size:14px;color:var(--ink-3)}
+.fopt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:var(--surface);
+padding:14px 16px;margin:9px 0;border-radius:var(--r);cursor:pointer;font-size:15.5px;color:var(--ink-2);transition:.15s}
+.fopt:hover{border-color:var(--accent-line);color:var(--ink)}
+.fopt input{margin:4px 0 0;accent-color:var(--accent);flex:none}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.frow{grid-template-columns:1fr}}
+.frow>div{margin-top:8px}
+.frow span{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);color:var(--ink-3);margin-bottom:7px}
+.frow input,.frow textarea{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--ink);
+padding:13px 14px;font-size:15.5px;font-family:inherit;border-radius:var(--r)}
+.frow input:focus,.frow textarea:focus{outline:0;border-color:var(--accent)}
+.fnav{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:24px}
+.consent{display:flex;gap:11px;align-items:flex-start;margin-top:18px;font-size:13px;color:var(--ink-3);line-height:1.5}
+.consent input{margin-top:3px;accent-color:var(--accent);flex:none}
+.result{display:none}.result.on{display:block;animation:fade .4s ease}
+.rhead{background:linear-gradient(180deg,var(--accent-soft),var(--surface) 60%);border:1px solid var(--accent-line);
+border-radius:var(--r-lg);padding:clamp(22px,3vw,32px)}
+.rhead h3{font-size:24px;margin-top:12px}
+.rlist{display:grid;gap:10px;margin-top:22px}
+.ritem{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px;
+display:flex;gap:14px;align-items:flex-start}
+.ritem .num{font-family:var(--mono);font-size:11px;color:var(--accent);padding-top:3px;flex:none}
+.ritem b{display:block;font-weight:600;margin-bottom:4px}
+.ritem p{font-size:14px;color:var(--ink-2)}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
+@media(max-width:860px){.calc{grid-template-columns:1fr}}
+.calc label{display:block;margin-bottom:20px}
+.calc label>span{display:block;font-size:13.5px;color:var(--ink-2);margin-bottom:8px}
+.calc input[type=range]{width:100%;accent-color:var(--accent)}
+.calc .val{font-family:var(--display);font-size:16px;color:var(--ink);font-weight:600;float:right}
+.cout{background:var(--surface);border:1px solid var(--accent-line);border-radius:var(--r-lg);padding:28px}
+.big{font-family:var(--display);font-size:clamp(32px,4.4vw,46px);font-weight:700;letter-spacing:-.03em;line-height:1}
+.band{background:linear-gradient(135deg,#0E1729,#132038 55%,#0B1220);border-top:1px solid var(--line-2);
+border-bottom:1px solid var(--line);padding:clamp(54px,7vw,96px) 0}
+.band .in{max-width:66ch}
+.band h2{margin-top:14px}
+.band .lede{margin-top:18px}
+.band .acts{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+footer{border-top:1px solid var(--line);padding:52px 0 40px;background:var(--bg-2)}
+.fgrid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px}
+@media(max-width:820px){.fgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.fgrid{grid-template-columns:1fr}}
+.fgrid h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:15px}
+.fgrid a{display:block;padding:5px 0;font-size:14.5px;color:var(--ink-2);text-decoration:none}
+.fgrid a:hover{color:var(--ink)}
+.fbot{margin-top:38px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink-3)}
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:70;background:rgba(11,18,32,.97);backdrop-filter:blur(12px);
+border-top:1px solid var(--line-2);padding:11px 16px;display:none;align-items:center;justify-content:space-between;gap:12px}
+.sticky span{font-size:13.5px;color:var(--ink-2)}
+.sticky a{background:var(--accent);color:#fff;text-decoration:none;padding:11px 18px;font-size:14px;
+border-radius:var(--r);font-weight:600;white-space:nowrap}
+.wa{position:fixed;right:18px;bottom:20px;z-index:70;background:#25D366;color:#04220F;text-decoration:none;
+padding:13px 20px;border-radius:100px;font-size:14.5px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+@media(max-width:860px){.sticky{display:flex}.wa{bottom:70px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto}}
+"""
+
+# ------------------------------------------------------------------ head
+def head(title, desc, path, ld=None, keywords=None, noindex=False):
+    url = BASE + path
+    robots = "noindex, follow" if noindex else "index, follow, max-snippet:-1, max-image-preview:large"
+    ld_all = [{
+        "@context": "https://schema.org", "@type": "Organization", "@id": BASE + "/#org",
+        "name": BRAND, "url": BASE + "/", "email": EMAIL,
+        "description": "Westbridge finds where local and service businesses lose customers and builds the websites, AI response and follow-up systems that fix it.",
+        "areaServed": [{"@type": "City", "name": CITY}, {"@type": "Country", "name": "India"}],
+        "founder": {"@id": BASE + "/#person"},
+        "knowsAbout": ["enquiry response", "AI receptionist", "WhatsApp automation",
+                       "lead follow-up", "appointment booking automation", "review generation",
+                       "customer reactivation", "local business lead generation"],
+    }, {
+        "@context": "https://schema.org", "@type": "Person", "@id": BASE + "/#person",
+        "name": "Abhishek Singh", "honorificSuffix": "FCCA, MCSI", "jobTitle": "Founder",
+        "worksFor": {"@id": BASE + "/#org"},
+        "description": "Abhishek Singh (FCCA, MCSI) has around twelve years of experience in internal audit, model risk, controls and compliance in financial services.",
+        "knowsAbout": ["internal audit", "risk and controls", "revenue-leak diagnosis", "customer journey analysis"],
+    }, {
+        "@context": "https://schema.org", "@type": "WebSite", "@id": BASE + "/#website",
+        "url": BASE + "/", "name": BRAND, "publisher": {"@id": BASE + "/#org"},
+    }]
+    if ld:
+        ld_all.extend(ld if isinstance(ld, list) else [ld])
+    ld_html = "\n".join('<script type="application/ld+json">%s</script>' % json.dumps(x, ensure_ascii=False) for x in ld_all)
+    kw = keywords or ("AI receptionist India, WhatsApp automation local business, missed call recovery, "
+                      "lead follow up automation, local business lead generation Hyderabad")
+    return f"""<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{html.escape(title)}</title>
+<meta name="description" content="{html.escape(desc)}">
+<meta name="keywords" content="{html.escape(kw)}">
+<meta name="robots" content="{robots}">
+<link rel="canonical" href="{url}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{BRAND}">
+<meta property="og:title" content="{html.escape(title)}">
+<meta property="og:description" content="{html.escape(desc)}">
+<meta property="og:url" content="{url}">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{html.escape(title)}">
+<meta name="twitter:description" content="{html.escape(desc)}">
+<meta name="theme-color" content="#0B1220">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Azeret+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+{ld_html}
+</head>
+<body>"""
+
+# ------------------------------------------------------------------ chrome
+def header(active=""):
+    links = "".join(
+        f'<a href="{h}"{" aria-current=\"page\"" if h == active else ""}>{html.escape(t)}</a>' for t, h in NAV)
+    mlinks = "".join(f'<a href="{h}">{html.escape(t)}</a>' for t, h in NAV)
+    return f"""<header>
+  <div class="wrap bar">
+    <a class="logo" href="/"><i></i>{BRAND}</a>
+    <nav class="main">{links}</nav>
+    <div class="nav-right">
+      <a class="btn sm" href="/growth-audit/">Find my revenue leaks</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="mnav"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div id="mnav">{mlinks}<div class="cta"><a class="btn wide" href="/growth-audit/">Find my revenue leaks</a></div></div>
+</header>"""
+
+def footer():
+    wa = (f'<a class="wa" href="https://wa.me/{WHATSAPP}?text=Hi%20Westbridge%2C%20I%27d%20like%20a%20free%20growth%20audit" rel="noopener">WhatsApp us</a>'
+          if WHATSAPP else "")
+    sticky = ('<div class="sticky"><span>Where is your business losing customers?</span>'
+              '<a href="/growth-audit/">Find my revenue leaks</a></div>')
+    def col(t, items):
+        return (f'<div><h4>{t}</h4>' +
+                "".join(f'<a href="{h}">{html.escape(n)}</a>' for n, h in items) + '</div>')
+    return f"""<footer><div class="wrap">
+<div class="fgrid">
+  <div>
+    <a class="logo" href="/" style="margin-bottom:14px"><i></i>{BRAND}</a>
+    <p class="small" style="max-width:34ch;margin-top:14px">We find where your business is losing customers — and build the systems that fix it. Built and managed by Westbridge, not another DIY software subscription.</p>
+  </div>
+  {col("Solutions", [("Get found","/solutions/#get-found"),("Convert more","/solutions/#convert-more"),
+                     ("Never miss a customer","/solutions/#never-miss"),("Automate the busywork","/solutions/#automate")])}
+  {col("Company", [("Work","/work/"),("Industries","/industries/"),("How it works","/how-it-works/"),
+                   ("About","/about/"),("Growth audit","/growth-audit/"),("Contact","/contact/")])}
+  {col("Contact", [("Email us", f"mailto:{EMAIL}"), ("Privacy notice","/privacy/")])}
+</div>
+<div class="fbot">
+  <span>&copy; {datetime.date.today().year} {BRAND} &middot; {CITY}, India</span>
+  <span>{TAGLINE}</span>
+</div>
+</div></footer>
+{wa}{sticky}
+<script>
+(function(){{
+  var b=document.getElementById('burger'), m=document.getElementById('mnav');
+  if(b&&m){{ b.addEventListener('click',function(){{ var o=m.classList.toggle('open'); b.setAttribute('aria-expanded',o); }}); }}
+  var f=document.querySelectorAll('.filters button');
+  f.forEach(function(btn){{ btn.addEventListener('click',function(){{
+    f.forEach(function(x){{x.classList.remove('on');}}); btn.classList.add('on');
+    var k=btn.getAttribute('data-f');
+    document.querySelectorAll('[data-cat]').forEach(function(c){{
+      c.style.display=(k==='all'||c.getAttribute('data-cat').indexOf(k)>-1)?'':'none';
+    }});
+  }});}});
+}})();
+</script>
+</body>
+</html>"""
+
+def crumb_ld(items):
+    return {"@context": "https://schema.org", "@type": "BreadcrumbList",
+            "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": t, "item": BASE + h}
+                                for i, (t, h) in enumerate(items)]}
+
+def faq_ld(pairs):
+    return {"@context": "https://schema.org", "@type": "FAQPage",
+            "mainEntity": [{"@type": "Question", "name": q,
+                            "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in pairs]}
+
+def service_ld(name, desc, audience="Local and service businesses in India"):
+    return {"@context": "https://schema.org", "@type": "Service", "name": name,
+            "serviceType": "Customer acquisition and response systems",
+            "description": desc, "provider": {"@id": BASE + "/#org"},
+            "areaServed": [{"@type": "City", "name": CITY}, {"@type": "Country", "name": "India"}],
+            "audience": {"@type": "Audience", "audienceType": audience}}
+
+# ------------------------------------------------------------------ components
+def hero(label, h1, sub, lede=None, ctas=True, strap=None, trust=None):
+    l = "".join(f'<p class="lede">{x}</p>' for x in (lede or []))
+    c = ""
+    if ctas:
+        c = ('<div class="hero-cta">'
+             '<a class="btn" href="/growth-audit/">Find my revenue leaks</a>'
+             '<a class="btn ghost" href="/how-it-works/">See how it works</a></div>')
+    t = ""
+    if trust:
+        t = '<div class="trust">' + "".join(f'<div><span class="tdot"></span>{x}</div>' for x in trust) + '</div>'
+    s = f'<div class="strap">{strap}</div>' if strap else ""
+    return (f'<section class="hero"><div class="wrap">'
+            f'<span class="eyebrow">{label}</span>'
+            f'<h1 style="margin-top:18px">{h1}</h1>'
+            f'<p class="lede" style="margin-top:22px;font-size:clamp(18px,1.9vw,22px);color:var(--ink-2)">{sub}</p>'
+            f'{l}{c}{t}{s}</div></section>')
+
+def shead(eyebrow, h2, lede=None):
+    return (f'<div class="shead"><span class="eyebrow">{eyebrow}</span><h2>{h2}</h2>'
+            + (f'<p class="lede">{lede}</p>' if lede else '') + '</div>')
+
+def card(k, h3, body, link=None, label=None, cls=""):
+    lk = f'<a class="txtlink" href="{link}">{label or "Read more"}</a>' if link else ""
+    return (f'<div class="card {cls}">' + (f'<span class="k">{k}</span>' if k else '')
+            + f'<h3>{h3}</h3><p>{body}</p>{lk}</div>')
+
+def faq_block(pairs, title=None, eyebrow="FAQ"):
+    inner = "".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in pairs)
+    t = f'<div class="shead"><span class="eyebrow">{eyebrow}</span><h2>{title}</h2></div>' if title else ""
+    return f'<section><div class="wrap">{t}<div class="faq">{inner}</div></div></section>'
+
+def band(h2, lede, primary=("Find my revenue leaks", "/growth-audit/"), secondary=("Talk to us", "/contact/")):
+    s = f'<a class="btn ghost" href="{secondary[1]}">{secondary[0]}</a>' if secondary else ""
+    return (f'<section class="band"><div class="wrap"><div class="in">'
+            f'<span class="eyebrow">Next step</span><h2>{h2}</h2><p class="lede">{lede}</p>'
+            f'<div class="acts"><a class="btn" href="{primary[1]}">{primary[0]}</a>{s}</div>'
+            f'</div></div></section>')
+
+def workflow(nodes, hi=None):
+    out = []
+    for i, n in enumerate(nodes):
+        cls = "node hi" if hi is not None and i in hi else "node"
+        out.append(f'<div class="{cls}"><span class="b">{i+1:02d}</span><p>{n}</p></div>')
+    return f'<div class="flow">{"".join(out)}</div>'
+
+def write_page(path, doc):
+    rel = path.lstrip("/")
+    if rel == "" or rel.endswith("/"):
+        rel = rel + "index.html"
+    full = os.path.join(OUT, rel)
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    with open(full, "w", encoding="utf-8") as fh:
+        fh.write(doc)
+    print("wrote", path)

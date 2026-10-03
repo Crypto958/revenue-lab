@@ -1,0 +1,15 @@
+# Live runtime state — NEVER commit or deploy over these
+website/urbania/app/data/
+website/urbania/app/.admin_token
+website/urbania/app/server.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Node
+node_modules/

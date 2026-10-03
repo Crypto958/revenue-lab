@@ -1,0 +1,17 @@
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "no-inline-style": "off",
+    "form-dup-name": "off",
+    "tel-non-breaking": "off",
+
+    "long-title": "error",
+    "attr-quotes": "error",
+    "no-raw-characters": "error",
+    "input-attributes": "error",
+    "no-implicit-button-type": "error",
+    "no-dup-id": "error",
+    "no-missing-references": "error",
+    "require-sri": "off"
+  }
+}

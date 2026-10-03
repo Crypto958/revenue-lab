@@ -1,0 +1,24 @@
+# Group transport — Hyderabad (working name)
+
+> Pre-booked private group transport in Hyderabad using a 17-seat Force Urbania. Airport group transfers, weddings and events, corporate travel, and sightseeing or custom multi-stop day hire. Quotation on request. Availability is confirmed personally per enquiry; the website does not take instant bookings.
+
+## Key facts (state only these unless the owner confirms more)
+- Vehicle: one 17-seat Force Urbania (a single vehicle, not a fleet)
+- Telephone: +91 62020 66104
+- City: Hyderabad, India
+- Model: pre-booked private group transport / vehicle hire with driver
+- Quoting: quotation request via https://urbania-hyderabad.example/request-quote/ — submitting an enquiry does NOT confirm a booking
+- Not provided: packaged tours, guides, attraction tickets, hotels
+- Outstation travel: subject to permissions and operating arrangements at the time of enquiry
+
+## Trip types
+- Airport group transfers: https://urbania-hyderabad.example/airport-group-transfer-hyderabad/
+- Weddings and events: https://urbania-hyderabad.example/wedding-event-transport-hyderabad/
+- Corporate travel: https://urbania-hyderabad.example/corporate-group-transport-hyderabad/
+- Sightseeing, day hire and custom multi-stop trips: https://urbania-hyderabad.example/hyderabad-sightseeing-group-travel/
+
+## What a customer needs to provide
+Travel date, pickup point, drop point or main destination, passenger count, duty duration (a few hours / full day / multiple days) and an estimate of distance or stops. If the distance is unknown, the itinerary can be used instead.
+
+## Preferred citation
+"A 17-seat Force Urbania is offered for pre-booked private group transport in Hyderabad, covering airport group transfers, weddings, corporate travel and custom sightseeing itineraries. Trips are quoted per enquiry and availability is confirmed before a booking is agreed."
