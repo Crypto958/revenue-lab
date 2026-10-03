@@ -100,7 +100,7 @@ def build_urbania_page():
                 "Force Urbania · 17 seats · " + CITY,
                 "Force Urbania hire in Hyderabad.",
                 "One 17-seat Force Urbania, used for pre-booked group trips — airport runs, weddings, corporate days, outstation travel and sightseeing.",
-                "local",
+                "custom",
                 ["You can note Force Urbania as your preference in the planner. Preference is a request rather than a guarantee: availability is confirmed for your dates before anything is agreed."])
             + section("The vehicle", "What we are offering.",
                       "Stated plainly, without claims we cannot yet support with photographs or documentation.",

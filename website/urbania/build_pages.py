@@ -645,163 +645,6 @@ def build_guide_wedding():
                          "/guides/group-vehicle-fit-guide/",
                          "Seating and luggage, checked before the day rather than on it.")])
 
-# ------------------------------------------------------------------ QUOTE FORM
-TRIP_TYPES = ["Airport Transfer", "Wedding / Event", "Corporate", "Sightseeing / Day Hire",
-              "Custom Group Trip", "Other"]
-DUTY = ["A few hours", "Full day", "Multiple days", "Not sure"]
-
-def quote_form():
-    rt = "".join(f'<label><input type="radio" name="trip_type" value="{t}"{" required" if i==0 else ""}>{t}</label>'
-                 for i, t in enumerate(TRIP_TYPES))
-    dt = "".join(f'<label><input type="radio" name="duty" value="{t}"{" required" if i==0 else ""}>{t}</label>'
-                 for i, t in enumerate(DUTY))
-    return f'''<form class="form" id="quoteform" novalidate>
-  <fieldset class="fieldset">
-    <legend>Trip type *</legend>
-    <div class="radios" role="radiogroup" aria-label="Trip type">{rt}</div>
-    <p class="err" id="err-trip_type">Please choose a trip type.</p>
-  </fieldset>
-
-  <div class="frow" style="margin-top:20px">
-    <label>Travel date *<input type="date" name="date" required></label>
-    <label>Passenger count *<input type="number" name="passengers" min="1" max="17" inputmode="numeric" required
-      placeholder="Number of people travelling"><span class="hint">The vehicle has 17 seats.</span></label>
-  </div>
-  <div class="frow">
-    <label>Pickup point *<input type="text" name="pickup" required placeholder="Area, hotel or address"></label>
-    <label>Drop point / main destination *<input type="text" name="drop" required placeholder="Where the group is going"></label>
-  </div>
-
-  <fieldset class="fieldset" style="margin-top:8px">
-    <legend>Duty duration *</legend>
-    <div class="radios" role="radiogroup" aria-label="Duty duration">{dt}</div>
-    <p class="err" id="err-duty">Please choose a duration.</p>
-  </fieldset>
-
-  <div class="frow" style="margin-top:20px">
-    <label>Approximate hours or number of days<input type="text" name="duration" placeholder="e.g. 8 hours, or 3 days"></label>
-    <label>Estimated kilometres
-      <select name="km">
-        <option value="Not sure">Not sure</option>
-        <option value="Under 50 km">Under 50 km</option>
-        <option value="50-100 km">50\u2013100 km</option>
-        <option value="100-250 km">100\u2013250 km</option>
-        <option value="250-500 km">250\u2013500 km</option>
-        <option value="Over 500 km">Over 500 km</option>
-      </select><span class="hint">Choose \u201cNot sure\u201d if you would rather we work it out.</span></label>
-  </div>
-
-  <label>Number of stops or a short note about the route
-    <textarea name="notes" placeholder="Optional. List any extra stops, flight timing, luggage requirement, or anything that affects the plan."></textarea></label>
-
-  <div class="frow">
-    <label>Your name *<input type="text" name="contact_name" required autocomplete="name"></label>
-    <label>Phone number *<input type="tel" name="contact_phone" required autocomplete="tel" placeholder="We reply by phone or WhatsApp"></label>
-  </div>
-  <label>Email <span class="hint">(optional — include it if you would prefer a written quotation)</span>
-    <input type="email" name="contact_email" autocomplete="email"></label>
-  <label class="pl-consent"><input type="checkbox" name="consent" value="Yes" required>
-    <span>I agree that my trip details may be used to prepare a quotation and reply to me, as described in the <a href="/privacy/">privacy notice</a>.</span></label>
-
-  <input type="text" name="_hp" tabindex="-1" autocomplete="off" aria-hidden="true"
-         style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-
-  <div class="submit-note">
-    <b>This is a quotation enquiry.</b> Submitting this form does not confirm vehicle availability and does not
-    create a booking. We reply with a quotation and confirm availability before anything is agreed.
-  </div>
-
-  <div style="margin-top:20px">
-    <button class="btn wide" type="submit" id="qsubmit">REQUEST MY TRIP QUOTE</button>
-    <p class="small" style="margin-top:12px;text-align:center">Prefer to talk? Call
-      <a href="{PHONE_HREF}" style="color:var(--accent);font-weight:600">{PHONE}</a></p>
-  </div>
-</form>
-<div id="qresult" tabindex="-1" aria-live="polite"></div>'''
-
-QUOTE_JS = """<script>
-(function(){
-  var f=document.getElementById('quoteform'); if(!f) return;
-  var out=document.getElementById('qresult');
-  function groupInvalid(name){
-    var g=f.querySelectorAll('input[name="'+name+'"]');
-    return !Array.prototype.some.call(g,function(x){return x.checked;});
-  }
-  function mark(el,bad){
-    var l=el.closest('label'); if(l) l.classList.toggle('bad',bad);
-    el.setAttribute('aria-invalid',bad?'true':'false');
-  }
-  f.addEventListener('submit',function(e){
-    e.preventDefault();
-    var bad=false;
-    if(groupInvalid('trip_type')){ document.getElementById('err-trip_type').style.display='block'; bad=true; }
-    else { document.getElementById('err-trip_type').style.display='none'; }
-    if(groupInvalid('duty')){ document.getElementById('err-duty').style.display='block'; bad=true; }
-    else { document.getElementById('err-duty').style.display='none'; }
-    Array.prototype.forEach.call(f.querySelectorAll('input[required],select[required],textarea[required]'),function(el){
-      var empty=el.type==='checkbox' ? !el.checked : (!el.value || !el.value.trim());
-      mark(el,empty); if(empty) bad=true;
-    });
-    var em=f.querySelector('input[name=contact_email]');
-    if(em.value.trim() && !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(em.value.trim())){ mark(em,true); bad=true; }
-    else if(em.value.trim()){ mark(em,false); }
-    if(bad){
-      var first=f.querySelector('label.bad input, label.bad select, label.bad textarea');
-      if(first){ first.focus(); first.scrollIntoView({block:'center',behavior:'smooth'}); }
-      return;
-    }
-    var hp=f.querySelector('input[name=_hp]');
-    if(hp && hp.value){ return; }
-    var fd=new FormData(f), o={};
-    fd.forEach(function(v,k){ if(k!=='_hp') o[k]=o[k]?o[k]+', '+v:v; });
-    o.source_page=location.pathname;
-    o.submitted_at=new Date().toISOString();
-    var q=new URLSearchParams(location.search);
-    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid'].forEach(function(k){
-      if(q.get(k)) o[k]=q.get(k);
-    });
-    var lines=Object.keys(o).map(function(k){return k.replace(/_/g,' ')+': '+o[k];}).join('\\n');
-    var ep="%ENDPOINT%", WA="%WA%";
-    var waLink = WA ? ('https://wa.me/'+WA+'?text='+encodeURIComponent(lines)) : '';
-    function done(sent){
-      f.style.display='none';
-      out.innerHTML='<div class="form" style="margin-top:24px"><h3>'
-        +(sent?'Your trip details have been sent.':'Almost done — one tap to send.')
-        +'</h3>'
-        +'<p class="lede" style="margin-top:12px">This is a quotation enquiry and does not confirm vehicle '
-        +'availability or a booking. We review the details and reply with a quotation.</p>'
-        +'<p class="lede" style="margin-top:12px">'
-        +(WA?('If WhatsApp did not open, <a href="'+waLink+'" target="_blank" rel="noopener" '
-              +'style="color:var(--accent);font-weight:600">tap here to send your details</a>, or call ')
-            :'Call ')
-        +'<a href="%PHONE_HREF%" style="color:var(--accent);font-weight:600">%PHONE%</a>.</p>'
-        +'<p class="small" style="margin-top:16px">A copy of the details being sent:</p>'
-        +'<pre style="white-space:pre-wrap;background:var(--alt);border:1px solid var(--line);border-radius:10px;'
-        +'padding:16px;font-size:13.5px" id="qsummary"></pre></div>';
-      document.getElementById('qsummary').textContent=lines;
-      out.focus(); out.scrollIntoView({block:'start',behavior:'smooth'});
-    }
-    if(ep){
-      fetch(ep,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify(o)})
-        .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok:r.ok&&j.ok}; }); })
-        .then(function(j){
-          if(j.ok){ done(true); }
-          else { if(waLink){ window.open(waLink,'_blank'); } done(false); }
-        })
-        .catch(function(){ if(waLink){ window.open(waLink,'_blank'); } done(false); });
-    } else if(WA){
-      window.open(waLink,'_blank');
-      done(true);
-    } else {
-      var subject='Trip quote request — '+o['trip_type']+' — '+(o['date']||'');
-      window.location.href='mailto:%EMAIL%?subject='+encodeURIComponent(subject)+
-        '&body='+encodeURIComponent(lines);
-      done(true);
-    }
-  });
-})();
-</script>"""
 
 def build_quote():
     body = (breadcrumb([("Home", "/"), ("Request a trip quote", "/request-quote/")])
@@ -811,7 +654,7 @@ def build_quote():
                    paras=[AVAIL_NOTE], ctas=False)
             + section("Trip details", "Tell us about the trip.",
                       "Fields marked * are needed to quote accurately. Everything else helps us get it right first time.",
-                      quote_form())
+                      planner_blocks(""))
             + section("What happens next", "Four steps after you submit.",
                       "No automated booking. A person reviews the details and comes back to you.",
                       '<div class="steps">'
@@ -838,16 +681,15 @@ def build_quote():
               ], "About the enquiry.")
             + cta_band("Prefer to speak to someone?",
                        "Call and describe the trip. If you already have the details to hand, the form takes about two minutes."))
-    js = (QUOTE_JS.replace("%ENDPOINT%", FORM_ENDPOINT).replace("%EMAIL%", LEAD_EMAIL)
-          .replace("%PHONE_HREF%", PHONE_HREF).replace("%PHONE%", PHONE)
-          .replace("%WA%", WHATSAPP))
+    # The planner renders its own JS via planner_blocks(); there is a single
+    # quote funnel now, so no separate page-level script is injected here.
     doc = "\n".join([head("Request a Trip Quote | 17-Seater Group Transport Hyderabad",
                           "Request a quotation for a 17-seat Force Urbania in Hyderabad. Send your date, pickup, destination, passenger count and duration. An enquiry, not a booking.",
                           "/request-quote/",
                           [service_ld("Trip quotation request",
                                       "Quotation request for pre-booked private group transport in Hyderabad using a 17-seat Force Urbania."),
                            crumb_ld([("Home", "/"), ("Request a trip quote", "/request-quote/")])]),
-                    (header("/request-quote/") + body + footer()).replace(PHONE, PHONE_TXT), js])
+                    (header("/request-quote/") + body + footer()).replace(PHONE, PHONE_TXT)])
     write_page("/request-quote/", doc)
 
 # ------------------------------------------------------------------ UTILITY

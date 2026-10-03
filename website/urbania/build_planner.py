@@ -163,6 +163,11 @@ CONTACT = (
     + f'<label class="pl-consent"><input type="checkbox" name="consent" required>'
       f'<span>I agree that my trip details may be used to prepare a quotation and reply to me, as described in the '
       f'<a href="/privacy/">privacy notice</a>.</span></label>'
+    # Bot trap, restored when the planner replaced the standalone form. Hidden
+    # from humans and assistive tech; anything typed here means a bot, and
+    # app/server.py:create_trip() then silently stores nothing.
+    + '<input type="text" name="_hp" tabindex="-1" autocomplete="off" aria-hidden="true" '
+      'style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">'
 )
 
 def _mode_block(m, first):
@@ -358,6 +363,7 @@ PLANNER_JS = """<script>
   form.addEventListener('submit',function(e){
     e.preventDefault();
     if(!validate()) return;
+    var hp=form.querySelector('input[name=_hp]'); if(hp&&hp.value) return;
     var o=collect(), clientRef=ref();
     function lines(id){ return 'Trip request '+id+'\\n'+
       Object.keys(o).map(function(k){return k.replace(/_/g,' ')+': '+o[k];}).join('\\n'); }

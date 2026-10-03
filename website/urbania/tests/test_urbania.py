@@ -47,21 +47,40 @@ class BuildContractTests(unittest.TestCase):
         self.assertNotIn("*", href)
         self.assertRegex(href, r"^tel:\+\d{10,15}$")
 
-    def test_quote_form_uses_api_contact_and_consent_contract(self):
-        source = (PROJECT / "build_pages.py").read_text(encoding="utf-8")
-        quote = source[source.index("def quote_form():"):source.index("QUOTE_JS =")]
-        self.assertIn('name="contact_name"', quote)
-        self.assertIn('name="contact_phone"', quote)
-        self.assertIn('name="contact_email"', quote)
-        self.assertIn('name="consent"', quote)
-        self.assertNotIn('name="name"', quote)
-        self.assertNotIn('name="phone"', quote)
+    def test_planner_uses_api_contact_and_consent_contract(self):
+        # The planner is now the only funnel, so it carries the contract that
+        # app/server.py:create_trip() validates.
+        src = (PROJECT / "build_planner.py").read_text(encoding="utf-8")
+        for field in ('"contact_name"', '"contact_phone"', '"contact_email"'):
+            self.assertIn(field, src)
+        self.assertIn('name="consent"', src)
+        self.assertIn("checkbox", src)
+        # required checkbox must be validated by checked-state, not string value
+        self.assertIn("el.type==='checkbox' ? el.checked", src)
+        # no legacy mis-keyed names survive
+        self.assertNotIn('f_text("name"', src)
+        self.assertNotIn('f_text("phone"', src)
 
-    def test_quote_javascript_checks_http_success(self):
-        source = (PROJECT / "build_pages.py").read_text(encoding="utf-8")
-        js = source[source.index("QUOTE_JS ="):source.index("def build_quote():")]
-        self.assertIn("r.ok&&j.ok", js)
-        self.assertNotIn(".then(function(){ done(true); })", js)
+    def test_planner_javascript_checks_http_success(self):
+        src = (PROJECT / "build_planner.py").read_text(encoding="utf-8")
+        self.assertIn("ok:r.ok&&j.ok", src)
+        self.assertNotIn(".then(function(){ done(true); })", src)
+
+    def test_quote_pages_post_to_the_real_endpoint(self):
+        for rel in ("request-quote", ""):
+            page = (SITE / rel / "index.html").read_text(encoding="utf-8")
+            self.assertIn('EP="/api/trip"', page, f"{rel or '/'} has no API endpoint wired")
+
+    def test_planner_carries_the_bot_honeypot(self):
+        # The standalone form had a hidden _hp trap; the planner replaced it and
+        # silently lost the trap, leaving the server-side honeypot dead code.
+        src = (PROJECT / "build_planner.py").read_text(encoding="utf-8")
+        self.assertIn('name="_hp"', src)
+        self.assertIn("hp&&hp.value", src)
+        for rel in ("request-quote", ""):
+            page = (SITE / rel / "index.html").read_text(encoding="utf-8")
+            self.assertIn('name="_hp"', page, f"{rel or '/'} lost the honeypot")
+            self.assertIn('aria-hidden="true"', page)
 
     def test_all_generated_pages_have_skip_link_and_main_landmark(self):
         pages = sorted(SITE.rglob("*.html"))
@@ -110,6 +129,47 @@ class DeploymentContractTests(unittest.TestCase):
         self.assertIn("curl -fsS -m 5 http://127.0.0.1:8100/health", self.script)
 
 
+class SingleFunnelTests(unittest.TestCase):
+    """There must be exactly one quote funnel.
+
+    Two parallel implementations (the homepage planner and a standalone
+    /request-quote/ form) drifted: different fields, different validation, and
+    different payload key styles that the server had to paper over with
+    `d.get("Pickup point") or d.get("pickup")`. /request-quote/ now renders the
+    planner so there is one implementation to maintain.
+    """
+
+    def test_legacy_quote_funnel_is_gone_from_source(self):
+        for name in ("build_pages.py", "build_v3.py", "build_ui.py"):
+            src = (PROJECT / name).read_text(encoding="utf-8")
+            self.assertNotIn("def quote_form(", src, f"{name} still defines the legacy form")
+            self.assertNotIn("QUOTE_JS", src, f"{name} still references QUOTE_JS")
+
+    def test_request_quote_page_renders_the_planner(self):
+        page = (SITE / "request-quote" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="planner"', page)
+        self.assertIn('id="plform"', page)
+        self.assertIn('id="pl-next"', page)
+        # the old form's signature must not be present anywhere on the page
+        self.assertNotIn('name="trip_type"', page)
+        self.assertNotIn("mailto:", page)
+
+    def test_no_page_ships_two_funnels(self):
+        for page in SITE.rglob("index.html"):
+            html = page.read_text(encoding="utf-8")
+            planners = html.count('id="planner"')
+            self.assertLessEqual(
+                planners, 1, f"{page.relative_to(SITE)} ships {planners} planners"
+            )
+
+    def test_force_urbania_page_does_not_presume_a_trip_type(self):
+        # The product page used the 'local' preset, which pre-selected
+        # 'City / Local' for every visitor regardless of their actual trip.
+        page = (SITE / "force-urbania-hire-hyderabad" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('data-preset="custom"', page)
+        self.assertNotIn('data-preset="local"', page)
+
+
 class ServerContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -143,6 +203,40 @@ class ServerContractTests(unittest.TestCase):
         )
         with urlopen(req, timeout=3) as response:
             return response.status, json.loads(response.read())
+
+    def test_planner_payload_shape_is_accepted(self):
+        """The planner's collect() emits human-labelled keys for trip fields
+        ('Pickup point') and snake_case keys for contact fields
+        ('contact_phone'). Because the planner is now the ONLY funnel, the API
+        must accept exactly that shape."""
+        status, body = self.post_json("/api/trip", {
+            "trip_type": "wedding",
+            "Pickup point": "Banjara Hills",
+            "Destination": "Ramoji Film City",
+            "Travel date": "2026-11-14",
+            "Passengers": "14",
+            "contact_name": "Meera",
+            "contact_phone": "9812345678",
+            "contact_email": "meera@example.com",
+            "consent": "Yes",
+            "source_page": "/request-quote/",
+        })
+        self.assertEqual(status, 200)
+        self.assertTrue(body["ok"])
+        self.assertTrue(body["ref"].startswith("GT"))
+        self.assertNotEqual(body["ref"], "GT000000", "honeypot path was taken")
+
+        # the owner-facing summary must read sensibly from labelled keys
+        conn = sqlite3.connect(self.server_module.DB)
+        summary, email = conn.execute(
+            "SELECT summary, email FROM trips WHERE ref=?", (body["ref"],)
+        ).fetchone()
+        conn.close()
+        self.assertIn("wedding", summary)
+        self.assertIn("Banjara Hills", summary)
+        self.assertIn("2026-11-14", summary)
+        self.assertIn("14 pax", summary)
+        self.assertEqual(email, "meera@example.com")
 
     def test_trip_api_preserves_contact_email(self):
         status, body = self.post_json(
