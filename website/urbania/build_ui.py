@@ -167,13 +167,18 @@ nav.main a:hover,nav.main a[aria-current]{color:var(--accent)}
 .hx{position:relative;background:#101820}
 .hx-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 45%;z-index:0}
 .hx-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
-background:linear-gradient(180deg,rgba(11,16,21,.60) 0%,rgba(11,16,21,.30) 38%,rgba(11,16,21,.72) 100%)}
+background:linear-gradient(180deg,rgba(11,16,21,.58) 0%,rgba(11,16,21,.28) 38%,rgba(11,16,21,.70) 100%)}
 /* A radial pool of shade directly behind the copy keeps the headline contrast
    high without darkening the whole photograph — a flat scrim over a dusk shot
-   goes muddy. */
-.hx-in::before{content:"";position:absolute;left:50%;top:8%;transform:translateX(-50%);
-width:min(920px,86%);height:64%;z-index:-1;pointer-events:none;
-background:radial-gradient(58% 62% at 50% 45%,rgba(9,13,18,.62) 0%,rgba(9,13,18,.30) 55%,rgba(9,13,18,0) 100%)}
+   goes muddy. It also has to suppress the vehicle's OWN liveried wordmark, which
+   otherwise sits right behind the body copy and competes with the real one. */
+.hx-in::before{content:"";position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
+width:min(1360px,100%);height:80%;z-index:-1;pointer-events:none;
+background:radial-gradient(closest-side,rgba(8,12,16,.88) 0%,rgba(8,12,16,.66) 36%,
+rgba(8,12,16,.24) 68%,rgba(8,12,16,0) 100%)}
+/* NOTE: closest-side makes the ellipse reach 0 alpha exactly at the box edge, so no
+   rectangular seam shows. Do NOT put overflow:hidden on .hx to contain this — the
+   quote bar hangs below the hero with a negative margin and would be clipped. */
 .hx-in{position:relative;z-index:2;max-width:1180px;margin:0 auto;
 padding:clamp(52px,7vw,104px) 24px 26px;text-align:center;color:#fff}
 .hx-in h1{color:#fff;font-size:clamp(31px,5.1vw,63px);letter-spacing:-.032em;line-height:1.03}

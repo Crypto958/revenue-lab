@@ -123,53 +123,61 @@ consumer-law problem, not a design preference.
 
 ## Shipped state
 
-Three files currently ship, all cropped from one owner-supplied AI-generated master
-(`brand/source/urbanloop-hero-original.png`, 1672×941):
+Four files ship, all cropped from the **v2 master** — `brand/source/urbanloop-master-v2.png`
+(1672×941), supplied by the owner on 2026-10-03. It is the same scene as v1 but
+**without the burned-in play button**, which removes the constraint that shaped
+every earlier crop.
 
-| Slot | File | Crop | Ships as | Why that shape |
+| Slot | File | Crop | Ships as | Box ratio |
 |---|---|---|---|---|
-| hero still | `hero/hero-poster.jpg` | `crop=585:820:925:100` | 585×820 | hero box is **0.714 portrait** |
-| gallery | `gallery/exterior-front.jpg` | `crop=736:552:0:290` | 736×552 | gallery box is **1.333 (4:3)** |
-| gallery | `gallery/exterior-side.jpg` | `crop=747:560:925:290` | 747×560 | gallery box is **1.333 (4:3)** |
+| hero background | `hero/hero-split.jpg` | `crop=1672:812:0:65` | 1672×812 | hero ~2.06 |
+| hero still (fallback) | `hero/hero-poster.jpg` | `crop=672:941:500:0` | 672×941 | 0.714 portrait |
+| gallery | `gallery/exterior-front.jpg` | `crop=1000:750:250:60` | 1000×750 | 1.333 (4:3) |
+| gallery | `gallery/exterior-side.jpg` | `crop=1000:750:672:60` | 1000×750 | 1.333 (4:3) |
 
-Crop each source to the ratio of the box it lands in. `object-fit: cover` silently
-centre-crops any mismatch, and a "correct-looking" landscape crop in a portrait slot
-is what produced the truncated wordmark below. An earlier revision of this table
-listed the *intended* crops rather than the shipped ones — the shipped
-`exterior-side.jpg` was still the 16:9 version. Verify against the files on disk:
-
-```bash
-for f in app/site/media/hero/*.jpg app/site/media/gallery/*.jpg; do
-  printf '%-40s ' "$f"; ffmpeg -hide_banner -i "$f" 2>&1 | grep -oE '[0-9]+x[0-9]+' | head -1
-done
-```
+The hero source (1672 wide) is now **wider than the 1440px it fills**, so it
+downscales and stays sharp. The earlier hero was a 747px crop upscaled ~1.9× and
+visibly soft — that is fixed.
 
 These are **AI-generated concept imagery, not photographs of the actual vehicle**,
 and the site captions them accordingly. They must be replaced with real photography
 (see `PHOTO_SHOT_LIST.md`).
 
-## The play-button problem — why crops look odd
+## One live hazard in the hero
 
-The master has a **play button burned into it** at x 744–912, y 409–577 (centre
-~828,493, ring radius ~80). It was added by whatever generated the image.
+The vehicle in this image carries its **own liveried UrbanLoop wordmark** on the
+bodywork. With the headline centred, that wordmark lands directly behind the body
+copy and reads as a second, half-obscured brand.
 
-It cannot be removed cleanly with the tools in this environment:
+Handled with a radial pool of shade behind the copy (`.hx-in::before`), which
+suppresses it without darkening the whole photograph. Two things to know if you
+touch that rule:
 
-- **Interpolating fill** (`ffmpeg -vf delogo`) — smears. The circle crosses the
-  window/pillar edge, so straight-line interpolation produces obvious vertical
-  streaking across the glass and bodywork.
-- **Clone patch** (mirrored copy of nearby pixels + feathered mask, see
-  `brand/patch_play_button.py`) — far better than delogo, but leaves a visible white
-  arc from the ring's outer edge *and* duplicates the door handle and UL monogram
-  into the patched area.
+- It uses `radial-gradient(closest-side, …)` so the ellipse reaches zero alpha
+  **exactly at its own box edge**. A percentage-sized gradient instead leaves a
+  faint rectangular seam, which shipped once and was visible.
+- Do **not** add `overflow:hidden` to `.hx` to contain it. The quote bar hangs
+  below the hero on a negative margin and would be clipped.
 
-Both were rendered and inspected before being rejected. Cleaning this properly needs
-a real inpainting model, which this environment does not have.
+## The v1 play-button problem — resolved, kept for the record
 
-**Consequence:** every shipped crop must exclude the x 744–912 band entirely. That
-is why the hero shows the van's side/rear rather than the whole vehicle, and why the
-front three-quarter crop stops at the nose. A clean, button-free master would remove
-this constraint — it is the single highest-value asset the owner can supply.
+The **v1** master (`brand/source/urbanloop-hero-original.png`) has a play button
+burned in at x 744–912, y 409–577. It could not be removed cleanly with the tools
+here, and both attempts were rendered and rejected:
+
+- **Interpolating fill** (`ffmpeg -vf delogo`) — obvious vertical streaking, because
+  the circle crosses the window/pillar edge.
+- **Clone patch** (mirrored pixels + feathered mask, `brand/patch_play_button.py`) —
+  far better, but leaves a white arc from the ring's edge *and* duplicates the door
+  handle and UL monogram.
+
+That constraint is now moot: v2 is clean. **If you ever fall back to v1, every crop
+must again exclude x 744–912.** Verify a replacement master before trusting it:
+
+```bash
+# inspect the zone where the button sits in v1
+ffmpeg -y -i MASTER.png -vf "crop=280:280:700:350" /tmp/buttonzone.png
+```
 
 ## The aspect trap (cost us a shipped defect)
 
