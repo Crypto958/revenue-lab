@@ -156,6 +156,10 @@ def build_home():
         + section("Gallery", "The vehicle, photographed.",
                   "Real photographs of the actual vehicle, as soon as they are available.",
                   SEC.gallery_block(), alt=True)
+        + section("Seating", "Seating references.",
+                  "Seat layout and legroom decide whether a long trip is comfortable. These are the "
+                  "details group buyers ask about most.",
+                  SEC.seating_block())
         + section("How it works", "From enquiry to quotation, in four steps.",
                   "There is no booking engine here. A person reads your trip details and replies with a quotation.",
                   '<div class="steps">'
@@ -1184,6 +1188,10 @@ def main():
     from build_v3 import build_v3_pages
     build_v3_pages()
     build_static()
+    st = SEC.media_status()
+    print(f"MEDIA — hero video: {st['hero_video']}  hero poster: {st['hero_poster']}  "
+          f"gallery: {st['gallery']}/{len(DATA.GALLERY_SLOTS)}  "
+          f"seating: {st['seating']}/{len(DATA.SEATING_SLOTS)}")
     print(f"DONE — {len(SITEMAP)} sitemap URLs, {TODAY}")
 
 if __name__ == "__main__":

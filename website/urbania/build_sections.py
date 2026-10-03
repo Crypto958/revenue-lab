@@ -12,11 +12,60 @@ labelled illustrative graphics — never stock photography presented as the actu
 vehicle, which is the current site's existing standard and the right one.
 """
 import html
+import os
 
 from site_data import (CONFIGURATIONS, CONFIG_SPEC_FIELDS, GALLERY_SLOTS, PRICING_FAQS,
                        RATE_EXCLUSIONS, RATE_INCLUSIONS, RATE_NOTES, RATE_TABLE_COLUMNS,
                        REVIEWS, REVIEWS_EMPTY_MESSAGE, ROUTES, SERVICE_AREAS, SERVICES,
-                       TRUST_ASSURANCES, TRUST_FIELDS, FLEET_CONFIRMED, tbc, money)
+                       TRUST_ASSURANCES, TRUST_FIELDS, FLEET_CONFIRMED, SEATING_SLOTS,
+                       SEAT_LAYOUTS, ASSETS_ARE_OUR_VEHICLE, tbc, money)
+
+# ------------------------------------------------------------------ media
+# Real photography and video drop into these directories and the site upgrades
+# itself on the next build — no code change. Until a file exists, the component
+# falls back to a clearly labelled illustration, never to stock imagery passed
+# off as the actual vehicle.
+#
+#   app/site/media/hero/      hero.mp4 | hero.webm | hero-poster.jpg
+#   app/site/media/gallery/   <slot-name>.jpg      (see site_data.GALLERY_SLOTS)
+#   app/site/media/seating/   <slot-name>.jpg      (see site_data.SEATING_SLOTS)
+#
+MEDIA_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app", "site", "media")
+
+IMAGE_EXT = (".jpg", ".jpeg", ".png", ".webp", ".avif")
+
+
+def media_path(*parts):
+    """Filesystem path for a media asset."""
+    return os.path.join(MEDIA_ROOT, *parts)
+
+
+def media_url(*parts):
+    return "/media/" + "/".join(parts)
+
+
+def find_image(kind, name):
+    """Return the served URL for kind/name.<ext> if the file exists, else None."""
+    for ext in IMAGE_EXT:
+        if os.path.exists(media_path(kind, name + ext)):
+            return media_url(kind, name + ext)
+    return None
+
+
+def has_hero_video():
+    return any(os.path.exists(media_path("hero", "hero" + v)) for v in (".mp4", ".webm"))
+
+
+def media_status():
+    """What real media exists right now — surfaced in docs and the build log."""
+    if not os.path.isdir(MEDIA_ROOT):
+        return {"hero_video": False, "hero_poster": False, "gallery": 0, "seating": 0}
+    return {
+        "hero_video": has_hero_video(),
+        "hero_poster": bool(find_image("hero", "hero-poster")),
+        "gallery": sum(1 for n, _ in GALLERY_SLOTS if find_image("gallery", n)),
+        "seating": sum(1 for n, _ in SEATING_SLOTS if find_image("seating", n)),
+    }
 
 
 # ------------------------------------------------------------------ CSS
@@ -93,6 +142,18 @@ table.rate td.pend{color:var(--warn);font-weight:600}
 @media(max-width:620px){.gal{grid-template-columns:repeat(2,1fr)}}
 .gslot{background:var(--alt);border:1px dashed var(--line-2);border-radius:var(--r);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px}
 .gslot span{font-size:11.5px;color:var(--ink-3);line-height:1.35}
+/* real photograph replacing a slot */
+.gfig{margin:0;border-radius:var(--r);overflow:hidden;position:relative;background:var(--alt-2)}
+.gfig img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font-size:11.5px;color:#fff;
+background:linear-gradient(transparent,rgba(6,16,24,.78))}
+/* hero media */
+.hv-video,.hv-still{width:100%;display:block;border-radius:12px;aspect-ratio:16/9;
+object-fit:cover;background:#0E1B2A}
+.hv-mobile{display:none;width:100%;border-radius:12px;aspect-ratio:16/9;object-fit:cover}
+/* a phone gets the still, not an autoplaying video: data and battery for no gain */
+@media(max-width:860px){.hv-video{display:none}.hv-mobile{display:block}}
+@media (prefers-reduced-motion:reduce){.hv-video{display:none}.hv-mobile{display:block}}
 /* ---- reviews ---- */
 .rev-empty{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r);padding:20px}
 .rev-empty p{font-size:14.5px;color:var(--ink-2)}
@@ -348,15 +409,55 @@ def reviews_block():
 
 
 # ----------------------------------------------------------------- gallery
-def gallery_block():
-    slots = "".join(
-        f'<div class="gslot"><span>{html.escape(caption)}<br><code style="font-size:10px">'
-        f'{html.escape(name)}.jpg</code></span></div>'
-        for name, caption in GALLERY_SLOTS)
-    return (f'<div class="gal">{slots}</div>'
-            f'<p class="small" style="margin-top:14px">Photographs of the actual vehicle are being '
-            f'prepared. Final images drop into these slots by filename &mdash; we do not use stock '
+def _media_grid(slots, kind):
+    """Render real photographs when present, labelled slots when not."""
+    out, have = "", 0
+    for name, caption in slots:
+        url = find_image(kind, name)
+        if url:
+            have += 1
+            out += (f'<figure class="gfig"><img src="{url}" alt="{html.escape(caption)}" '
+                    f'loading="lazy" decoding="async">'
+                    f'<figcaption>{html.escape(caption)}</figcaption></figure>')
+        else:
+            out += (f'<div class="gslot"><span>{html.escape(caption)}<br>'
+                    f'<code style="font-size:10px">{html.escape(kind)}/{html.escape(name)}.jpg'
+                    f'</code></span></div>')
+    return f'<div class="gal">{out}</div>', have
+
+
+def _media_note(have, total, kind="photographs", folder="gallery"):
+    if have == total:
+        return (f'<p class="small" style="margin-top:14px">All {total} {kind} supplied '
+                f'&mdash; images of the vehicle as photographed.</p>')
+    if have:
+        return (f'<p class="small" style="margin-top:14px">{have} of {total} {kind} supplied so far. '
+                f'The remaining slots show the exact filename they expect.</p>')
+    return (f'<p class="small" style="margin-top:14px">{kind.capitalize()} are being prepared. Final '
+            f'images drop into <code>media/{folder}/</code> by filename &mdash; we do not use stock '
             f'photography to stand in for the real vehicle.</p>')
+
+
+def gallery_block():
+    grid, have = _media_grid(GALLERY_SLOTS, "gallery")
+    return grid + _media_note(have, len(GALLERY_SLOTS), "photographs", "gallery")
+
+
+def seating_block():
+    """Seating references: layout comparison plus the seating photo set.
+
+    Seat layout and legroom are the details group buyers ask about most, and the
+    briefing calls them out. Layout descriptions are structural (1x1 vs 2x1) and
+    claim no specific vehicle specification.
+    """
+    layouts = "".join(
+        f'<div class="card"><span class="tag">{html.escape(l["label"])}</span>'
+        f'<h3>{html.escape(l["name"])}</h3><p>{html.escape(l["blurb"])}</p></div>'
+        for l in SEAT_LAYOUTS)
+    grid, have = _media_grid(SEATING_SLOTS, "seating")
+    return (f'<div class="grid g2" style="margin-bottom:28px">{layouts}</div>'
+            + grid
+            + _media_note(have, len(SEATING_SLOTS), "seating photographs", "seating"))
 
 
 def pricing_faq_block():
@@ -415,10 +516,53 @@ def hero_visual():
               '<span class="hvb">Group travel</span>'
               '<span class="hvb">Hyderabad</span>'
               '</div>')
+
+    # 1. Cinematic video (desktop) with a poster that doubles as the mobile still.
+    if has_hero_video():
+        poster = find_image("hero", "hero-poster") or find_image("hero", "hero")
+        sources = "".join(
+            f'<source src="{media_url("hero", "hero" + ext)}" type="{mime}">'
+            for ext, mime in ((".webm", "video/webm"), (".mp4", "video/mp4"))
+            if os.path.exists(media_path("hero", "hero" + ext)))
+        par = f' poster="{poster}"' if poster else ""
+        # Autoplaying video on a phone burns data and battery for no conversion
+        # gain, so mobile gets the still instead.
+        mobile = (f'<img class="hv-mobile" src="{poster}" alt="{_alt_text()}" '
+                  f'width="1120" height="660" loading="lazy" decoding="async">') if poster else ""
+        return (f'<div class="hvpanel">{badges}'
+                f'<video class="hv-video" autoplay muted loop playsinline preload="metadata"'
+                f'{par}>{sources}</video>{mobile}'
+                f'<p class="hvcap">{_media_caption("Footage")}</p></div>')
+
+    # 2. Still photograph.
+    still = find_image("hero", "hero-poster") or find_image("hero", "hero")
+    if still:
+        return (f'<div class="hvpanel">{badges}'
+                f'<img class="hv-still" src="{still}" alt="{_alt_text()}" '
+                f'width="1120" height="660" loading="lazy" decoding="async">'
+                f'<p class="hvcap">{_media_caption("Photograph")}</p></div>')
+
+    # 3. Labelled illustration — the honest fallback until media is supplied.
     return (f'<div class="hvpanel">{badges}{svg}'
             '<p class="hvcap"><b>Illustrative diagram &mdash; not a photograph of the actual '
-            'vehicle.</b><br>Photographs of the real Urbania are being prepared and will replace '
-            'this panel.</p></div>')
+            'vehicle.</b><br>Photographs and video of the real Urbania are being prepared and will '
+            'replace this panel.</p></div>')
+
+
+def _alt_text():
+    if ASSETS_ARE_OUR_VEHICLE:
+        return "Force Urbania 17-seat group travel vehicle used for pre-booked trips in Hyderabad"
+    return ("Force Urbania 17-seat group travel vehicle (representative image of the model, "
+            "not a photograph of this operator's vehicle)")
+
+
+def _media_caption(kind="Photograph"):
+    """Caption that states provenance honestly rather than implying ownership."""
+    if ASSETS_ARE_OUR_VEHICLE:
+        return (f'<b>{kind} of our Force Urbania.</b> One vehicle, used for pre-booked group trips '
+                f'in Hyderabad.')
+    return (f'<b>{kind} of the Force Urbania model.</b> Images of our own vehicle are being '
+            f'prepared. Specifications and condition are confirmed with your quotation.')
 
 
 # ----------------------------------------------------------- hero journey bar

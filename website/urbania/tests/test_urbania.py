@@ -461,6 +461,98 @@ class HtmlValidityTests(unittest.TestCase):
         self.assertEqual(offenders, {}, f"unbalanced component markup: {offenders}")
 
 
+class MediaPipelineTests(unittest.TestCase):
+    """Photos and video must drop in without code changes — and their absence
+    must fall back to a labelled illustration, never to stock imagery."""
+
+    def setUp(self):
+        import build_sections as SEC
+        self.SEC = SEC
+        self.addCleanup(self._cleanup)
+
+    def _cleanup(self):
+        for path in getattr(self, "_made", []):
+            if os.path.exists(path):
+                os.remove(path)
+
+    def _place(self, kind, name, ext=".png"):
+        """Drop a file into the media tree.
+
+        The build only checks existence, never image validity, so a stub header
+        is enough here — and it keeps the test from depending on Pillow, which
+        is deliberately not installed in this project.
+        """
+        os.makedirs(self.SEC.media_path(kind), exist_ok=True)
+        p = self.SEC.media_path(kind, name + ext)
+        with open(p, "wb") as fh:
+            fh.write(b"\x89PNG\r\n\x1a\n" + b"media-pipeline-test")
+        # track the exact path: an earlier version tracked (kind, name) and only
+        # swept image extensions, so a test .mp4 leaked and broke later tests
+        self._made = getattr(self, "_made", []) + [p]
+        return p
+
+    def test_placeholder_state_when_no_media(self):
+        st = self.SEC.media_status()
+        for key, val in st.items():
+            self.assertFalse(val, f"unexpected media present: {key}={val}")
+
+    def test_missing_media_returns_none(self):
+        self.assertIsNone(self.SEC.find_image("gallery", "does-not-exist"))
+
+    def test_unknown_filenames_are_ignored(self):
+        """A stray file must not be picked up as a slot."""
+        self._place("gallery", "totally-made-up")
+        self.assertIsNone(self.SEC.find_image("gallery", "exterior-front"))
+        self.assertIsNone(self.SEC.find_image("gallery", "totally-made-up-suffix"))
+
+    def test_gallery_slot_switches_to_photo_when_supplied(self):
+        import re
+        self._place("gallery", "exterior-front")
+        block = self.SEC.gallery_block()
+        self.assertIn('class="gfig"', block, "supplied photo did not render")
+        self.assertIn("/media/gallery/exterior-front.png", block)
+
+    def test_hero_uses_still_when_poster_supplied(self):
+        self._place("hero", "hero-poster")
+        hero = self.SEC.hero_visual()
+        self.assertIn('class="hv-still"', hero)
+        self.assertIn("/media/hero/hero-poster.png", hero)
+        self.assertNotIn("Illustrative diagram", hero)
+
+    def test_hero_uses_video_when_supplied(self):
+        self._place("hero", "hero-poster")
+        self._place("hero", "hero", ext=".mp4")
+        hero = self.SEC.hero_visual()
+        self.assertIn("<video", hero)
+        for attr in ("autoplay", "muted", "loop", "playsinline", "poster="):
+            self.assertIn(attr, hero, f"hero video missing {attr}")
+        # a phone must get the still, not an autoplaying video
+        self.assertIn('class="hv-mobile"', hero)
+
+    def test_hero_falls_back_to_labelled_illustration(self):
+        hero = self.SEC.hero_visual()
+        self.assertIn("Illustrative diagram", hero)
+        self.assertIn("not a photograph of the actual", hero)
+
+    def test_alt_text_matches_provenance_flag(self):
+        """The alt text must never claim ownership the owner has not asserted."""
+        import site_data
+        alt = self.SEC._alt_text()
+        if site_data.ASSETS_ARE_OUR_VEHICLE:
+            self.assertNotIn("representative", alt)
+        else:
+            self.assertIn("representative image", alt,
+                          "alt text claims ownership while the flag is False")
+
+    def test_seating_section_covers_the_reference_set(self):
+        block = self.SEC.seating_block()
+        self.assertIn("1x1", block)
+        self.assertIn("2x1", block)
+        import site_data
+        for name, caption in site_data.SEATING_SLOTS:
+            self.assertIn(name, block, f"seating slot {name} missing from the section")
+
+
 class ServerContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

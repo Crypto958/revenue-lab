@@ -295,6 +295,18 @@ table.rate td.pend{color:var(--warn);font-weight:600}
 @media(max-width:620px){.gal{grid-template-columns:repeat(2,1fr)}}
 .gslot{background:var(--alt);border:1px dashed var(--line-2);border-radius:var(--r);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px}
 .gslot span{font-size:11.5px;color:var(--ink-3);line-height:1.35}
+/* real photograph replacing a slot */
+.gfig{margin:0;border-radius:var(--r);overflow:hidden;position:relative;background:var(--alt-2)}
+.gfig img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font-size:11.5px;color:#fff;
+background:linear-gradient(transparent,rgba(6,16,24,.78))}
+/* hero media */
+.hv-video,.hv-still{width:100%;display:block;border-radius:12px;aspect-ratio:16/9;
+object-fit:cover;background:#0E1B2A}
+.hv-mobile{display:none;width:100%;border-radius:12px;aspect-ratio:16/9;object-fit:cover}
+/* a phone gets the still, not an autoplaying video: data and battery for no gain */
+@media(max-width:860px){.hv-video{display:none}.hv-mobile{display:block}}
+@media (prefers-reduced-motion:reduce){.hv-video{display:none}.hv-mobile{display:block}}
 /* ---- reviews ---- */
 .rev-empty{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r);padding:20px}
 .rev-empty p{font-size:14.5px;color:var(--ink-2)}

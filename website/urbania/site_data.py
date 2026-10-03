@@ -26,6 +26,12 @@ vehicles actually exist.
 # fleet. See docs/IMPROVEMENT_PLAN.md.
 FLEET_CONFIRMED = False
 
+# Media provenance. Dropping a file into app/site/media/ does NOT by itself mean it
+# is a photograph of the owner's own vehicle. Set this True only for imagery of the
+# actual vehicle; while False, supplied media is captioned as representative of the
+# Force Urbania model rather than as this business's vehicle.
+ASSETS_ARE_OUR_VEHICLE = False
+
 TBC = "To be confirmed"
 
 
@@ -277,6 +283,39 @@ GALLERY_SLOTS = [
     ("luggage", "Luggage bay with cases"),
     ("night-interior", "Interior at night"),
     ("driver-area", "Driver area and dashboard"),
+]
+
+
+# Seating references. Seat layout and legroom are the two things buyers ask about
+# most, and the briefing calls them out explicitly. Real photographs drop into
+# app/site/media/seating/<name>.jpg and this section switches from placeholder to
+# photo automatically on the next build.
+SEATING_SLOTS = [
+    ("layout-1x1", "1x1 (Maharaja) seat layout"),
+    ("layout-2x1", "2x1 seat layout"),
+    ("seat-detail", "Seat type and trim"),
+    ("legroom", "Legroom between rows"),
+    ("aisle", "Aisle width"),
+    ("reclined", "Seat pushed back / reclined"),
+    ("headrest", "Headrest and seat back"),
+    ("charging", "Per-seat charging point"),
+    ("reading-light", "Reading light and air vent"),
+    ("rear-bench", "Rear row / last bench"),
+    ("entry-step", "Entry step and grab handle"),
+    ("luggage-bay", "Luggage bay with cases"),
+]
+
+# Descriptions of the two seat layouts. Layout convention is what distinguishes
+# the trims in the Indian market; nothing here claims a specific vehicle spec.
+SEAT_LAYOUTS = [
+    dict(key="1x1", label="1x1 layout",
+         name="Luxury / Maharaja seating",
+         blurb="A single seat either side of the aisle. The layout used for the most "
+               "comfortable small-group travel, with armrests and space between passengers."),
+    dict(key="2x1", label="2x1 layout",
+         name="Standard group seating",
+         blurb="Two seats on one side of the aisle and one on the other. The usual layout "
+               "for a full 16 or 17 seat group, which is what makes the larger capacity fit."),
 ]
 
 
