@@ -695,11 +695,13 @@ def quote_form():
     <textarea name="notes" placeholder="Optional. List any extra stops, flight timing, luggage requirement, or anything that affects the plan."></textarea></label>
 
   <div class="frow">
-    <label>Your name *<input type="text" name="name" required autocomplete="name"></label>
-    <label>Phone number *<input type="tel" name="phone" required autocomplete="tel" placeholder="We reply by phone or WhatsApp"></label>
+    <label>Your name *<input type="text" name="contact_name" required autocomplete="name"></label>
+    <label>Phone number *<input type="tel" name="contact_phone" required autocomplete="tel" placeholder="We reply by phone or WhatsApp"></label>
   </div>
   <label>Email <span class="hint">(optional — include it if you would prefer a written quotation)</span>
-    <input type="email" name="email" autocomplete="email"></label>
+    <input type="email" name="contact_email" autocomplete="email"></label>
+  <label class="pl-consent"><input type="checkbox" name="consent" value="Yes" required>
+    <span>I agree that my trip details may be used to prepare a quotation and reply to me, as described in the <a href="/privacy/">privacy notice</a>.</span></label>
 
   <input type="text" name="_hp" tabindex="-1" autocomplete="off" aria-hidden="true"
          style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
@@ -737,10 +739,10 @@ QUOTE_JS = """<script>
     if(groupInvalid('duty')){ document.getElementById('err-duty').style.display='block'; bad=true; }
     else { document.getElementById('err-duty').style.display='none'; }
     Array.prototype.forEach.call(f.querySelectorAll('input[required],select[required],textarea[required]'),function(el){
-      var empty=!el.value || !el.value.trim();
+      var empty=el.type==='checkbox' ? !el.checked : (!el.value || !el.value.trim());
       mark(el,empty); if(empty) bad=true;
     });
-    var em=f.querySelector('input[name=email]');
+    var em=f.querySelector('input[name=contact_email]');
     if(em.value.trim() && !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(em.value.trim())){ mark(em,true); bad=true; }
     else if(em.value.trim()){ mark(em,false); }
     if(bad){
@@ -781,7 +783,12 @@ QUOTE_JS = """<script>
     }
     if(ep){
       fetch(ep,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify(o)}).then(function(){ done(true); })
+        body:JSON.stringify(o)})
+        .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok:r.ok&&j.ok}; }); })
+        .then(function(j){
+          if(j.ok){ done(true); }
+          else { if(waLink){ window.open(waLink,'_blank'); } done(false); }
+        })
         .catch(function(){ if(waLink){ window.open(waLink,'_blank'); } done(false); });
     } else if(WA){
       window.open(waLink,'_blank');

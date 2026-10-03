@@ -69,7 +69,7 @@ restart_urbania() {
   hr
   echo "RESTART Urbania app server (:8100)"
   if [ "$DRY_RUN" = 1 ]; then
-    echo "  [dry-run] would pkill 'python3 server.py' and relaunch detached."
+    echo "  [dry-run] would stop the :8100 listener and relaunch it detached."
     echo "  admin board: $([ "$WITH_ADMIN" = 1 ] && echo 'ENABLED (--with-admin)' || echo 'left disabled (unchanged)')"
     return 0
   fi
@@ -80,12 +80,19 @@ restart_urbania() {
   fi
   ssh_run "
     set -e
-    pkill -f 'python3 server.py' 2>/dev/null || true
-    sleep 1
     cd '$REMOTE_WEBSITE/urbania/app'
+    # Bracket trick: this pattern matches the real 'python3 server.py' process
+    # but NOT this remote shell, whose own command line contains the pattern
+    # text verbatim. Without the brackets, the pkill matches the shell running
+    # it and the restart aborts halfway.
+    pkill -f '[p]ython3 server.py' 2>/dev/null || true
+    sleep 1
     $admin_expr PORT=8100 setsid nohup python3 server.py > server.log 2>&1 < /dev/null &
     sleep 2
-    echo -n '  health: '; curl -s -m 5 http://127.0.0.1:8100/health || echo 'NO RESPONSE'
+    # -f makes curl exit non-zero on an HTTP error, so a dead server fails the
+    # deploy instead of printing NO RESPONSE and reporting success.
+    echo -n '  health: '
+    curl -fsS -m 5 http://127.0.0.1:8100/health
     echo
   "
 }

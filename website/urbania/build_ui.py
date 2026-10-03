@@ -79,7 +79,10 @@ transition:background .16s,transform .16s,box-shadow .16s;box-shadow:0 6px 18px 
 .btn.wide{width:100%}
 .txtlink{color:var(--accent);text-decoration:none;font-weight:600;font-size:15.5px;border-bottom:1px solid rgba(17,106,123,.3)}
 .txtlink:hover{border-color:var(--accent)}
-:focus-visible{outline:3px solid rgba(17,106,123,.45);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:3px solid var(--accent-2);outline-offset:3px;border-radius:4px}
+.skip-link{position:fixed;left:12px;top:12px;z-index:1000;background:#fff;color:var(--ink);padding:10px 14px;
+border:2px solid var(--accent-2);border-radius:6px;transform:translateY(-160%);text-decoration:none;font-weight:700}
+.skip-link:focus{transform:none}
 /* header */
 header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:18px;height:72px}
@@ -186,12 +189,13 @@ footer a:hover{color:#fff}
 .fbot{margin-top:36px;padding-top:20px;border-top:1px solid #1D2E3E;font-size:13px;color:#8FA0AF;
 display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 /* sticky mobile */
-.sticky{position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;grid-template-columns:1fr 1fr;gap:1px;
-background:var(--line);border-top:1px solid var(--line-2)}
-.sticky a{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px 10px;text-decoration:none;
-font-weight:650;font-size:15.5px;background:#fff;color:var(--ink)}
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;grid-template-columns:repeat(3,1fr);gap:1px;
+background:var(--line);border-top:1px solid var(--line-2);padding-bottom:env(safe-area-inset-bottom)}
+.sticky a{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px 8px;text-decoration:none;
+font-weight:650;font-size:14.5px;background:#fff;color:var(--ink);text-align:center}
 .sticky a.q{background:var(--accent);color:#fff}
-@media(max-width:860px){.sticky{display:grid}body{padding-bottom:56px}}
+.sticky a.w{background:#25D366;color:#052E16}
+@media(max-width:860px){.sticky{display:grid}.wa{display:none}body{padding-bottom:calc(56px + env(safe-area-inset-bottom))}}
 .wa{position:fixed;right:16px;bottom:76px;z-index:70;background:#25D366;color:#052E16;text-decoration:none;
 padding:13px 19px;border-radius:100px;font-weight:650;font-size:15px;box-shadow:0 10px 26px rgba(0,0,0,.22)}
 @media(min-width:861px){.wa{bottom:20px}}
@@ -243,14 +247,19 @@ def head(title, desc, path, ld=None, noindex=False):
 <link rel="stylesheet" href="/style.css">
 {ld_html}
 </head>
-<body>"""
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>"""
 
 # ------------------------------------------------------------------ chrome
 def call_svg():
     return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7A2 2 0 0 1 22 16.9Z"/></svg>'
 
 def header(active=""):
-    links = "".join(f'<a href="{h}"{" aria-current=\"page\"" if h == active else ""}>{html.escape(t)}</a>' for t, h in NAV)
+    links = "".join(
+        f'<a href="{h}"' + (' aria-current="page"' if h == active else "")
+        + f'>{html.escape(t)}</a>'
+        for t, h in NAV
+    )
     mlinks = "".join(f'<a href="{h}">{html.escape(t)}</a>' for t, h in NAV)
     return f"""<header>
   <div class="wrap bar">
@@ -269,17 +278,20 @@ def header(active=""):
       <a class="btn ghost wide" href="{PHONE_HREF}">Call {PHONE_TXT}</a>
     </div>
   </div>
-</header>"""
+</header>
+<main id="main-content">"""
 
 def footer():
     wa = (f'<a class="wa" href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp</a>' if WHATSAPP else "")
     sticky = ('<div class="sticky">'
-              '<a class="q" href="/request-quote/">Request a Trip Quote</a>'
-              f'<a href="{PHONE_HREF}">Call now</a></div>')
+              '<a class="q" href="/request-quote/">Request Quote</a>'
+              + (f'<a class="w" href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp</a>' if WHATSAPP else "")
+              + f'<a href="{PHONE_HREF}">Call now</a></div>')
     def col(t, items):
         return f'<div><h3 class="fh">{t}</h3>' + "".join(
             f'<a href="{h}">{html.escape(n)}</a>' for n, h in items) + '</div>'
-    return f"""<footer><div class="wrap">
+    return f"""</main>
+<footer><div class="wrap">
 <div class="fgrid">
   <div>
     <div class="logo" style="color:#fff;margin-bottom:12px"><span class="mk">17</span>{html.escape(BRAND)}</div>

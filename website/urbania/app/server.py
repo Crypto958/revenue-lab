@@ -165,6 +165,10 @@ class H(SimpleHTTPRequestHandler):
         if n <= 0 or n > 200_000:
             return {}
         raw = self.rfile.read(n)
+        content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+        if content_type == "application/x-www-form-urlencoded":
+            parsed = parse_qs(raw.decode("utf-8", "replace"), keep_blank_values=True)
+            return {key: values[-1] if values else "" for key, values in parsed.items()}
         try:
             return json.loads(raw.decode("utf-8", "replace"))
         except Exception:
@@ -220,7 +224,8 @@ class H(SimpleHTTPRequestHandler):
                          summary,payload,source_page,utm_source,utm_medium,utm_campaign,referrer,
                          ip_hash,updated_at)
                          VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                      (ref, now, str(d.get("trip_type", "")), "NEW", name, phone, str(d.get("contact email") or ""),
+                      (ref, now, str(d.get("trip_type", "")), "NEW", name, phone,
+                       str(d.get("contact_email") or d.get("contact email") or d.get("email") or ""),
                        build_summary(d), json.dumps(d), str(d.get("source_page", "")),
                        str(d.get("utm_source", "")), str(d.get("utm_medium", "")), str(d.get("utm_campaign", "")),
                        str(d.get("referrer", "")), secrets.token_hex(8), now))
@@ -275,7 +280,6 @@ class H(SimpleHTTPRequestHandler):
                             FROM trips ORDER BY created_at DESC LIMIT 200""").fetchall()
         counts = {s: c.execute("SELECT COUNT(*) FROM trips WHERE status=?", (s,)).fetchone()[0] for s in STATUSES}
         c.close()
-        opts = "".join(f"<option>{s}</option>" for s in STATUSES)
         opens = sum(counts[s] for s in OPEN_STATUSES)
         kpis = (f"<div class=k><b>{len(rows)}</b><span>requests shown</span></div>"
                 f"<div class=k><b>{opens}</b><span>open</span></div>"
@@ -284,6 +288,10 @@ class H(SimpleHTTPRequestHandler):
         trs = ""
         for r in rows:
             new = " new" if r["status"] == "NEW" else ""
+            opts = "".join(
+                f'<option{" selected" if s == r["status"] else ""}>{s}</option>'
+                for s in STATUSES
+            )
             trs += (f'<tr class="{new}"><td><code>{r["ref"]}</code><br><span class=t>{r["created_at"][:16].replace("T"," ")}</span></td>'
                     f'<td>{html.escape(r["trip_type"] or "")}</td>'
                     f'<td>{html.escape(r["summary"] or "")}<br><span class=t>from {html.escape(r["source_page"] or "")}</span></td>'
