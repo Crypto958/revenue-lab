@@ -19,7 +19,7 @@ from site_data import (CONFIGURATIONS, CONFIG_SPEC_FIELDS, GALLERY_SLOTS, PRICIN
                        REVIEWS, REVIEWS_EMPTY_MESSAGE, ROUTES, SERVICE_AREAS, SERVICES,
                        TRUST_ASSURANCES, TRUST_FIELDS, FLEET_CONFIRMED, SEATING_SLOTS,
                        SEAT_LAYOUTS, ASSETS_ARE_OUR_VEHICLE, SHOW_MEDIA_PLACEHOLDERS,
-                       tbc, money)
+                       RATE_INDICATIVE, tbc, money)
 
 # ------------------------------------------------------------------ media
 # Real photography and video drop into these directories and the site upgrades
@@ -107,6 +107,9 @@ table.rate{width:100%;border-collapse:collapse;min-width:680px}
 table.rate th,table.rate td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line);font-size:14.5px;white-space:nowrap}
 table.rate thead th{background:var(--alt);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
 table.rate td.pend{color:var(--warn);font-weight:600}
+table.rate.indic th[scope=row]{font-weight:600;color:var(--ink);width:26%}
+table.rate.indic .amt{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600;width:22%}
+table.rate.indic td.small{color:var(--ink-2);line-height:1.5}
 .io{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 @media(max-width:720px){.io{grid-template-columns:1fr}}
 .io>div{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px}
@@ -375,6 +378,35 @@ def rates_table():
     if notes:
         parts.append(f'<div class="notes">{notes}</div>')
     return "".join(parts)
+
+
+def indicative_rates():
+    """Indicative market pricing.
+
+    CATEGORY B — reversible commercial content, labelled as indicative everywhere
+    and never presented as a contract rate. The figures are market-researched bands
+    for a Force Urbania in Hyderabad, not this operator's own rate card, so the copy
+    says the quotation confirms the number for the actual trip. Provenance for every
+    figure is in site_data.RATE_INDICATIVE_SOURCES.
+    """
+    rows = ""
+    for r in RATE_INDICATIVE:
+        unit = {"per km": "/km", "per day": "/day", "one way": " one way",
+                "per hour": "/hour"}.get(r["unit"], " " + r["unit"])
+        rows += (f'<tr><th scope="row">{r["label"]}</th>'
+                 f'<td class="amt">{money(r["low"])}&ndash;{money(r["high"])}{unit}</td>'
+                 f'<td class="small">{r["note"]}</td></tr>')
+    return (
+        '<div class="rate-wrap"><table class="rate indic">'
+        '<thead><tr><th scope="col">Item</th><th scope="col">Indicative range</th>'
+        '<th scope="col">What it covers</th></tr></thead>'
+        f'<tbody>{rows}</tbody></table></div>'
+        '<p class="small" style="margin-top:14px"><b>Indicative, not a fixed price.</b> '
+        'These are typical market ranges for a Force Urbania in Hyderabad, shown so you can '
+        'budget before enquiring. Your quotation confirms the figure for your actual trip '
+        '&mdash; it depends on distance, duration, the date, the configuration and the route. '
+        'Tolls, parking, state permits, GST and any night allowance are additional where they '
+        'apply.</p>')
 
 
 def fleet_status_note():

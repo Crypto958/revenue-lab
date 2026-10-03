@@ -41,6 +41,46 @@ ASSETS_ARE_OUR_VEHICLE = False
 # Turn this on to see, on any page, exactly which files the build is waiting for.
 SHOW_MEDIA_PLACEHOLDERS = False
 
+# ------------------------------------------------------- indicative pricing
+# CATEGORY B — reversible commercial content. Market-researched 2026-10-03 from live
+# Hyderabad-facing operator rate cards (chikucabs, chikucab, 24cabservice,
+# actempotravellerhire, rajputanacabs, hyderabadwheels, rinocab, mebus) with
+# Delhi-sourced cards deliberately excluded. See RATE_INDICATIVE_SOURCES.
+#
+# These are INDICATIVE MARKET FIGURES, not UrbanLoop's own contract rates. Every
+# surface that renders them says so and states that the quotation confirms the
+# figure for the actual trip. Replace with the owner's rate card when supplied —
+# nothing else needs to change.
+RATE_INDICATIVE = [
+    dict(label="Local / city travel", unit="per km", low=30, high=40,
+         note="Charged per kilometre against a minimum. Time-and-distance packages are "
+              "common for a full day in the city."),
+    dict(label="Outstation travel", unit="per km", low=30, high=45,
+         note="A minimum of 250&ndash;300 km per day applies even on shorter runs, because "
+              "the vehicle and driver are committed for the day."),
+    dict(label="Full day &mdash; 8 hours / 80 km", unit="per day", low=6800, high=10000,
+         note="A 17-seat configuration sits at the top of this range. Extra hours and extra "
+              "kilometres are charged beyond the package."),
+    dict(label="Driver allowance", unit="per day", low=500, high=800,
+         note="Applies to outstation and overnight trips. Some operators include it in the "
+              "package instead of billing it separately."),
+    dict(label="Airport transfer", unit="one way", low=4000, high=4500,
+         note="Indicative for a van pick-up or drop. Most Hyderabad operators quote airport "
+              "runs per kilometre rather than as a flat route fare."),
+]
+
+# Where the indicative figures came from. Kept beside the data so these are auditable
+# and re-checkable rather than numbers of unknown origin.
+RATE_INDICATIVE_SOURCES = {
+    "local_per_km": "chikucabs.com 30-35; chikucab.com 38-40; 24cabservice.com 37-39; actempotravellerhire.com 34-40 (outliers rinocab 25, sara.cab 45 excluded)",
+    "outstation_per_km": "rajputanacabs.in 32-40; actempotravellerhire.com 34-45; 24cabservice.com 35-39; chikucab.com 38-40",
+    "full_day": "hyderabadwheels.com 6825 incl. taxes; actempotravellerhire.com 8000 (9-10 str) to 10000 (17 str); rajputanacabs.in 8000",
+    "driver_allowance": "chikucab/chikucabs 500; rinocab 500; actempotravellerhire.com 600-700; mebus.in 800; clearcarrental.com 800",
+    "airport": "actempotravellerhire.com 4000 (9-10 str) to 4500 (13-17 str) — WEAKEST FIGURE: only one van-specific flat rate found",
+    "gst": "5% standard contract-carriage rate — chikucab.com, actempotravellerhire.com, destinytraveller.com",
+    "night_allowance": "chikucab.com 500; 24cabservice.com 800 after 8pm; bookmytempotraveller.com 300-350",
+}
+
 TBC = "To be confirmed"
 
 
@@ -59,9 +99,18 @@ def tbc(value, prefix="", suffix=""):
 
 
 def money(value):
-    """Rupee placeholder. Renders '₹XX' when unset, never a guessed figure."""
+    """Rupee figure. Renders '₹XX' when unset, never a guessed figure.
+
+    Numbers are grouped (6800 -> 6,800) so larger figures are readable. Plain comma
+    grouping, which matches Indian convention below one lakh; every figure on the
+    site is currently under 10,000, so lakh-style grouping does not arise.
+    """
     if value is None:
         return "&#8377;XX"
+    if isinstance(value, bool):
+        return f"&#8377;{value}"
+    if isinstance(value, int) or (isinstance(value, float) and float(value).is_integer()):
+        return "&#8377;" + format(int(value), ",")
     return f"&#8377;{value}"
 
 
@@ -191,7 +240,7 @@ RATE_EXCLUSIONS = [
 RATE_NOTES = [
     ("Minimum billing", None),
     ("Billing basis", "Garage to garage"),
-    ("GST", None),
+    ("GST", "5%"),
     ("Night allowance", None),
     ("Extra hour rate", None),
     ("Extra kilometre rate", None),

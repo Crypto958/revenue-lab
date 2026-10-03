@@ -66,14 +66,60 @@ over an hour, so the page states which one it means.
 Do not tighten these into false precision. If a route is re-verified and the figure
 changes, update both `ROUTES` and `ROUTE_DISTANCE_SOURCES` together.
 
+## INDICATIVE PRICING — market-researched, labelled as indicative (Category B)
+
+Publishing decision: launch with indicative market ranges rather than "request a quote"
+alone, so a customer can budget before enquiring. This is authorised as Category B
+(reversible commercial content) and is NOT presented as a contract rate anywhere.
+
+**These are not UrbanLoop's own rates.** They are typical market ranges gathered
+2026-10-03 from live Hyderabad-facing operator rate cards, with Delhi-priced cards
+(urbaniahire.com, urbaniatemporental.com, urbaniavannonrent.com, tempotravller.com,
+renttraveller.com) deliberately excluded. Every surface that shows them says they are
+indicative and that the quotation confirms the figure for the actual trip.
+
+| Item | Indicative range | Basis |
+|---|---|---|
+| Local / city | ₹30–40 /km | chikucabs 30-35; chikucab 38-40; 24cabservice 37-39; actempotravellerhire 34-40 |
+| Outstation | ₹30–45 /km | rajputanacabs 32-40; actempotravellerhire 34-45; 24cabservice 35-39; chikucab 38-40 |
+| Full day 8hr/80km | ₹6,800–10,000 | hyderabadwheels 6,825 incl. taxes; actempotravellerhire 8,000 → 10,000 by seating |
+| Driver allowance | ₹500–800 /day | chikucab/chikucabs 500; rinocab 500; actempotravellerhire 600-700; mebus 800 |
+| Airport transfer, one way | ₹4,000–4,500 | actempotravellerhire only — see caveat below |
+| GST | 5% | standard contract-carriage rate |
+| Minimum km/day, outstation | 250–300 km | genuine market split; both stated |
+| Night allowance | ₹250–800 | varies by operator; stated as a range |
+
+**Excluded as unreliable:** bhavanicabs.com local Urbania at ₹2,000–3,000/day — far
+below every other source. **Outliers excluded** from the per-km bands: rinocab ₹25,
+sara.cab ₹45.
+
+**Weakest figure — airport transfer.** Only ONE Hyderabad van operator publishes a flat
+rate (₹4,000–4,500). Every other operator quotes airport runs per km or as a package.
+Route-specific van fares (RGIA→HITEC City vs Gachibowli vs Secunderabad) were not
+published anywhere; only sedan/SUV figures exist (₹850–1,400). Treat as indicative and
+verify with the owner before it is presented as a firm airport tariff.
+
+**Owner action:** replace `RATE_INDICATIVE` in `site_data.py` with UrbanLoop's own rate
+card. The rendering, the disclaimer and the test guard all follow the data — no code
+change is needed.
+
+The test suite enforces that a rupee figure may appear on a page **only** if it traces
+to `RATE_INDICATIVE` or `CONFIGURATIONS`. An invented number still cannot reach a page.
+
+
 ## UNVERIFIED — must not be published as fact
 
 Operating base address · permanent driver arrangement · driver vetting or experience · permit status ·
 commercial insurance status · vehicle fitness/compliance · vehicle year and variant · final service area ·
-pricing · rate per kilometre · minimum kilometres · overtime rate · night allowance · toll treatment ·
+minimum kilometres · overtime rate · night allowance · toll treatment ·
 parking treatment · cancellation policy · payment terms · availability pattern · operating history in
 Hyderabad · customer reviews · customer counts · exact luggage capacity · GST/invoicing status · photographs
 of the vehicle · any special safety feature.
+
+**Removed from this list:** pricing, rate per kilometre and driver allowance are no longer
+unverified — they are published as INDICATIVE market ranges under Category B above, clearly
+labelled and with their sources recorded. The distinction that matters is that they are
+indicative, not that they are secret.
 
 All of the above are handled by writing copy that **does not depend on them** (see SAFE PUBLIC CLAIM),
 leaving an inline `<!-- [VERIFY BEFORE PUBLISHING: ...] -->` marker in the source where a decision is needed.

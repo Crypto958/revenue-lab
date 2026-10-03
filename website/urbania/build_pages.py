@@ -176,9 +176,9 @@ def build_home():
                   "we will confirm the practical details.",
                   SEC.routes_grid(), alt=True)
         + section("Rates", "Force Urbania rental rates in Hyderabad.",
-                  "How each charge is built up: per kilometre, per day, driver allowance, and what is charged "
-                  "in addition to the quotation.",
-                  SEC.rates_table()
+                  "Indicative market ranges, so you can budget before enquiring. Your quotation "
+                  "confirms the figure for your actual trip.",
+                  SEC.indicative_rates()
                   + '<p style="margin-top:18px"><a class="btn" '
                     'href="/rates/force-urbania-rental-rates-hyderabad/">See the full rates page</a></p>')
         + section("Trust", "What you can rely on.",
@@ -991,10 +991,10 @@ def build_rates_page():
         # This section used to repeat the H1 verbatim as an H2 and claim that
         # "indicative rates are published per configuration" — which stopped being
         # true the moment the ₹XX placeholders were removed.
-        section("Rates", "How each charge is built up.",
-                "Every component of a quotation, listed separately &mdash; what is covered and "
-                "what is charged in addition.",
-                SEC.fleet_status_note() + SEC.rates_table())
+        section("Rates", "Indicative pricing.",
+                "What a Force Urbania typically costs in Hyderabad, and what the quotation "
+                "covers and charges in addition.",
+                SEC.indicative_rates() + SEC.fleet_status_note() + SEC.rates_table())
         + section("How pricing works", "Three things drive the price.",
                   "A group vehicle is priced on the trip, not chosen from a menu.",
                   how, alt=True)
@@ -1008,9 +1008,11 @@ def build_rates_page():
               "rates, driver allowance, minimum kilometres, inclusions and exclusions.",
               "/rates/force-urbania-rental-rates-hyderabad/",
               "Rates", "Force Urbania rental rates in Hyderabad.",
-              "Per-kilometre, per-day and driver allowance, with inclusions and exclusions stated plainly.",
+              "Indicative per-kilometre, per-day and driver-allowance ranges, with inclusions and "
+              "exclusions stated plainly.",
               ["Rates depend on the trip rather than a fixed menu, so a quotation is prepared for your own "
-               "itinerary. What follows is how each charge is built up."],
+               "itinerary. The ranges below are typical market figures for a Force Urbania in Hyderabad "
+               "\u2014 they are indicative, and your quotation confirms the number for your trip."],
               body_sections, faqs,
               [("Home", "/"), ("Rates", "/rates/force-urbania-rental-rates-hyderabad/")],
               "Force Urbania rental rates in Hyderabad",

@@ -343,6 +343,9 @@ table.rate{width:100%;border-collapse:collapse;min-width:680px}
 table.rate th,table.rate td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line);font-size:14.5px;white-space:nowrap}
 table.rate thead th{background:var(--alt);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
 table.rate td.pend{color:var(--warn);font-weight:600}
+table.rate.indic th[scope=row]{font-weight:600;color:var(--ink);width:26%}
+table.rate.indic .amt{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600;width:22%}
+table.rate.indic td.small{color:var(--ink-2);line-height:1.5}
 .io{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 @media(max-width:720px){.io{grid-template-columns:1fr}}
 .io>div{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px}

@@ -294,10 +294,33 @@ class ContentHonestyTests(unittest.TestCase):
         self.assertEqual(offenders, [], f"unsupported claims found: {offenders[:5]}")
 
     def test_no_fabricated_rupee_figures_are_rendered(self):
+        """A rupee figure may appear only if it traces to sourced data.
+
+        This originally banned EVERY rupee figure, because at the time none were
+        verified. The indicative market ranges are now researched and authorised
+        (Category B), so the guarantee was re-stated rather than dropped: each
+        rendered figure must come from RATE_INDICATIVE or CONFIGURATIONS. An
+        invented number still cannot reach a page.
+        """
+        import site_data
+        allowed = set()
+        for r in site_data.RATE_INDICATIVE:
+            for v in (r["low"], r["high"]):
+                allowed.add(site_data.money(v).replace("&#8377;", ""))
+        for c in site_data.CONFIGURATIONS:
+            for k in ("per_km", "per_day", "driver_allowance", "min_km_per_day"):
+                v = c.get(k)
+                if v is not None:
+                    allowed.add(site_data.money(v).replace("&#8377;", ""))
+        self.assertTrue(allowed, "no sourced rupee figures — test would pass vacuously")
+
+        offenders = []
         for page in sorted(SITE.rglob("*.html")):
             html = page.read_text(encoding="utf-8")
-            found = re.findall(r"&#8377;\d", html)
-            self.assertEqual(found, [], f"{page.relative_to(SITE)} renders a rupee figure {found[:3]}")
+            for m in re.finditer(r"&#8377;([0-9][0-9,]*)", html):
+                if m.group(1) not in allowed:
+                    offenders.append((page.relative_to(SITE).as_posix(), m.group(0)))
+        self.assertEqual(offenders, [], f"unsourced rupee figures rendered: {offenders[:6]}")
 
 
 class NewArchitectureTests(unittest.TestCase):
