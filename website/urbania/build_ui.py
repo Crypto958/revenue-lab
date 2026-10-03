@@ -496,8 +496,32 @@ def faq_block(pairs, h2="Questions people ask before enquiring.", eyebrow="FAQ")
     return (f'<section><div class="wrap"><div class="shead"><span class="eyebrow">{eyebrow}</span>'
             f'<h2>{h2}</h2></div><div class="faq">{inner}</div></div></section>')
 
+def _hero_photo():
+    """The supplied hero photograph, if one is present."""
+    for name in ("hero-split.jpg", "hero-split.png", "hero-split.webp",
+                 "hero-poster.jpg", "hero-poster.png", "hero-poster.webp"):
+        if os.path.exists(os.path.join(OUT, "media", "hero", name)):
+            return "/media/hero/" + name
+    return None
+
+
 def vehicle_panel():
-    """Clearly labelled illustrative graphic. NOT a photograph of the actual vehicle."""
+    """Vehicle figure for a subpage hero.
+
+    Serves the supplied photograph when one exists, and falls back to a clearly
+    labelled diagram — never to stock imagery passed off as the actual vehicle.
+    The diagram used to be the only branch, so six subpages shipped a hand-drawn
+    box captioned "photographs are being prepared" while a real image sat unused.
+    """
+    photo = _hero_photo()
+    if photo:
+        return (
+            '<div class="vwrap">'
+            f'<img src="{photo}" alt="Force Urbania 17-seat group travel vehicle '
+            f'(representative image of the model, not a photograph of this operator&#x27;s vehicle)" '
+            f'loading="lazy" decoding="async">'
+            '<p class="vcap"><b>Photograph of the Force Urbania model.</b> A representative image '
+            '&mdash; not a photograph of our own vehicle.</p></div>')
     svg = ('<svg viewBox="0 0 640 300" role="img" aria-label="Illustrative diagram of a 17-seat Force Urbania-style '
            'group travel van, showing passenger seating and a rear luggage area. This is a diagram, not a photograph '
            'of the actual vehicle."><rect width="640" height="300" fill="#EAF0F4"/>'
@@ -517,10 +541,8 @@ def vehicle_panel():
            '<text x="120" y="150" font-family="Inter,sans-serif" font-size="13" fill="#0C4F5C" text-anchor="middle">Driver</text>'
            '</svg>')
     return ('<div class="vwrap">' + svg +
-            '<p class="vcap"><b>Illustrative diagram — not a photograph of the actual vehicle.</b><br>'
-            'Real vehicle photographs are being prepared. '
-            '<!-- [VERIFY BEFORE PUBLISHING: replace with real front 3/4, rear 3/4, side profile, open door, '
-            'seat rows, aisle and luggage-area photographs of the actual vehicle] --></p></div>')
+            '<p class="vcap"><b>Illustrative diagram &mdash; not a photograph of the actual '
+            'vehicle.</b></p></div>')
 
 def write_page(path, doc):
     rel = path.lstrip("/")

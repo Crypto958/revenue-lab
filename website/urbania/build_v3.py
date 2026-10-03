@@ -91,7 +91,7 @@ def build_urbania_page():
         ("Is this your own vehicle?",
          "Yes. We operate one 17-seat Force Urbania ourselves. That is why availability is confirmed per enquiry rather than shown as live — there is a single vehicle."),
         ("Can I see the vehicle before booking?",
-         "Ask us. Photographs of the actual vehicle are being prepared; until they are available we will describe what we can and confirm the details that matter for your trip in writing."),
+         "Ask us. We will describe the vehicle, its seating and its current condition in writing with your quotation, and answer anything you want to check before you confirm."),
         ("What is not included?",
          "We provide the vehicle and the driver for the journeys described in your quotation. Attraction tickets, guides, hotels and packaged tours are not part of the service."),
     ]

@@ -334,10 +334,44 @@ class NewArchitectureTests(unittest.TestCase):
         self.assertIn('id="fy-pax"', home)
         self.assertIn('id="fy-card"', home)
 
-    def test_trust_and_reviews_are_placeholder_state(self):
-        home = (SITE / "index.html").read_text(encoding="utf-8")
-        self.assertGreater(home.count('class="tcard"'), 0)
-        self.assertIn("rev-empty", home)
+    def test_no_placeholder_state_is_published(self):
+        """The site must not publish placeholder boxes.
+
+        This test previously asserted the OPPOSITE — that the trust tiles and the
+        empty-reviews box were present. Those were the loudest "unfinished" signal
+        on the page, so they were removed and the guard is now on their absence.
+        """
+        problems = []
+        for p in SITE.rglob("*.html"):
+            t = p.read_text(encoding="utf-8")
+            rel = p.relative_to(SITE).as_posix()
+            if 'class="tcard"' in t and "To be confirmed" in t:
+                problems.append((rel, "trust tiles showing To be confirmed"))
+            if 'class="rev-empty"' in t:
+                problems.append((rel, "empty reviews box"))
+            if "&#8377;XX" in t:
+                problems.append((rel, "placeholder price"))
+        self.assertEqual(problems, [], f"placeholder state published: {problems}")
+
+    def test_no_page_repeats_its_h1_as_a_section_heading(self):
+        """A section H2 that repeats the page H1 verbatim reads as a copy-paste
+        error, competes with the H1 in search results, and tells the reader they
+        have already seen this. The rates page did exactly that.
+        """
+        problems = []
+        for p in SITE.rglob("*.html"):
+            t = p.read_text(encoding="utf-8")
+            m = re.search(r"<h1[^>]*>(.*?)</h1>", t, re.S)
+            if not m:
+                continue
+            norm = lambda s: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s)).strip().lower().rstrip(".")
+            h1 = norm(m.group(1))
+            if not h1:
+                continue
+            for h2 in re.findall(r"<h2[^>]*>(.*?)</h2>", t, re.S):
+                if norm(h2) == h1:
+                    problems.append((p.relative_to(SITE).as_posix(), h1))
+        self.assertEqual(problems, [], f"H2 duplicates the H1: {problems}")
 
     def test_seo_pages_exist_for_every_declared_route(self):
         import site_data
@@ -671,16 +705,22 @@ class ShippedMediaTests(unittest.TestCase):
                          "rendered figure count != shipped photo count")
 
     def test_shipped_media_never_claims_ownership(self):
-        """Whatever ships, the caption and alt text must state provenance
-        honestly whenever the owner has not asserted these are their vehicle."""
+        """Whatever ships, the caption must state provenance honestly.
+
+        The blacklist is checked as WHOLE phrases that can only appear in a
+        positive ownership claim. A bare substring like "photograph of our"
+        false-positives on the disclaimer "not a photograph of our own vehicle",
+        which says the opposite — so the disclaimer is asserted first and the
+        blacklist restricted to claims that cannot be a negation.
+        """
         if self.DATA.ASSETS_ARE_OUR_VEHICLE:
             self.skipTest("owner has asserted these are our own vehicle")
         hero = self.SEC.hero_visual()
         if 'class="hv-still"' in hero or "<video" in hero:
             self.assertIn("representative image", hero)
-            self.assertIn("Images of our own vehicle are being prepared", hero)
-            for claim in ("of our Force Urbania", "our vehicle is shown",
-                          "photograph of our"):
+            self.assertIn("not a photograph of our own vehicle", hero)
+            for claim in ("of our Force Urbania.", "our vehicle is shown",
+                          "Photograph of our vehicle", "<b>Our vehicle"):
                 self.assertNotIn(claim, hero,
                                  f"shipped media implies ownership: {claim!r}")
 

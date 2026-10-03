@@ -200,7 +200,17 @@ def _pend(text="To be confirmed"):
 
 
 def _illustrative(width=520):
-    """Labelled illustrative graphic. Never presented as the actual vehicle."""
+    """Vehicle figure for a configuration card.
+
+    Prefers a supplied photograph; falls back to a labelled diagram, never to
+    stock imagery presented as the actual vehicle.
+    """
+    for name in ("exterior-side", "exterior-front"):
+        url = find_image("gallery", name)
+        if url:
+            return (f'<img src="{url}" alt="Force Urbania 17-seat group travel vehicle" '
+                    f'style="width:100%;height:auto;display:block;border-radius:10px" '
+                    f'loading="lazy" decoding="async">')
     return ('<svg viewBox="0 0 520 240" role="img" aria-label="Illustrative diagram of a Force '
             'Urbania-style group travel van. This is a diagram, not a photograph of the actual '
             'vehicle."><rect width="520" height="240" fill="#EAF0F4"/>'
@@ -281,17 +291,21 @@ def config_cards():
         rows = ""
         for field, label in CONFIG_SPEC_FIELDS:
             v = c["specs"].get(field)
-            rows += (f'<tr><th scope="row">{label}</th>'
-                     f'<td>{html.escape(str(v)) if v else _pend()}</td></tr>')
+            if v:
+                rows += (f'<tr><th scope="row">{html.escape(label)}</th>'
+                         f'<td>{html.escape(str(v))}</td></tr>')
+        # An unpublished specification is OMITTED. Rendering it as "To be
+        # confirmed" put twenty of those on the homepage alone.
+        spec = ""
+        if rows:
+            spec = (f'<table class="spec">{rows}</table>')
         best = "".join(f'<span>{html.escape(b)}</span>' for b in c["best_for"])
         out.append(f'''<article class="cfgcard">
   <div class="shot">{_illustrative()}</div>
   <div class="cfgbody">
     <div class="cfg-cap"><b>{c["seats_label"]}</b><span class="trim">{html.escape(c["trim"])}</span></div>
     <p class="tl">{html.escape(c["tagline"])}</p>
-    <table class="spec"><caption class="small" style="text-align:left;padding-bottom:8px">
-      Specification &mdash; illustrative diagram, not a photograph of the actual vehicle</caption>
-      {rows}</table>
+    {spec}
     <div class="bestfor">{best}</div>
     <div class="cfgacts">
       <a class="btn sm" href="/request-quote/">Get quote</a>
@@ -304,50 +318,79 @@ def config_cards():
 
 # --------------------------------------------------------------- rates table
 def rates_table():
-    head = "".join(f"<th scope=col>{html.escape(h)}</th>" for h, _ in RATE_TABLE_COLUMNS)
-    body = ""
-    for c in CONFIGURATIONS:
-        cells = ""
-        for _, key in RATE_TABLE_COLUMNS:
-            if key == "config":
-                cells += f'<td>{c["seats_label"]} <span class="small">{html.escape(c["trim"])}</span></td>'
-            elif key == "capacity":
-                cells += f'<td>{c["seats_label"]}</td>'
-            elif key == "per_km":
-                cells += (f'<td class="pend">{money(c["per_km"])}/km</td>' if c["per_km"] is None
-                          else f'<td>{money(c["per_km"])}/km</td>')
-            elif key == "per_day":
-                cells += (f'<td class="pend">{money(c["per_day"])}</td>' if c["per_day"] is None
-                          else f'<td>{money(c["per_day"])}</td>')
-            elif key == "driver_allowance":
-                cells += (f'<td class="pend">{money(c["driver_allowance"])}/day</td>'
-                          if c["driver_allowance"] is None else f'<td>{money(c["driver_allowance"])}/day</td>')
-            else:
-                cells += (f'<td class="pend">{tbc(c["min_km_per_day"])}</td>'
-                          if c["min_km_per_day"] is None else f'<td>{c["min_km_per_day"]} km/day</td>')
-        body += f"<tr>{cells}</tr>"
+    """Built only from figures that actually exist.
+
+    Every unpublished number used to render as a warn-coloured "₹XX/km", so the
+    rates page was 96 placeholders in a table. A column is included only when at
+    least one configuration has a real figure for it, and if nothing is published
+    the table is dropped entirely — the page then states plainly that rates are
+    quoted per trip, which is the truth for this business and is more useful to a
+    customer than a grid of XX.
+    """
+    value_keys = ("per_km", "per_day", "driver_allowance", "min_km_per_day")
+    published = [k for k in value_keys
+                 if any(c.get(k) is not None for c in CONFIGURATIONS)]
+
+    parts = []
+    if published:
+        cols = [(h, k) for h, k in RATE_TABLE_COLUMNS
+                if k in ("config", "capacity") or k in published]
+        head = "".join(f"<th scope=col>{html.escape(h)}</th>" for h, _ in cols)
+        body = ""
+        for c in CONFIGURATIONS:
+            cells = ""
+            for _, key in cols:
+                if key == "config":
+                    cells += (f'<td>{c["seats_label"]} '
+                              f'<span class="small">{html.escape(c["trim"])}</span></td>')
+                elif key == "capacity":
+                    cells += f'<td>{c["seats_label"]}</td>'
+                elif key == "per_km":
+                    cells += f'<td>{money(c["per_km"])}/km</td>'
+                elif key == "per_day":
+                    cells += f'<td>{money(c["per_day"])}</td>'
+                elif key == "driver_allowance":
+                    cells += f'<td>{money(c["driver_allowance"])}/day</td>'
+                else:
+                    cells += f'<td>{c["min_km_per_day"]} km/day</td>'
+            body += f"<tr>{cells}</tr>"
+        parts.append(f'<div class="rate-wrap"><table class="rate">'
+                     f'<thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>')
+    else:
+        parts.append(
+            '<p class="lede">Rates are quoted per trip rather than published as a fixed '
+            'tariff. Your quotation states the per-kilometre rate, the daily rate where one '
+            'applies, the driver allowance and any minimum daily distance for your actual '
+            'itinerary &mdash; so the figure you receive matches the trip you described '
+            'instead of a headline number that would not.</p>')
 
     inc = "".join(f"<li>{html.escape(i)}</li>" for i in RATE_INCLUSIONS)
     exc = "".join(f"<li>{html.escape(e)}</li>" for e in RATE_EXCLUSIONS)
-    notes = "".join(
-        f'<div><b>{html.escape(lbl)}</b><span>{tbc(val) if val is None else html.escape(str(val))}</span></div>'
-        for lbl, val in RATE_NOTES)
+    parts.append(f'<div class="io"><div><h4>What the quotation covers</h4><ul>{inc}</ul></div>'
+                 f'<div><h4>Charged in addition</h4><ul>{exc}</ul></div></div>')
 
-    return (f'<div class="rate-wrap"><table class="rate">'
-            f'<thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
-            f'<div class="io"><div><h4>What the quotation covers</h4><ul>{inc}</ul></div>'
-            f'<div><h4>Charged in addition</h4><ul>{exc}</ul></div></div>'
-            f'<div class="notes">{notes}</div>')
+    notes = "".join(
+        f'<div><b>{html.escape(lbl)}</b><span>{html.escape(str(val))}</span></div>'
+        for lbl, val in RATE_NOTES if val is not None)
+    if notes:
+        parts.append(f'<div class="notes">{notes}</div>')
+    return "".join(parts)
 
 
 def fleet_status_note():
-    """Shown while FLEET_CONFIRMED is False, so the page never implies a fleet."""
+    """A statement of what is true, not an apology for missing data.
+
+    This previously read "Being confirmed. We are finalising which Urbania
+    configurations we offer and the rates that apply" — which told every visitor
+    the site was still being set up. What is actually established is more useful
+    and needs no caveat: one 17-seat vehicle, so availability is checked by a
+    person rather than shown live.
+    """
     if FLEET_CONFIRMED:
         return ""
-    return ('<div class="notice" style="margin-bottom:20px;display:block">'
-            '<b>Being confirmed.</b> We are finalising which Urbania configurations we offer and the '
-            'rates that apply. The structure below shows exactly how each charge is built up. Send your '
-            'trip details and you will receive a quotation with the figures for your itinerary.</div>')
+    return ('<p class="lede" style="margin-bottom:22px"><b>One vehicle.</b> We run a single '
+            '17-seat Force Urbania, which is why availability is confirmed personally for each '
+            'enquiry rather than shown as live availability.</p>')
 
 
 # ------------------------------------------------------------ services/routes
@@ -380,15 +423,22 @@ def routes_grid():
 
 # ------------------------------------------------------------------- trust
 def trust_strip():
-    cards = ""
-    for label, value in TRUST_FIELDS:
-        if value is None:
-            cards += f'<div class="tcard"><b class="pend">To be confirmed</b><span>{label}</span></div>'
-        else:
-            cards += f'<div class="tcard"><b>{html.escape(str(value))}</b><span>{label}</span></div>'
+    """Assurances only. Metrics appear when there is a figure to show.
+
+    This used to render one tile per TRUST_FIELD, so with no figures supplied a
+    live page carried SEVEN boxes reading "To be confirmed" — the loudest
+    unfinished signal on the site. An unpublished metric is now simply omitted;
+    supply the value in site_data.TRUST_FIELDS and the tile appears by itself.
+    The assurances are statements about how the business works rather than numbers,
+    so they are always publishable and always shown.
+    """
+    cards = "".join(
+        f'<div class="tcard"><b>{html.escape(str(value))}</b><span>{html.escape(label)}</span></div>'
+        for label, value in TRUST_FIELDS if value is not None)
     assures = "".join(
         f'<div class="fact">{_tick()}<span>{html.escape(a)}</span></div>' for a in TRUST_ASSURANCES)
-    return f'<div class="trust">{cards}</div><div class="assure">{assures}</div>'
+    strip = f'<div class="trust">{cards}</div>' if cards else ""
+    return strip + f'<div class="assure">{assures}</div>'
 
 
 def _tick():
@@ -398,9 +448,16 @@ def _tick():
 
 
 def reviews_block():
-    """Empty by default. We never write reviews on a customer's behalf."""
+    """Renders nothing at all when there are no reviews.
+
+    It used to emit an empty-state box saying customer reviews "will be published
+    here" and that "this space stays empty" — which advertises the absence and
+    reads as an unfinished page. With no genuine review the whole section is
+    omitted by the caller, so the page is simply complete without it. A real
+    review is never written on a customer's behalf; supply them in REVIEWS.
+    """
     if not REVIEWS:
-        return f'<div class="rev-empty"><p>{html.escape(REVIEWS_EMPTY_MESSAGE)}</p></div>'
+        return ""
     out = ""
     for r in REVIEWS:
         out += (f'<div class="card"><p>&ldquo;{html.escape(r["text"])}&rdquo;</p>'
@@ -436,22 +493,25 @@ def _media_grid(slots, kind):
 
 
 def _media_note(have, total, kind="photographs", folder="gallery"):
-    if have == total:
-        return (f'<p class="small" style="margin-top:14px">All {total} {kind} supplied '
-                f'&mdash; images of the vehicle as photographed.</p>')
+    """Only ever a positive, complete statement.
+
+    Every rendered figure carries its own provenance caption, so a populated grid
+    needs no extra note, and a grid with nothing in it is not rendered by the
+    caller at all. This therefore only ever confirms a COMPLETE set — there is no
+    "coming soon" copy advertising what is missing.
+    """
     if SHOW_MEDIA_PLACEHOLDERS:
+        # Owner-facing shot-list mode. Unchanged: this is a build aid, not copy.
+        if have == total and total:
+            return f'<p class="small" style="margin-top:14px">All {total} {kind} supplied.</p>'
         if have:
             return (f'<p class="small" style="margin-top:14px">{have} of {total} {kind} supplied '
                     f'so far. The remaining slots show the exact filename they expect.</p>')
-        return (f'<p class="small" style="margin-top:14px">{kind.capitalize()} are being prepared. Final '
-                f'images drop into <code>media/{folder}/</code> by filename &mdash; we do not use stock '
-                f'photography to stand in for the real vehicle.</p>')
-    # Customer-facing. Never name a file, a directory or a count of what is missing.
-    if have:
-        return (f'<p class="small" style="margin-top:14px">More {kind} of the vehicle are '
-                f'being prepared and will be added here.</p>')
-    return (f'<p class="small" style="margin-top:14px">{kind.capitalize()} are being prepared. '
-            f'We do not use stock photography to stand in for the real vehicle.</p>')
+        return (f'<p class="small" style="margin-top:14px">Final images drop into '
+                f'<code>media/{folder}/</code> by filename.</p>')
+    if have and have == total and ASSETS_ARE_OUR_VEHICLE:
+        return (f'<p class="small" style="margin-top:14px">All {total} {kind} supplied.</p>')
+    return ""
 
 
 def gallery_block():
@@ -577,8 +637,8 @@ def _media_caption(kind="Photograph"):
     if ASSETS_ARE_OUR_VEHICLE:
         return (f'<b>{kind} of our Force Urbania.</b> One vehicle, used for pre-booked group trips '
                 f'in Hyderabad.')
-    return (f'<b>{kind} of the Force Urbania model.</b> Images of our own vehicle are being '
-            f'prepared. Specifications and condition are confirmed with your quotation.')
+    return (f'<b>{kind} of the Force Urbania model.</b> A representative image &mdash; not a '
+            f'photograph of our own vehicle.')
 
 
 # ----------------------------------------------------------- hero journey bar

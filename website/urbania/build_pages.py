@@ -180,12 +180,16 @@ def build_home():
         + section("Trust", "What you can rely on.",
                   "We publish figures we can stand behind. Where we do not have one yet, we say so.",
                   SEC.trust_strip(), alt=True)
-        + section("Reviews", "What customers say.",
-                  "Reviews appear here only when they are genuine.",
-                  SEC.reviews_block())
-        + section("Gallery", "The vehicle, photographed.",
-                  "Real photographs of the actual vehicle, as soon as they are available.",
-                  SEC.gallery_block(), alt=True)
+        # Bands with nothing real to show are OMITTED, not rendered empty with
+        # "coming soon" copy. An empty box advertises the absence and is the
+        # clearest "unfinished" signal a page can carry; each rendered photograph
+        # already carries its own provenance caption.
+        + (section("Reviews", "What customers say.",
+                   "Reviews appear here only when they are genuine.",
+                   SEC.reviews_block()) if SEC.REVIEWS else "")
+        + (section("Gallery", "The vehicle, photographed.",
+                   "Images of the Force Urbania model.",
+                   SEC.gallery_block(), alt=True) if SEC.media_status()["gallery"] else "")
         + section("Seating", "Seating references.",
                   "Seat layout and legroom decide whether a long trip is comfortable. These are the "
                   "details group buyers ask about most.",
@@ -821,7 +825,9 @@ def build_contact():
                    "Call to discuss the trip, or send the details through the quotation form.",
                    ctas=False)
             + section("Contact", "How to reach us.",
-                      "WhatsApp, phone, or the quotation form. The form sends your trip details straight to WhatsApp in one tap.",
+                      "WhatsApp, phone, or the quotation form. The form records your trip details, "
+                      "and the confirmation screen gives you a one-tap option to send the same "
+                      "summary to us on WhatsApp.",
                       '<div class="grid g3">'
                       f'<div class="card"><span class="tag">WhatsApp</span><h3>Message us</h3>'
                       f'<p>The fastest route. Send the date, route, passenger count and duration and we will reply with a quotation.</p>'
@@ -841,23 +847,18 @@ def build_contact():
                       f'<!-- [VERIFY BEFORE PUBLISHING: confirm the public enquiry email address. A business address on '
                       f'the domain is preferable to a personal address.] --></div>'
                       '</div>')
-            + section("Business details", "Details published only once confirmed.",
-                      "Rather than filling this page with claims, here is exactly what is still being confirmed.",
+            + section("Getting in touch", "How to reach us.",
+                      "Pre-booked private group transport with a 17-seat Force Urbania.",
                       '<div class="grid g2">'
-                      '<div class="card"><h3>Available now</h3><ul>'
-                      f'<li>Telephone: {PHONE}</li>'
-                      '<li>Vehicle: 17-seat Force Urbania</li>'
-                      '<li>Service: pre-booked private group transport, quotation on request</li>'
-                      '<li>City: Hyderabad</li></ul></div>'
-                      '<div class="card"><h3>Being confirmed before publication</h3><ul>'
-                      '<li>Registered business name and address</li>'
-                      '<li>Operating base and confirmed service area</li>'
-                      '<li>Permit, insurance and fitness documentation</li>'
-                      '<li>Driver arrangements</li>'
-                      '<li>GST and invoicing status</li>'
-                      '<li>Photographs of the vehicle</li></ul>'
-                      '<p style="margin-top:14px" class="small">We would rather publish nothing here than publish '
-                      'something unverified.</p></div></div>', alt=True)
+                      '<div class="card"><h3>By telephone</h3><ul>'
+                      f'<li>Call or message <a href="{PHONE_HREF}">{PHONE}</a></li>'
+                      '<li>Quickest for checking whether a date is free</li>'
+                      '<li>Based in Hyderabad</li></ul></div>'
+                      '<div class="card"><h3>By quotation request</h3><ul>'
+                      '<li>Send the date, pickup point, destination and passenger count</li>'
+                      '<li>You receive a written quotation in reply</li>'
+                      '<li>Nothing is charged to ask, and an enquiry does not book the vehicle</li>'
+                      '</ul></div></div>', alt=True)
             + cta_band())
     page("/contact/", "Contact | Group Transport Hyderabad " + PHONE,
          f"Contact for pre-booked private group transport in Hyderabad with a 17-seat Force Urbania. Call {PHONE} or request a trip quote online.",
@@ -983,9 +984,12 @@ def build_rates_page():
         'booking.</p></div>'
         '</div>')
     body_sections = (
-        section("Rates", "Force Urbania rental rates in Hyderabad.",
-                "Each charge is listed separately so you can see how a quotation is built up. Indicative "
-                "rates are published per configuration, and any figure we have not confirmed is marked as such.",
+        # This section used to repeat the H1 verbatim as an H2 and claim that
+        # "indicative rates are published per configuration" — which stopped being
+        # true the moment the ₹XX placeholders were removed.
+        section("Rates", "How each charge is built up.",
+                "Every component of a quotation, listed separately &mdash; what is covered and "
+                "what is charged in addition.",
                 SEC.fleet_status_note() + SEC.rates_table())
         + section("How pricing works", "Three things drive the price.",
                   "A group vehicle is priced on the trip, not chosen from a menu.",
@@ -1013,20 +1017,25 @@ def build_rates_page():
 def build_fleet_pages():
     for c in DATA.CONFIGURATIONS:
         path = f'/fleet/{c["key"]}/'
-        specs = "".join(
-            f'<tr><th scope="row">{label}</th><td>'
-            f'{DATA.tbc(c["specs"].get(field))}</td></tr>'
-            for field, label in DATA.CONFIG_SPEC_FIELDS)
+        # Unpublished specifications are omitted rather than rendered as
+        # "To be confirmed" — this card carried five of those on each fleet page.
+        spec_rows = ""
+        for field, label in DATA.CONFIG_SPEC_FIELDS:
+            v = c["specs"].get(field)
+            if v:
+                spec_rows += (f'<tr><th scope="row">{html.escape(label)}</th>'
+                              f'<td>{html.escape(str(v))}</td></tr>')
+        spec_card = ""
+        if spec_rows:
+            spec_card = (f'<div class="card"><h3>Specification</h3>'
+                         f'<table class="spec"><tbody>{spec_rows}</tbody></table></div>')
         best = "".join(f"<li>{b}</li>" for b in c["best_for"])
         body_sections = (
-            section("Configuration", f'{c["seats_label"]} Force Urbania.',
+            section("Configuration", "What this configuration gives you.",
                     c["tagline"],
                     SEC.fleet_status_note() + '<div class="grid g2">'
-                    f'<div class="card"><h3>Specification</h3>'
-                    f'<table class="spec"><tbody>{specs}</tbody></table>'
-                    '<p class="small" style="margin-top:12px">Illustrative diagram, not a photograph of the '
-                    'actual vehicle.</p></div>'
-                    f'<div class="card"><h3>Well suited to</h3><ul>{best}</ul>'
+                    + spec_card
+                    + f'<div class="card"><h3>Well suited to</h3><ul>{best}</ul>'
                     '<p style="margin-top:14px"><a class="btn" href="/request-quote/">Get a quote</a></p>'
                     '</div></div>')
             + section("Rates", "What this configuration costs.",
@@ -1053,23 +1062,31 @@ def build_destination_pages():
         path = f"/destinations/hyderabad-to-{slug}/"
         dist = DATA.tbc(r["distance_km"], suffix=" km")
         tm = DATA.tbc(r["drive_time"])
+        # Only rows with a real figure are rendered. "Minimum billing" and "Driver
+        # allowance" were hard-coded to DATA.tbc(None) here, so every destination
+        # page carried rows that could never show anything but "To be confirmed".
+        rows = ""
+        if r["distance_km"] is not None:
+            rows += (f'<div><b>Distance</b>'
+                     f'<span>{DATA.tbc(r["distance_km"], suffix=" km")}</span></div>')
+        if r["drive_time"]:
+            rows += (f'<div><b>Typical drive time</b>'
+                     f'<span>{html.escape(str(r["drive_time"]))}</span></div>')
+        row_block = f'<div class="notes">{rows}</div>' if rows else ""
         body_sections = (
-            section("Route", f'Hyderabad to {r["name"]}.',
+            section("Route", "The route in practice.",
                     r["note"],
-                    '<div class="notes">'
-                    f'<div><b>Distance</b><span>{dist}</span></div>'
-                    f'<div><b>Typical drive time</b><span>{tm}</span></div>'
-                    f'<div><b>Minimum billing</b><span>{DATA.tbc(None)}</span></div>'
-                    f'<div><b>Driver allowance</b><span>{DATA.tbc(None)}</span></div>'
-                    '</div>'
-                    '<p class="small" style="margin-top:16px">We are verifying distances and drive times '
-                    'rather than publishing estimates that may be wrong. Tell us your dates and we will '
-                    'confirm the practical details.</p>')
+                    row_block
+                    + '<p class="small" style="margin-top:16px">Distances and drive times are '
+                      'approximate and depend on the route and the time of day. Tell us your dates '
+                      'and we will confirm the practical details &mdash; including where a break or '
+                      'an overnight stop makes the trip easier.</p>')
             + section("Planning this trip", "What to tell us.",
                       "The details that change the answer.",
                       '<div class="grid g3">'
-                      f'<div class="card"><h3>Group size</h3><p>How many are travelling, and whether '
-                      f'anyone needs extra legroom. {DATA.tbc(None)} capacity is confirmed per enquiry.</p></div>'
+                      '<div class="card"><h3>Group size</h3><p>How many are travelling, and whether '
+                      'anyone needs extra legroom. Seating for your group is confirmed with your '
+                      'quotation rather than assumed.</p></div>'
                       '<div class="card"><h3>Luggage</h3><p>Large suitcases are the usual constraint on a '
                       'multi-day trip. Tell us the bag count as well as the passenger count.</p></div>'
                       '<div class="card"><h3>Timing</h3><p>Overnight or multi-day trips change the driver '
@@ -1096,7 +1113,7 @@ def build_extra_service_pages():
             continue
         path = s["href"]
         body_sections = (
-            section("Service", s["name"], s["blurb"],
+            section("Service", "How a booking works.", s["blurb"],
                     SEC.fleet_status_note()
                     + '<div class="grid g3">'
                     '<div class="card"><h3>Tell us</h3><p>Date, pickup point, destination or stops, '
