@@ -620,6 +620,25 @@ class ShippedMediaTests(unittest.TestCase):
         self.assertGreater(h, w, f"hero poster is {w}x{h} — landscape in a "
                                  f"portrait box will be centre-cropped")
 
+    def test_shipped_gallery_photos_are_landscape_like_their_box(self):
+        """The gallery figure box is 274x206 — 1.333 (4:3). A portrait source is
+        centre-cropped top and bottom, so the two tiles in one row end up
+        inconsistently framed. Measured in the DOM, not assumed.
+        """
+        import site_data
+        checked = 0
+        for name, _ in site_data.GALLERY_SLOTS:
+            url = self.SEC.find_image("gallery", name)
+            if not url:
+                continue
+            path = self.SEC.media_path("gallery", os.path.basename(url))
+            w, h = self._jpeg_size(path)
+            self.assertGreater(w, h, f"gallery photo {name} is {w}x{h} — portrait "
+                                     f"in a 4:3 box will be cropped top and bottom")
+            checked += 1
+        if not checked:
+            self.skipTest("no gallery photos shipped yet")
+
     def test_shipped_gallery_photos_render_as_figures(self):
         import site_data
         block = self.SEC.gallery_block()

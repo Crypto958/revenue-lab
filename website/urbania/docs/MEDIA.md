@@ -126,11 +126,23 @@ consumer-law problem, not a design preference.
 Three files currently ship, all cropped from one owner-supplied AI-generated master
 (`brand/source/urbanloop-hero-original.png`, 1672×941):
 
-| Slot | File | Crop | Size |
-|---|---|---|---|
-| hero still | `hero/hero-poster.jpg` | `crop=585:820:925:100` | 585×820 |
-| gallery | `gallery/exterior-front.jpg` | `crop=736:820:0:150` | 736×820 |
-| gallery | `gallery/exterior-side.jpg` | `crop=585:820:925:100` | 585×820 |
+| Slot | File | Crop | Ships as | Why that shape |
+|---|---|---|---|---|
+| hero still | `hero/hero-poster.jpg` | `crop=585:820:925:100` | 585×820 | hero box is **0.714 portrait** |
+| gallery | `gallery/exterior-front.jpg` | `crop=736:552:0:290` | 736×552 | gallery box is **1.333 (4:3)** |
+| gallery | `gallery/exterior-side.jpg` | `crop=747:560:925:290` | 747×560 | gallery box is **1.333 (4:3)** |
+
+Crop each source to the ratio of the box it lands in. `object-fit: cover` silently
+centre-crops any mismatch, and a "correct-looking" landscape crop in a portrait slot
+is what produced the truncated wordmark below. An earlier revision of this table
+listed the *intended* crops rather than the shipped ones — the shipped
+`exterior-side.jpg` was still the 16:9 version. Verify against the files on disk:
+
+```bash
+for f in app/site/media/hero/*.jpg app/site/media/gallery/*.jpg; do
+  printf '%-40s ' "$f"; ffmpeg -hide_banner -i "$f" 2>&1 | grep -oE '[0-9]+x[0-9]+' | head -1
+done
+```
 
 These are **AI-generated concept imagery, not photographs of the actual vehicle**,
 and the site captions them accordingly. They must be replaced with real photography
