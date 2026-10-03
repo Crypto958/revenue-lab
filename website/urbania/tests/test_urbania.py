@@ -314,7 +314,7 @@ class NewArchitectureTests(unittest.TestCase):
         text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", m.group(1))).strip()
         self.assertIn("Force Urbania rental in Hyderabad", text,
                       f"H1 text does not carry the primary keyword: {text!r}")
-        self.assertIn("Premium group travel for up to 17 passengers", home)
+        self.assertIn("Premium group transportation for airport transfers", home)
 
     def test_journey_bar_is_step_one_only(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

@@ -188,6 +188,11 @@ padding:clamp(52px,7vw,104px) 24px 26px;text-align:center;color:#fff}
 .hx-mini span+span::before{content:"·";margin:0 8px;color:#6C7C88}
 .hx-cap{margin:14px auto 0;max-width:56ch;font-size:11.5px;line-height:1.5;color:#93A2AE}
 .hx-cap b{color:#B9C6D0;font-weight:600}
+.hx-line{margin-top:14px;font-size:clamp(15px,1.5vw,19px);font-weight:600;letter-spacing:.01em;color:#EFD9B4}
+.hx-alt{margin-top:16px;font-size:15px;color:#C3CFD8}
+.hx-alt a{color:#fff;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:1px}
+.hx-alt a:hover{border-bottom-color:#fff}
+.hx-alt span{margin:0 10px;color:#7C8B96}
 /* the floating quote bar */
 .qwrap{position:relative;z-index:3;max-width:1180px;margin:34px auto -58px;padding:0 24px}
 .qwrap .jbar{background:#fff;border:1px solid var(--line);border-radius:14px;

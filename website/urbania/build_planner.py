@@ -124,7 +124,7 @@ MODES = [
                    f_text("passengers", "Passengers", "", req=True, typ="number", half=True)),
              f_chips("route_help", "Would you like help planning the route?", ["Yes — suggest a sensible order", "No — we have our own route"]),
          ]),
-    dict(key="family", label="Family Trip", cta="Plan family trip",
+    dict(key="family", label="Family / Group Holiday", cta="Plan family trip",
          blurb="Family groups travelling together, including children and luggage.",
          date_ui="range",
          fields=[
@@ -136,6 +136,32 @@ MODES = [
              f_row(f_text("date_from", "Travel date", typ="date", half=True),
                    f_text("return_date", "Return date", "Optional", typ="date", half=True)),
              f_select("luggage", "Luggage", ["Cabin bags only", "A few large suitcases", "One large suitcase each", "Heavy — lots of bags", "Prams or bulky items", "Not sure"]),
+         ]),
+    dict(key="pilgrimage", label="Pilgrimage", cta="Plan pilgrimage transport",
+         blurb="Temple and pilgrimage travel for groups, including early starts and multi-day routes.",
+         date_ui="range",
+         fields=[
+             f_row(f_text("pickup", "Pickup point", "Starting address", req=True, half=True),
+                   f_text("temple", "Temple or destination", "e.g. Tirupati, Srisailam, Shirdi", req=True, half=True)),
+             f_text("add_stop", "Any other stops", "Optional — list them in the order you want"),
+             f_row(f_text("date", "Travel date", req=True, typ="date", half=True),
+                   f_text("return_date", "Return date", "Leave blank if undecided", typ="date", half=True)),
+             f_row(f_text("passengers", "Passengers", "Including children and elders", req=True, typ="number", half=True),
+                   f_select("luggage", "Luggage", ["Cabin bags only", "A few large suitcases", "One large suitcase each", "Heavy — lots of bags", "Not sure"], half=True)),
+             f_select("early_start", "Does the day start early?", ["Yes — before 6am", "No", "Not sure"], half=True),
+         ]),
+    dict(key="hotel", label="Hotel / Resort", cta="Request hotel transfer",
+         blurb="Transfers between hotels, resorts and venues for groups.",
+         date_ui="single",
+         fields=[
+             f_row(f_text("pickup", "Pickup point", "Hotel, resort or address", req=True, half=True),
+                   f_text("destination", "Destination", "Where the group is going", req=True, half=True)),
+             f_row(f_text("date", "Travel date", req=True, typ="date", half=True),
+                   f_text("pickup_time", "Pickup time", typ="time", half=True)),
+             f_row(f_text("passengers", "Passengers", "", req=True, typ="number", half=True),
+                   f_select("luggage", "Luggage", ["Cabin bags only", "A few large suitcases", "One large suitcase each", "Heavy — lots of bags", "Not sure"], half=True)),
+             f_select("return_leg", "Return transfer needed?",
+                      ["Yes, same day", "Yes, on a later date", "One way only", "Not sure"], half=True),
          ]),
     dict(key="custom", label="Custom", cta="Tell us your plan",
          blurb="Anything that does not fit the other modes. Describe it and we will work out what is needed.",
@@ -160,6 +186,7 @@ CONTACT = (
     f_row(f_text("contact_name", "Your name", "", req=True, half=True),
           f_text("contact_phone", "Phone number", "We reply by phone or WhatsApp", req=True, typ="tel", half=True))
     + f_text("contact_email", "Email", "Optional — include it if you would prefer a written quotation", typ="email")
+    + f_text("whatsapp", "WhatsApp number", "Only if it differs from the phone number above", typ="tel")
     + f'<label class="pl-consent"><input type="checkbox" name="consent" required>'
       f'<span>I agree that my trip details may be used to prepare a quotation and reply to me, as described in the '
       f'<a href="/privacy/">privacy notice</a>.</span></label>'

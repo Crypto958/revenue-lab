@@ -97,14 +97,17 @@ def build_home():
             f'width="747" height="685" fetchpriority="high" decoding="async">'
             '<div class="hx-scrim"></div>'
             '<div class="hx-in">'
-            '<span class="eyebrow" style="color:#8FD3CB">Force Urbania specialist &middot; '
-            + CITY + '</span>'
+            '<span class="eyebrow" style="color:#8FD3CB">UrbanLoop &middot; Premium Group Mobility</span>'
             '<h1 style="margin-top:16px">Force Urbania rental'
             '<span class="l2">in Hyderabad</span></h1>'
-            '<p class="lede">Premium group travel for up to 17 passengers. One Force Urbania, '
-            'used for pre-booked group trips &mdash; airport runs, weddings, corporate days, '
-            'outstation travel and sightseeing.</p>'
-            '<p class="hx-cap">' + SEC._media_caption("Photograph") + '</p>'
+            '<p class="hx-line">Move Together, Better.</p>'
+            '<p class="lede">Premium group transportation for airport transfers, family journeys, '
+            'corporate travel, weddings, events and outstation trips &mdash; up to 17 passengers '
+            'travelling together in a single Force Urbania.</p>'
+            + (f'<p class="hx-alt"><a href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp us</a>'
+               f'<span>&middot;</span><a href="{PHONE_HREF}">Call {PHONE_TXT}</a></p>'
+               if WHATSAPP else '')
+            + '<p class="hx-cap">' + SEC._media_caption("Photograph") + '</p>'
             f'<div class="qwrap">{SEC.journey_bar()}</div>'
             '</div></section>'
             # The bar hangs below the hero, so this section starts clear of it.
@@ -168,8 +171,9 @@ def build_home():
                   "Every trip is quoted from your own plan. These are the situations that come up most often.",
                   SEC.services_grid())
         + section("Popular trips", "Popular trips from Hyderabad.",
-                  "Distances and journey times are being verified rather than estimated. Tell us the route and "
-                  "we will confirm the practical details for your dates.",
+                  "Distances and journey times are approximate road figures from central "
+                  "Hyderabad, and depend on the route and time of day. Tell us your dates and "
+                  "we will confirm the practical details.",
                   SEC.routes_grid(), alt=True)
         + section("Rates", "Force Urbania rental rates in Hyderabad.",
                   "How each charge is built up: per kilometre, per day, driver allowance, and what is charged "

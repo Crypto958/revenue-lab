@@ -661,7 +661,7 @@ def journey_bar(action="/request-quote/"):
       <input name="date" type="date"></label>
     <label class="jf"><span>Passengers</span>
       <input name="pax" type="number" inputmode="numeric" min="1" max="20" placeholder="e.g. 14"></label>
-    <div class="jgo"><button class="btn" type="submit">Get a quote</button></div>
+    <div class="jgo"><button class="btn" type="submit">Check availability</button></div>
   </div>
   <p class="jnote">{_tick()}<span>Free and no obligation &mdash; no payment is taken to request a
   quotation, and availability is confirmed by a person before anything is agreed.</span></p>
