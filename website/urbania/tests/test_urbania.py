@@ -210,6 +210,257 @@ class SingleFunnelTests(unittest.TestCase):
         self.assertNotIn('data-preset="local"', page)
 
 
+class ContentHonestyTests(unittest.TestCase):
+    """The brief forbids inventing specs, rates, distances, numbers or reviews.
+
+    These tests enforce that at the source, so a placeholder cannot silently
+    become a fabricated figure later.
+    """
+
+    def setUp(self):
+        import site_data
+        self.data = site_data
+
+    def test_no_invented_rates_distances_or_counts(self):
+        d = self.data
+        for c in d.CONFIGURATIONS:
+            self.assertIsNone(c["per_km"], f'{c["key"]} has an invented per_km rate')
+            self.assertIsNone(c["per_day"], f'{c["key"]} has an invented per_day rate')
+            self.assertIsNone(c["driver_allowance"])
+            self.assertIsNone(c["min_km_per_day"])
+            for field, val in c["specs"].items():
+                self.assertIsNone(val, f'{c["key"]}.{field} invented')
+        for r in d.ROUTES:
+            self.assertIsNone(r["distance_km"], f'{r["name"]} has an invented distance')
+            self.assertIsNone(r["drive_time"], f'{r["name"]} has an invented drive time')
+        for label, val in d.TRUST_FIELDS:
+            self.assertIsNone(val, f'trust field "{label}" is a fabricated number')
+        self.assertEqual(d.REVIEWS, [], "reviews must not be fabricated")
+
+    def test_unset_values_render_as_visible_placeholders(self):
+        d = self.data
+        self.assertNotIn("None", d.tbc(None))
+        self.assertRegex(d.tbc(None), r"To be confirmed")
+        # nb: &#8377; (the rupee entity) contains digits, so compare exactly
+        # rather than scanning for digits.
+        self.assertEqual(d.money(None), "&#8377;XX",
+                         "an unset rate must render a placeholder, never a figure")
+        self.assertEqual(d.tbc(None, suffix=" km"), "To be confirmed km")
+
+    def test_group_size_recommendation_covers_9_to_17(self):
+        d = self.data
+        for n in range(9, 18):
+            key, headline, detail = d.recommend(n)
+            self.assertIsNotNone(key, f"{n} passengers resolved to no configuration")
+            keys = {c["key"] for c in d.CONFIGURATIONS}
+            self.assertIn(key, keys, f"{n} passengers -> unknown config {key}")
+            self.assertTrue(headline and detail)
+
+    def test_over_17_is_declined_not_absorbed(self):
+        d = self.data
+        key, headline, detail = d.recommend(18)
+        self.assertIsNone(key)
+        self.assertTrue(detail, "declining must still explain")
+        for n in (18, 20, 40):
+            self.assertEqual(len(d.recommend(n)), 3, "recommend() must always return a 3-tuple")
+
+    def test_no_superlative_claims_in_rendered_pages(self):
+        # The brief forbids '#1', 'best', 'largest' style unsupported claims.
+        pattern = re.compile(r"#1\b|\bbest in (?:class|India)\b|\blargest\b", re.I)
+        offenders = []
+        for page in sorted(SITE.rglob("*.html")):
+            visible = re.sub(r"<!--.*?-->", "", page.read_text(encoding="utf-8"), flags=re.S)
+            visible = re.sub(r"<(script|style)\b.*?</\1>", "", visible, flags=re.S | re.I)
+            m = pattern.search(visible)
+            if m:
+                offenders.append((str(page.relative_to(SITE)), m.group(0)))
+        self.assertEqual(offenders, [], f"unsupported claims found: {offenders[:5]}")
+
+    def test_no_fabricated_rupee_figures_are_rendered(self):
+        for page in sorted(SITE.rglob("*.html")):
+            html = page.read_text(encoding="utf-8")
+            found = re.findall(r"&#8377;\d", html)
+            self.assertEqual(found, [], f"{page.relative_to(SITE)} renders a rupee figure {found[:3]}")
+
+
+class NewArchitectureTests(unittest.TestCase):
+    """The new sections, funnel entry point and SEO architecture."""
+
+    def test_hero_carries_the_primary_keyword(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertIn("<h1>Force Urbania rental in Hyderabad</h1>", home)
+        self.assertIn("Premium group travel for up to 17 passengers", home)
+
+    def test_journey_bar_is_step_one_only(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        bar = re.search(r'<form class="jbar".*?</form>', home, re.S)
+        self.assertIsNotNone(bar, "hero journey bar is missing")
+        markup = bar.group(0)
+        for field in ("from", "to", "date", "pax"):
+            self.assertIn(f'name="{field}"', markup)
+        # step 1 must capture trip details only, never personal data
+        self.assertNotIn("contact_", markup, "step 1 must not ask for contact details")
+        self.assertNotIn("consent", markup)
+        # and it must degrade without JS
+        self.assertIn('method="get"', markup)
+        self.assertIn('action="/request-quote/"', markup)
+
+    def test_planner_accepts_the_journey_bar_handoff(self):
+        src = (PROJECT / "build_planner.py").read_text(encoding="utf-8")
+        self.assertIn("prefill", src)
+        self.assertIn("URLSearchParams", src)
+        # field names differ per mode, so more than one name must be tried
+        self.assertIn("main_pickup", src)
+        self.assertIn("destinations", src)
+
+    def test_config_cards_cover_every_configuration(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        import site_data
+        self.assertEqual(home.count('class="cfgcard"'), len(site_data.CONFIGURATIONS))
+
+    def test_group_size_selector_is_server_rendered(self):
+        # must work and be indexable without JS
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="fy-pax"', home)
+        self.assertIn('id="fy-card"', home)
+
+    def test_trust_and_reviews_are_placeholder_state(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertGreater(home.count('class="tcard"'), 0)
+        self.assertIn("rev-empty", home)
+
+    def test_seo_pages_exist_for_every_declared_route(self):
+        import site_data
+        expected = ["/rates/force-urbania-rental-rates-hyderabad/"]
+        expected += [f'/fleet/{c["key"]}/' for c in site_data.CONFIGURATIONS]
+        expected += [f'/destinations/hyderabad-to-{r["name"].lower()}/' for r in site_data.ROUTES]
+        expected += [s["href"] for s in site_data.SERVICES if s["href"].startswith("/services/")]
+        for path in expected:
+            f = SITE / path.strip("/") / "index.html"
+            self.assertTrue(f.exists(), f"declared page missing: {path}")
+
+    def test_every_declared_page_is_in_the_sitemap(self):
+        import site_data
+        sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+        expected = [f'/fleet/{c["key"]}/' for c in site_data.CONFIGURATIONS]
+        expected += [f'/destinations/hyderabad-to-{r["name"].lower()}/' for r in site_data.ROUTES]
+        for path in expected:
+            self.assertIn(path, sitemap, f"{path} missing from sitemap.xml")
+
+    def test_submission_confirmation_lives_outside_the_form(self):
+        """done() sets form.style.display='none' on success. While #pl-result sat
+        inside that form the customer saw it vanish with no acknowledgement —
+        and inner_text() still returned the text, so the flow test passed."""
+        for rel in ("request-quote", ""):
+            page = (SITE / rel / "index.html").read_text(encoding="utf-8")
+            form = re.search(r'<form id="plform".*?</form>', page, re.S)
+            self.assertIsNotNone(form, f"{rel or '/'} has no planner form")
+            self.assertIn('id="pl-result"', page, f"{rel or '/'} has no result container")
+            self.assertNotIn(
+                'id="pl-result"', form.group(0),
+                "the confirmation must sit OUTSIDE the form that gets hidden on success")
+
+    def test_no_broken_internal_links(self):
+        broken = []
+        for page in sorted(SITE.rglob("*.html")):
+            html = page.read_text(encoding="utf-8")
+            for href in re.findall(r'href="(/[^"#?]*)"', html):
+                if href.startswith("//"):
+                    continue
+                target = SITE / href.lstrip("/")
+                if href.endswith("/") or target.is_dir():
+                    target = target / "index.html"
+                if not target.exists():
+                    broken.append((str(page.relative_to(SITE)), href))
+        self.assertEqual(broken[:10], [], f"{len(broken)} broken internal links")
+
+
+class HtmlValidityTests(unittest.TestCase):
+    """Catch malformed markup that renders as a layout bug.
+
+    A missing </div> in fleet_status_note() made the quote bar a child of a
+    display:flex notice, squashing the form inputs to a sliver. Every content
+    test passed; only the screenshot showed it. This checks tag balance.
+    """
+
+    VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+            "meta", "param", "source", "track", "wbr",
+            # svg primitives commonly self-closed
+            "path", "rect", "circle", "line", "polygon", "polyline", "ellipse", "use", "stop"}
+
+    def _balance(self, text):
+        from html.parser import HTMLParser
+
+        problems = []
+        stack = []
+
+        class P(HTMLParser):
+            def handle_starttag(self, tag, attrs):
+                if tag in HtmlValidityTests.VOID:
+                    return
+                stack.append((tag, self.getpos()[0]))
+
+            def handle_startendtag(self, tag, attrs):
+                pass
+
+            def handle_endtag(self, tag):
+                if tag in HtmlValidityTests.VOID:
+                    return
+                if not stack:
+                    problems.append(f"stray </{tag}> at line {self.getpos()[0]}")
+                    return
+                if stack[-1][0] == tag:
+                    stack.pop()
+                else:
+                    # find a match further down
+                    for i in range(len(stack) - 1, -1, -1):
+                        if stack[i][0] == tag:
+                            unclosed = stack[i + 1:]
+                            for t, ln in unclosed:
+                                problems.append(f"<{t}> opened line {ln} never closed")
+                            del stack[i:]
+                            break
+                    else:
+                        problems.append(f"stray </{tag}> at line {self.getpos()[0]}")
+
+        parser = P(convert_charrefs=True)
+        parser.feed(text)
+        for t, ln in stack:
+            problems.append(f"<{t}> opened line {ln} never closed")
+        return problems
+
+    def test_no_unclosed_structural_tags(self):
+        offenders = {}
+        for page in sorted(SITE.rglob("*.html")):
+            problems = self._balance(page.read_text(encoding="utf-8"))
+            if problems:
+                offenders[str(page.relative_to(SITE))] = problems[:4]
+        self.assertEqual(offenders, {}, f"unbalanced markup: {offenders}")
+
+    def test_section_builders_emit_balanced_fragments(self):
+        # check the components directly, so a new one cannot ship unbalanced
+        import build_sections as SEC
+        fragments = {
+            "fleet_status_note": SEC.fleet_status_note(),
+            "find_your_urbania": SEC.find_your_urbania(),
+            "config_cards": SEC.config_cards(),
+            "rates_table": SEC.rates_table(),
+            "services_grid": SEC.services_grid(),
+            "routes_grid": SEC.routes_grid(),
+            "trust_strip": SEC.trust_strip(),
+            "reviews_block": SEC.reviews_block(),
+            "gallery_block": SEC.gallery_block(),
+            "pricing_faq_block": SEC.pricing_faq_block(),
+            "journey_bar": SEC.journey_bar(),
+        }
+        offenders = {}
+        for name, frag in fragments.items():
+            problems = self._balance(frag)
+            if problems:
+                offenders[name] = problems[:4]
+        self.assertEqual(offenders, {}, f"unbalanced component markup: {offenders}")
+
+
 class ServerContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

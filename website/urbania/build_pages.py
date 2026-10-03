@@ -5,6 +5,8 @@ from build_ui import (BASE, BRAND, PHONE, PHONE_HREF, PHONE_TXT, WHATSAPP, CITY,
                       NAV, head, header, footer, crumb_ld, faq_ld, service_ld,
                       hero, section, cta_band, faq_block, vehicle_panel, write_page, call_svg)
 from build_planner import planner, PLANNER_CSS, PLANNER_JS, MODES
+import build_sections as SEC
+import site_data as DATA
 
 # Lead delivery. OWNER DECISION REQUIRED — see docs/OWNER_DECISIONS.md.
 # Empty endpoint => the form composes a pre-filled email instead, so no lead is lost.
@@ -81,22 +83,41 @@ def build_home():
     tick = ('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#116A7B" stroke-width="2.6" '
             'stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>')
     facthtml = "".join(f'<div class="fact">{tick}<span>{f}</span></div>' for f in facts)
+    usecases = ["Airport", "Outstation", "Corporate", "Weddings", "Family trips",
+                "Pilgrimage", "Events"]
+    chips = "".join(f'<a class="uc" href="#find-your-urbania">{u}</a>' for u in usecases)
     body = (
-        '<section class="hero"><div class="wrap">'
-        '<span class="eyebrow">Group travel · ' + CITY + '</span>'
-        '<h1>Get your group there together.</h1>'
-        '<p class="lede" style="margin-top:16px;font-size:clamp(18px,1.9vw,21px)">17-seat Force Urbania hire in '
-        'Hyderabad for groups of 10\u201317. Tell us the trip — airport run, wedding, outstation, day out or '
-        'something custom — and we check what suits your group before sending a quotation.</p>'
-        f'<div class="heroacts"><a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE_TXT}</a></div>'
-        '<p class="small" style="margin-top:14px">Quotation on request. Availability is confirmed personally — '
-        'this site does not show live availability and does not take instant bookings.</p>'
-        '</div></section>'
+        '<section class="hero"><div class="wrap"><div class="hv"><div>'
+        '<span class="eyebrow">Force Urbania specialist &middot; ' + CITY + '</span>'
+        '<h1>Force Urbania rental in Hyderabad</h1>'
+        '<p class="lede" style="margin-top:16px;font-size:clamp(18px,1.9vw,21px)">'
+        'Premium group travel for up to 17 passengers. One Force Urbania, used for pre-booked group '
+        'trips &mdash; airport runs, weddings, corporate days, outstation travel and sightseeing. '
+        'Tell us the trip and we check what suits your group before sending a quotation.</p>'
+        '<div class="heroacts" style="margin-top:22px">'
+        '<a class="btn" href="/request-quote/">Get a quote</a>'
+        f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE_TXT}</a>'
+        '</div>'
+        f'<div class="ucs">{chips}</div>'
+        '</div><div>' + SEC.hero_visual() + '</div>'
+        '</div></div></section>'
+        # STEP 1 of the funnel, above the fold: trip details only, no personal data.
+        + '<section style="padding-top:0"><div class="wrap">'
+          + SEC.fleet_status_note() + SEC.journey_bar() + '</div></section>'
+        + f'<section class="alt"><div class="wrap"><div class="facts">{facthtml}</div></div></section>'
+        + '<section id="find-your-urbania"><div class="wrap"><div class="shead">'
+          '<span class="eyebrow">Configuration</span><h2>Find your Urbania</h2>'
+          '<p class="lede">Tell us how many people are travelling. We recommend a configuration &mdash; '
+          'and we will say honestly when a group cannot be carried in one vehicle.</p></div>'
+          + SEC.find_your_urbania() + '</div></section>'
+        + section("The fleet", "Urbania configurations.",
+                  "Each configuration is listed with its capacity and specification. Where a detail has not "
+                  "been confirmed we say so rather than filling the gap with a guess.",
+                  SEC.config_cards(), alt=True)
         + '<section style="padding-top:0"><div class="wrap">'
           '<div class="shead" style="margin-bottom:18px"><h2 style="font-size:clamp(19px,2.1vw,25px)">'
           'Plan your group trip</h2></div>'
           + planner_blocks("") + '</div></section>'
-        + f'<section class="alt"><div class="wrap"><div class="facts">{facthtml}</div></div></section>'
         + section("Trip types", "What groups use the vehicle for.",
                   "Every trip is quoted from your own plan. These are the four situations that come up most often.",
                   '<div class="grid g2">'
@@ -113,6 +134,28 @@ def build_home():
                   '<h3>Sightseeing and day hire</h3><p>Full-day or multi-stop city travel using your own itinerary — you choose the stops and the running order.</p>'
                   '<p style="margin-top:14px"><span class="txtlink">Sightseeing &amp; custom trips</span></p></a>'
                   '</div>', alt=True)
+        + section("Services", "What we are booked for.",
+                  "Every trip is quoted from your own plan. These are the situations that come up most often.",
+                  SEC.services_grid())
+        + section("Popular trips", "Popular trips from Hyderabad.",
+                  "Distances and journey times are being verified rather than estimated. Tell us the route and "
+                  "we will confirm the practical details for your dates.",
+                  SEC.routes_grid(), alt=True)
+        + section("Rates", "Force Urbania rental rates in Hyderabad.",
+                  "How each charge is built up: per kilometre, per day, driver allowance, and what is charged "
+                  "in addition to the quotation.",
+                  SEC.rates_table()
+                  + '<p style="margin-top:18px"><a class="btn" '
+                    'href="/rates/force-urbania-rental-rates-hyderabad/">See the full rates page</a></p>')
+        + section("Trust", "What you can rely on.",
+                  "We publish figures we can stand behind. Where we do not have one yet, we say so.",
+                  SEC.trust_strip(), alt=True)
+        + section("Reviews", "What customers say.",
+                  "Reviews appear here only when they are genuine.",
+                  SEC.reviews_block())
+        + section("Gallery", "The vehicle, photographed.",
+                  "Real photographs of the actual vehicle, as soon as they are available.",
+                  SEC.gallery_block(), alt=True)
         + section("How it works", "From enquiry to quotation, in four steps.",
                   "There is no booking engine here. A person reads your trip details and replies with a quotation.",
                   '<div class="steps">'
@@ -152,8 +195,12 @@ def build_home():
                   '<a class="card" href="/guides/wedding-guest-transport-planning/"><h3>Wedding guest transport</h3>'
                   '<p>Planning guest movement between hotels, venues and the airport without chaos.</p></a>'
                   '</div>', alt=True)
+        + section("Pricing questions", "What it costs, and how it is worked out.",
+                  "Commercial questions answered plainly, including what sits outside the quotation.",
+                  SEC.pricing_faq_block())
         + faq_block(CORE_FAQ)
         + cta_band()
+        + SEC.FIND_JS
     )
     page("/", "17-Seater Force Urbania Hire in Hyderabad | Group Travel",
          "Pre-booked private group transport in Hyderabad with a 17-seat Force Urbania — airport group transfers, weddings, corporate travel and custom day trips.",
@@ -856,8 +903,198 @@ SITEMAP = ["/", "/find-a-vehicle/", "/force-urbania-hire-hyderabad/",
            "/guides/group-vehicle-fit-guide/", "/guides/wedding-guest-transport-planning/",
            "/about/", "/contact/", "/privacy/", "/terms/"]
 
+# Derived from site_data so a new configuration, route or service cannot be
+# added without appearing in sitemap.xml. A page that exists but is not listed
+# is invisible to search, which defeats the point of the architecture.
+SITEMAP += ["/rates/force-urbania-rental-rates-hyderabad/"]
+SITEMAP += [f'/fleet/{c["key"]}/' for c in DATA.CONFIGURATIONS]
+SITEMAP += [f'/destinations/hyderabad-to-{r["name"].lower()}/' for r in DATA.ROUTES]
+SITEMAP += [s["href"] for s in DATA.SERVICES if s["href"].startswith("/services/")]
+
+# ------------------------------------------------------------------ SEO PAGES
+# Architecture the brief asks for. These are real, substantive pages, not thin
+# doorway pages. Every figure comes from site_data as a placeholder; nothing is
+# invented, and unconfirmed specs render as "To be confirmed".
+def _seo_page(path, title, desc, active, eyebrow, h1, sub, paras,
+              body_sections, faqs, crumb, ldname, lddesc, noindex=False):
+    body = (breadcrumb(crumb)
+            + hero(eyebrow, h1, sub, paras=list(paras) + [AVAIL_NOTE], ctas=True)
+            + body_sections
+            + faq_block(faqs) + cta_band())
+    page(path, title, desc, body,
+         ld=[service_ld(ldname, lddesc), faq_ld(faqs), crumb_ld(crumb)],
+         active=active, noindex=noindex)
+
+
+def build_rates_page():
+    how = (
+        '<div class="grid g3">'
+        '<div class="card"><h3>Distance</h3><p>Outstation trips are billed per kilometre, measured '
+        'garage to garage, so the journey to reach you is counted the same way a customer would expect.</p></div>'
+        '<div class="card"><h3>Time</h3><p>Local use is billed as a package &mdash; a set number of hours and '
+        'kilometres for the day &mdash; with extra hours and extra kilometres charged beyond that.</p></div>'
+        '<div class="card"><h3>The driver</h3><p>Outstation and overnight trips carry a daily driver '
+        'allowance, separate from the per-kilometre rate, because the driver is committed for the whole day.</p></div>'
+        '</div>')
+    extra = (
+        '<div class="grid g2">'
+        '<div class="card"><h3>Charged in addition</h3><ul>'
+        + "".join(f"<li>{e}</li>" for e in DATA.RATE_EXCLUSIONS)
+        + '</ul><p style="margin-top:12px">These are passed on at actuals rather than built into a flat '
+          'figure, so you pay what the route costs.</p></div>'
+        '<div class="card"><h3>How the quotation is built</h3><p>Tell us the route, the dates, the number '
+        'travelling and the luggage. We work out the practical distance and hours, apply the rate for the '
+        'configuration you need, and send a quotation that lists each component.</p>'
+        '<p style="margin-top:12px">Nothing is charged to request a quotation, and a quotation is not a '
+        'booking.</p></div>'
+        '</div>')
+    body_sections = (
+        section("Rates", "Force Urbania rental rates in Hyderabad.",
+                "Each charge is listed separately so you can see how a quotation is built up. Indicative "
+                "rates are published per configuration, and any figure we have not confirmed is marked as such.",
+                SEC.fleet_status_note() + SEC.rates_table())
+        + section("How pricing works", "Three things drive the price.",
+                  "A group vehicle is priced on the trip, not chosen from a menu.",
+                  how, alt=True)
+        + section("Beyond the quotation", "What sits outside the quoted rate.",
+                  "Stated up front rather than discovered later.",
+                  extra))
+    faqs = DATA.PRICING_FAQS
+    _seo_page("/rates/force-urbania-rental-rates-hyderabad/",
+              "Force Urbania Rental Rates in Hyderabad | Per Km, Per Day and Driver Allowance",
+              "How Force Urbania rental in Hyderabad is priced: per-kilometre outstation rates, per-day "
+              "rates, driver allowance, minimum kilometres, inclusions and exclusions.",
+              "/rates/force-urbania-rental-rates-hyderabad/",
+              "Rates", "Force Urbania rental rates in Hyderabad.",
+              "Per-kilometre, per-day and driver allowance, with inclusions and exclusions stated plainly.",
+              ["Rates depend on the trip rather than a fixed menu, so a quotation is prepared for your own "
+               "itinerary. What follows is how each charge is built up."],
+              body_sections, faqs,
+              [("Home", "/"), ("Rates", "/rates/force-urbania-rental-rates-hyderabad/")],
+              "Force Urbania rental rates in Hyderabad",
+              "Per-kilometre and per-day Force Urbania rental rates in Hyderabad, including driver "
+              "allowance, minimum kilometres and what is charged in addition.")
+
+
+def build_fleet_pages():
+    for c in DATA.CONFIGURATIONS:
+        path = f'/fleet/{c["key"]}/'
+        specs = "".join(
+            f'<tr><th scope="row">{label}</th><td>'
+            f'{DATA.tbc(c["specs"].get(field))}</td></tr>'
+            for field, label in DATA.CONFIG_SPEC_FIELDS)
+        best = "".join(f"<li>{b}</li>" for b in c["best_for"])
+        body_sections = (
+            section("Configuration", f'{c["seats_label"]} Force Urbania.',
+                    c["tagline"],
+                    SEC.fleet_status_note() + '<div class="grid g2">'
+                    f'<div class="card"><h3>Specification</h3>'
+                    f'<table class="spec"><tbody>{specs}</tbody></table>'
+                    '<p class="small" style="margin-top:12px">Illustrative diagram, not a photograph of the '
+                    'actual vehicle.</p></div>'
+                    f'<div class="card"><h3>Well suited to</h3><ul>{best}</ul>'
+                    '<p style="margin-top:14px"><a class="btn" href="/request-quote/">Get a quote</a></p>'
+                    '</div></div>')
+            + section("Rates", "What this configuration costs.",
+                      "Per-kilometre and per-day rates for this configuration.",
+                      SEC.rates_table(), alt=True))
+        _seo_page(path,
+                  f'{c["seats_label"]} Force Urbania in Hyderabad | {c["trim"]} Group Vehicle',
+                  f'{c["seats_label"]} Force Urbania hire in Hyderabad. Capacity, specification, best uses '
+                  f'and rates for the {c["trim"]} configuration.',
+                  path,
+                  "Fleet", f'{c["seats_label"]} Force Urbania.',
+                  c["tagline"],
+                  ["Tell us the group size and the luggage and we will confirm whether this configuration "
+                   "suits your trip before you commit."],
+                  body_sections, DATA.PRICING_FAQS[:5],
+                  [("Home", "/"), ("Fleet", "/find-a-vehicle/"), (f'{c["seats_label"]}', path)],
+                  f'{c["seats_label"]} Force Urbania hire in Hyderabad',
+                  f'{c["seats_label"]} Force Urbania for pre-booked group transport in Hyderabad.')
+
+
+def build_destination_pages():
+    for r in DATA.ROUTES:
+        slug = r["name"].lower()
+        path = f"/destinations/hyderabad-to-{slug}/"
+        dist = DATA.tbc(r["distance_km"], suffix=" km")
+        tm = DATA.tbc(r["drive_time"])
+        body_sections = (
+            section("Route", f'Hyderabad to {r["name"]}.',
+                    r["note"],
+                    '<div class="notes">'
+                    f'<div><b>Distance</b><span>{dist}</span></div>'
+                    f'<div><b>Typical drive time</b><span>{tm}</span></div>'
+                    f'<div><b>Minimum billing</b><span>{DATA.tbc(None)}</span></div>'
+                    f'<div><b>Driver allowance</b><span>{DATA.tbc(None)}</span></div>'
+                    '</div>'
+                    '<p class="small" style="margin-top:16px">We are verifying distances and drive times '
+                    'rather than publishing estimates that may be wrong. Tell us your dates and we will '
+                    'confirm the practical details.</p>')
+            + section("Planning this trip", "What to tell us.",
+                      "The details that change the answer.",
+                      '<div class="grid g3">'
+                      f'<div class="card"><h3>Group size</h3><p>How many are travelling, and whether '
+                      f'anyone needs extra legroom. {DATA.tbc(None)} capacity is confirmed per enquiry.</p></div>'
+                      '<div class="card"><h3>Luggage</h3><p>Large suitcases are the usual constraint on a '
+                      'multi-day trip. Tell us the bag count as well as the passenger count.</p></div>'
+                      '<div class="card"><h3>Timing</h3><p>Overnight or multi-day trips change the driver '
+                      'allowance and the minimum daily distance. Send the dates and stop order.</p></div>'
+                      '</div>', alt=True))
+        _seo_page(path,
+                  f'Hyderabad to {r["name"]} by Force Urbania | Group Travel',
+                  f'Group travel from Hyderabad to {r["name"]} in a Force Urbania, up to 17 passengers. '
+                  f'{r["note"]}',
+                  path,
+                  f'{r["region"]} &middot; Route', f'Hyderabad to {r["name"]}.',
+                  "Group travel on this route in a single vehicle, quoted from your own itinerary.",
+                  ["Outstation trips are quoted per enquiry so the practical distance, hours and driver "
+                   "allowance for your dates are confirmed together."],
+                  body_sections, DATA.PRICING_FAQS[:4],
+                  [("Home", "/"), ("Destinations", "/guides/"), (f'Hyderabad to {r["name"]}', path)],
+                  f'Group travel from Hyderabad to {r["name"]}',
+                  f'Pre-booked Force Urbania group transport from Hyderabad to {r["name"]}.')
+
+
+def build_extra_service_pages():
+    for s in DATA.SERVICES:
+        if not s["href"].startswith("/services/"):
+            continue
+        path = s["href"]
+        body_sections = (
+            section("Service", s["name"], s["blurb"],
+                    SEC.fleet_status_note()
+                    + '<div class="grid g3">'
+                    '<div class="card"><h3>Tell us</h3><p>Date, pickup point, destination or stops, '
+                    'passenger count and the luggage you are carrying.</p></div>'
+                    '<div class="card"><h3>We check</h3><p>Whether the trip suits one Urbania and what '
+                    'configuration fits the group and the bags.</p></div>'
+                    '<div class="card"><h3>You receive</h3><p>A quotation for your itinerary, with '
+                    'availability confirmed before anything is agreed.</p></div>'
+                    '</div>')
+            + section("Rates", "What it costs.",
+                      "The same rate structure applies to every trip type.",
+                      SEC.rates_table(), alt=True))
+        _seo_page(path, f'{s["name"]} in Hyderabad | Force Urbania Group Transport',
+                  f'{s["name"]} in Hyderabad using a Force Urbania for up to 17 passengers. Quotation '
+                  f'provided for your own itinerary.',
+                  path, "Service", s["name"], s["blurb"],
+                  ["Every trip is quoted from your own plan rather than a fixed package."],
+                  body_sections, DATA.PRICING_FAQS[:5],
+                  [("Home", "/"), ("Services", "/how-it-works/"), (s["name"], path)],
+                  f'{s["name"]} in Hyderabad',
+                  f'{s["name"]} for pre-booked groups in Hyderabad using a Force Urbania.')
+
+
+def build_seo_pages():
+    build_rates_page()
+    build_fleet_pages()
+    build_destination_pages()
+    build_extra_service_pages()
+
+
 def build_static():
-    write_page("/style.css", CSS + PLANNER_CSS)
+    write_page("/style.css", CSS + PLANNER_CSS + SEC.SECTIONS_CSS)
     # Open Graph image — generated graphic, NOT a photograph of the actual vehicle.
     try:
         from PIL import Image, ImageDraw, ImageFont
@@ -943,6 +1180,7 @@ def main():
     build_home(); build_airport(); build_wedding(); build_corporate(); build_sightseeing()
     build_guides_hub(); build_guide_urbania_vs_tempo(); build_guide_fit(); build_guide_wedding()
     build_quote(); build_about(); build_contact(); build_privacy(); build_terms(); build_404()
+    build_seo_pages()
     from build_v3 import build_v3_pages
     build_v3_pages()
     build_static()

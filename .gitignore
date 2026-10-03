@@ -13,3 +13,6 @@ __pycache__/
 
 # Node
 node_modules/
+
+# Visual QA screenshots (regenerate with tools/shoot.py)
+website/urbania/.sshots/

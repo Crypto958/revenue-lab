@@ -207,13 +207,16 @@ def planner(preset=""):
       <p class="pl-disclaim"><b>This is a quotation request.</b> Sending it does not confirm vehicle availability
       and does not create a booking. We check suitability and availability, then send you a quotation.</p>
     </div>
-    <div id="pl-result" tabindex="-1" aria-live="polite"></div>
-    <noscript><div style="padding:18px 20px;border-top:1px solid var(--line);background:#FFF7E6;font-size:14.5px">
-      <b>This planner needs JavaScript.</b> You can still get a quotation — call
-      <a href="%PHONE_HREF%" style="color:var(--accent);font-weight:600">%PHONE%</a> or email your trip details:
-      trip type, route, dates, number of passengers and the luggage you are carrying. We will reply with a quotation.
-    </div></noscript>
   </form>
+  <!-- OUTSIDE the form on purpose. done() hides the form on success; while this
+       lived inside it, the confirmation was hidden with it and the customer saw
+       the form vanish with no acknowledgement at all. -->
+  <div id="pl-result" tabindex="-1" aria-live="polite"></div>
+  <noscript><div style="padding:18px 20px;border-top:1px solid var(--line);background:#FFF7E6;font-size:14.5px">
+    <b>This planner needs JavaScript.</b> You can still get a quotation — call
+    <a href="%PHONE_HREF%" style="color:var(--accent);font-weight:600">%PHONE%</a> or email your trip details:
+    trip type, route, dates, number of passengers and the luggage you are carrying. We will reply with a quotation.
+  </div></noscript>
 </div>'''
 
 # ---------------------------------------------------------------- CSS
@@ -258,6 +261,10 @@ padding:9px 14px;font-size:14.5px;color:var(--ink-2);cursor:pointer;background:#
 .pl-srow{display:grid;grid-template-columns:170px 1fr;gap:12px;font-size:14.5px;padding:8px 0;border-bottom:1px solid var(--line)}
 @media(max-width:560px){.pl-srow{grid-template-columns:1fr;gap:2px}}
 .pl-srow b{color:var(--ink-3);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+/* the result's numbered steps: the number column does not need 170px */
+.pl-steps .pl-srow{grid-template-columns:34px 1fr}
+.pl-steps .pl-srow b{font-family:var(--mono);font-size:14px;color:var(--accent);letter-spacing:0}
+@media(max-width:560px){.pl-steps .pl-srow{grid-template-columns:28px 1fr;gap:6px}}
 .pl-srow span{color:var(--ink)}
 .pl-snote{font-size:13px;color:var(--ink-3)}
 .pl-summary-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
@@ -373,10 +380,10 @@ PLANNER_JS = """<script>
       var wa=waFor(id);
       form.style.display='none';
       result.innerHTML='<div style="padding:22px 20px"><h3 class="pl-h">'
-        +'Request received — reference '+id+'</h3>'
+        +'Request received</h3>'
         +'<div class="pl-ref">'+id+'</div>'
-        +'<p class="lede" style="font-size:16px">Thank you. Here is what happens next:</p>'
-        +'<div class="pl-sgrid" style="margin-top:14px">'
+        +'<p class="lede" style="font-size:16px">Thank you &mdash; your reference is above. Here is what happens next:</p>'
+        +'<div class="pl-sgrid pl-steps" style="margin-top:14px">'
         +'<div class="pl-srow"><b>1</b><span>We check whether your trip suits the 17-seat Urbania, or whether another option fits better.</span></div>'
         +'<div class="pl-srow"><b>2</b><span>We confirm availability for your dates.</span></div>'
         +'<div class="pl-srow"><b>3</b><span>We send you a quotation with the inclusions and terms.</span></div>'
@@ -405,6 +412,31 @@ PLANNER_JS = """<script>
     else if(WA){ window.open(waFor(clientRef),'_blank'); done(clientRef,true); }
     else { done(clientRef,true); }
   });
+  // Prefill from the hero journey bar (?from=&to=&date=&pax=). Field names
+  // differ per trip mode (pickup vs main_pickup, destination vs destinations),
+  // so try the active mode's own names in order. Values only — never invents one.
+  var PRE={from:['pickup','main_pickup','address','airport'],
+           to:['destination','destinations','venue','itinerary','plan'],
+           date:['date','date_from','return_date'],
+           pax:['passengers','guests','team_size','adults']};
+  function prefill(){
+    var q; try{ q=new URLSearchParams(location.search); }catch(err){ return; }
+    var scope=pl.querySelector('.pl-mode.on')||pl;
+    Object.keys(PRE).forEach(function(k){
+      var v=q.get(k); if(!v) return;
+      var names=PRE[k];
+      for(var i=0;i<names.length;i++){
+        var el=scope.querySelector('[name="'+names[i]+'"]'); if(!el) continue;
+        if(el.tagName==='SELECT'){
+          var hit=[].slice.call(el.options).filter(function(o){
+            return o.value===v||o.text===v;})[0];
+          if(hit) el.value=hit.value;
+        } else if(el.type!=='checkbox'&&el.type!=='radio'){ el.value=v; }
+        break;
+      }
+    });
+  }
   activate(current);
+  prefill();
 })();
 </script>"""

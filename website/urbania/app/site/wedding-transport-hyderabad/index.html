@@ -73,13 +73,16 @@
       <p class="pl-disclaim"><b>This is a quotation request.</b> Sending it does not confirm vehicle availability
       and does not create a booking. We check suitability and availability, then send you a quotation.</p>
     </div>
-    <div id="pl-result" tabindex="-1" aria-live="polite"></div>
-    <noscript><div style="padding:18px 20px;border-top:1px solid var(--line);background:#FFF7E6;font-size:14.5px">
-      <b>This planner needs JavaScript.</b> You can still get a quotation — call
-      <a href="tel:+916202066104" style="color:var(--accent);font-weight:600">+91&nbsp;62020&nbsp;66104</a> or email your trip details:
-      trip type, route, dates, number of passengers and the luggage you are carrying. We will reply with a quotation.
-    </div></noscript>
   </form>
+  <!-- OUTSIDE the form on purpose. done() hides the form on success; while this
+       lived inside it, the confirmation was hidden with it and the customer saw
+       the form vanish with no acknowledgement at all. -->
+  <div id="pl-result" tabindex="-1" aria-live="polite"></div>
+  <noscript><div style="padding:18px 20px;border-top:1px solid var(--line);background:#FFF7E6;font-size:14.5px">
+    <b>This planner needs JavaScript.</b> You can still get a quotation — call
+    <a href="tel:+916202066104" style="color:var(--accent);font-weight:600">+91&nbsp;62020&nbsp;66104</a> or email your trip details:
+    trip type, route, dates, number of passengers and the luggage you are carrying. We will reply with a quotation.
+  </div></noscript>
 </div><script>
 (function(){
   var pl=document.getElementById('planner'); if(!pl) return;
@@ -180,10 +183,10 @@
       var wa=waFor(id);
       form.style.display='none';
       result.innerHTML='<div style="padding:22px 20px"><h3 class="pl-h">'
-        +'Request received — reference '+id+'</h3>'
+        +'Request received</h3>'
         +'<div class="pl-ref">'+id+'</div>'
-        +'<p class="lede" style="font-size:16px">Thank you. Here is what happens next:</p>'
-        +'<div class="pl-sgrid" style="margin-top:14px">'
+        +'<p class="lede" style="font-size:16px">Thank you &mdash; your reference is above. Here is what happens next:</p>'
+        +'<div class="pl-sgrid pl-steps" style="margin-top:14px">'
         +'<div class="pl-srow"><b>1</b><span>We check whether your trip suits the 17-seat Urbania, or whether another option fits better.</span></div>'
         +'<div class="pl-srow"><b>2</b><span>We confirm availability for your dates.</span></div>'
         +'<div class="pl-srow"><b>3</b><span>We send you a quotation with the inclusions and terms.</span></div>'
@@ -212,7 +215,32 @@
     else if(WA){ window.open(waFor(clientRef),'_blank'); done(clientRef,true); }
     else { done(clientRef,true); }
   });
+  // Prefill from the hero journey bar (?from=&to=&date=&pax=). Field names
+  // differ per trip mode (pickup vs main_pickup, destination vs destinations),
+  // so try the active mode's own names in order. Values only — never invents one.
+  var PRE={from:['pickup','main_pickup','address','airport'],
+           to:['destination','destinations','venue','itinerary','plan'],
+           date:['date','date_from','return_date'],
+           pax:['passengers','guests','team_size','adults']};
+  function prefill(){
+    var q; try{ q=new URLSearchParams(location.search); }catch(err){ return; }
+    var scope=pl.querySelector('.pl-mode.on')||pl;
+    Object.keys(PRE).forEach(function(k){
+      var v=q.get(k); if(!v) return;
+      var names=PRE[k];
+      for(var i=0;i<names.length;i++){
+        var el=scope.querySelector('[name="'+names[i]+'"]'); if(!el) continue;
+        if(el.tagName==='SELECT'){
+          var hit=[].slice.call(el.options).filter(function(o){
+            return o.value===v||o.text===v;})[0];
+          if(hit) el.value=hit.value;
+        } else if(el.type!=='checkbox'&&el.type!=='radio'){ el.value=v; }
+        break;
+      }
+    });
+  }
   activate(current);
+  prefill();
 })();
 </script></div></section><section class="alt"><div class="wrap"><div class="shead"><span class="eyebrow">Planning</span><h2>The movements a wedding day usually needs.</h2><p class="lede">Weddings rarely need one trip. They need the same vehicle available across a schedule, which is what makes a single group vehicle practical.</p></div><div class="grid g3"><div class="card"><h3>Hotel to venue</h3><p>Moving a block of guests from their accommodation to the ceremony or reception.</p></div><div class="card"><h3>Airport to hotel</h3><p>Collecting arriving guests, including several pickups across a day.</p></div><div class="card"><h3>Family movements</h3><p>Moving immediate family between venues, homes and the venue on the day.</p></div><div class="card"><h3>Multiple pickup points</h3><p>Guests spread across more than one hotel gathered in a planned order.</p></div><div class="card"><h3>Multi-event schedules</h3><p>Mehendi, ceremony and reception on different days, each with its own movement plan.</p></div><div class="card"><h3>Return transport</h3><p>Getting guests safely back at the end of the event, planned in advance rather than at midnight.</p></div></div></div></section><section class=""><div class="wrap"><div class="shead"><span class="eyebrow">Information</span><h2>What to send us.</h2><p class="lede">A simple list is enough — send it as it is and we will work out the sequencing.</p></div><div class="grid g2"><div class="card"><h3>For each movement</h3><ul><li>Day and date</li><li>Pickup point and time</li><li>Drop point</li><li>Number of guests travelling together</li><li>Whether the vehicle should wait or return</li></ul></div><div class="card"><h3>What happens next</h3><ul><li>We map the movements into a practical schedule</li><li>We flag anything that will not work in one vehicle</li><li>You receive a quotation for the duty</li><li>Availability is confirmed with the quotation</li></ul></div></div></div></section><section class="alt"><div class="wrap"><div class="notice"><span>&#9432;</span><div><b>What is not included.</b> We provide the vehicle and driver for the journeys you plan. Decoration packages, event coordination, guest management, guides, tickets and hotel arrangements are not part of this service.</div></div></div></section><section class="alt"><div class="wrap"><div class="shead"><h2>Read next.</h2></div><div class="grid g2"><a class="card" href="/guides/wedding-guest-transport-planning/"><h3>Planning wedding guest transport</h3><p>How to build the movement list before you look for vehicles — and the failures to avoid.</p><span class="txtlink" style="margin-top:14px">Read this</span></a></div></div></section><section><div class="wrap"><div class="shead"><span class="eyebrow">FAQ</span><h2>Questions people ask before enquiring.</h2></div><div class="faq"><details><summary>How do we plan transport for wedding guests?</summary><p>Start with the schedule: which guests need to move, from where to where, on which day, and at what time. Send that list and the number of guests travelling together, and we will quote for the vehicle across those movements.</p></details><details><summary>Can the vehicle do several trips in one day?</summary><p>Yes. Wedding days usually involve multiple movements — hotel to venue, venue to hotel, airport runs in between. These are planned as one duty so the vehicle is available across the day.</p></details><details><summary>Can you do multiple pickups from different hotels?</summary><p>Yes. List each pickup point and how many guests are at each, and we can plan a sensible order.</p></details><details><summary>Can you handle airport arrivals for guests?</summary><p>Yes, though guests arriving on different flights at different times may need separate arrangements. Send the flight details and we will tell you what is workable.</p></details><details><summary>Is the vehicle available for multi-day wedding events?</summary><p>Multi-day enquiries are quoted for the whole period. Tell us each day's requirements so the quotation reflects the actual duty rather than a single trip.</p></details><details><summary>Can we decorate the vehicle?</summary><p>Any decoration must not affect safety or the vehicle's condition, and arrangements are confirmed with your quotation.</p></details><details><summary>What if our timings change on the day?</summary><p>Changes are handled as they arise, and any difference in duty duration or distance is reflected in the final billing terms set out in your quotation.</p></details></div></div></section><section class="alt"><div class="wrap"><div class="shead"><h2>Tell us about your trip and we will send a quotation.</h2><p class="lede">Share the date, pickup point, destination, number of passengers and expected duration. We reply with a quotation — this is an enquiry, not a confirmed booking.</p></div><div class="heroacts"><a class="btn" href="/request-quote/">Request a Trip Quote</a><a class="btn ghost" href="tel:+916202066104"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7A2 2 0 0 1 22 16.9Z"/></svg>&nbsp;Call +91&nbsp;62020&nbsp;66104</a></div></div></section></main>
 <footer><div class="wrap">
