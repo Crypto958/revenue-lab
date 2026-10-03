@@ -1,4 +1,5 @@
 import importlib.util
+import gzip
 import json
 import os
 from pathlib import Path
@@ -822,6 +823,67 @@ class BrandWiringTests(unittest.TestCase):
         self.assertNotIn("*", self.UI.PHONE_HREF)
         # and it must actually appear on the pages
         self.assertIn(self.UI.PHONE_HREF, (SITE / "index.html").read_text(encoding="utf-8"))
+
+
+class CompressionTests(unittest.TestCase):
+    """Text assets are gzipped; binaries are not; content is byte-identical."""
+
+    @classmethod
+    def setUpClass(cls):
+        import socket
+        cls.port = int(os.environ.get("URBANIA_TEST_PORT", "8140"))
+        try:
+            with socket.create_connection(("127.0.0.1", cls.port), timeout=2):
+                pass
+        except OSError:
+            raise unittest.SkipTest(f"no server on :{cls.port}")
+
+    def _get(self, path, accept="gzip"):
+        req = Request(f"http://127.0.0.1:{self.port}{path}",
+                      headers={"Accept-Encoding": accept} if accept else {})
+        try:
+            with urlopen(req, timeout=10) as r:
+                return r.status, dict(r.headers), r.read()
+        except HTTPError as e:
+            return e.code, dict(e.headers), e.read()
+
+    def test_html_is_gzipped_and_decodes_identically(self):
+        """The whole point is a smaller payload that is still the same document."""
+        _, h_gz, body_gz = self._get("/")
+        self.assertEqual(h_gz.get("Content-Encoding"), "gzip",
+                         "HTML is not compressed — pages ship ~90 KB each")
+        self.assertEqual(gzip.decompress(body_gz).decode("utf-8")[:15], "<!DOCTYPE html>")
+        _, _, body_plain = self._get("/", accept=None)
+        self.assertEqual(gzip.decompress(body_gz), body_plain,
+                         "gzipped body differs from the plain body")
+        self.assertLess(len(body_gz), len(body_plain) * 0.5,
+                        "compression saved almost nothing")
+
+    def test_directory_urls_are_compressed_too(self):
+        """'/' and '/about/' are directories. A naive isfile() check skips them and
+        compresses only CSS — which is exactly the bug this guards."""
+        for path in ("/", "/about/", "/rates/force-urbania-rental-rates-hyderabad/"):
+            _, h, _ = self._get(path)
+            self.assertEqual(h.get("Content-Encoding"), "gzip", f"{path} not compressed")
+
+    def test_binary_assets_are_not_gzipped(self):
+        jpg = (SITE / "media" / "hero" / "hero-split.jpg")
+        if not jpg.exists():
+            self.skipTest("no jpeg shipped")
+        _, h, body = self._get("/media/hero/hero-split.jpg")
+        self.assertNotEqual(h.get("Content-Encoding"), "gzip",
+                            "JPEG compressed — wasteful and pointless")
+        self.assertEqual(body[:2], b"\xff\xd8", "served bytes are not the JPEG")
+
+    def test_404_stays_404_when_compressed(self):
+        status, h, _ = self._get("/definitely-missing")
+        self.assertEqual(status, 404)
+        self.assertEqual(h.get("Content-Encoding"), "gzip")
+
+    def test_no_accept_encoding_gets_a_plain_body(self):
+        _, h, body = self._get("/", accept=None)
+        self.assertIsNone(h.get("Content-Encoding"))
+        self.assertEqual(body[:15], b"<!DOCTYPE html>")
 
 
 class ServerContractTests(unittest.TestCase):

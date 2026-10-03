@@ -17,7 +17,7 @@ Security notes:
   - The customer-facing lookup never returns name, phone, email or address.
   - Simple per-IP rate limiting on the public endpoint.
 """
-import os, sys, json, sqlite3, secrets, threading, time, re, mimetypes, html
+import os, sys, json, sqlite3, secrets, threading, time, re, mimetypes, html, gzip, io
 from datetime import datetime, timezone
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -143,6 +143,46 @@ class H(SimpleHTTPRequestHandler):
         super().end_headers()
 
     # ---------- helpers
+    TEXT_ASSETS = (".html", ".css", ".svg", ".js", ".txt", ".xml", ".webmanifest")
+
+    def send_head(self):
+        """Serve compressible text assets gzipped, in one shot.
+
+        Every page is ~90 KB of HTML uncompressed (the brand mark is inlined as
+        vector artwork), so gzip takes it to roughly 12-15 KB. The brief is
+        mobile-first and most enquiries are expected from a phone, so this is worth
+        doing centrally. Binary types are untouched.
+
+        Handled here rather than in copyfile() because SimpleHTTPRequestHandler has
+        already sent Content-Length by the time copyfile() runs, and a compressed
+        body under an uncompressed length would corrupt the response.
+        """
+        path = self.translate_path(self.path)
+        # A directory serves its index.html, so "/" and "/about/" are files too —
+        # without this the homepage is a directory path, os.path.isfile() is False,
+        # and the site's biggest pages silently skip compression while CSS gets it.
+        if os.path.isdir(path):
+            path = os.path.join(path, "index.html")
+        if (os.path.isfile(path)
+                and path.lower().endswith(self.TEXT_ASSETS)
+                and "gzip" in (self.headers.get("Accept-Encoding") or "")):
+            try:
+                with open(path, "rb") as fh:
+                    body = gzip.compress(fh.read(), 6)
+            except OSError:
+                return super().send_head()
+            self.send_response(200)
+            self.send_header("Content-Type", self.guess_type(path))
+            self.send_header("Content-Encoding", "gzip")
+            self.send_header("Vary", "Accept-Encoding")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            if self.command == "HEAD":
+                return None
+            # the parent's do_GET streams whatever this returns straight to the socket
+            return io.BytesIO(body)
+        return super().send_head()
+
     def _json(self, obj, code=200):
         body = json.dumps(obj).encode()
         self.send_response(code)
@@ -218,7 +258,13 @@ class H(SimpleHTTPRequestHandler):
             except OSError:
                 return super().send_error(code, message, explain)
             self.send_response(404)
+            compressed = "gzip" in (self.headers.get("Accept-Encoding") or "")
+            if compressed:
+                body = gzip.compress(body, 6)
             self.send_header("Content-Type", "text/html; charset=utf-8")
+            if compressed:
+                self.send_header("Content-Encoding", "gzip")
+                self.send_header("Vary", "Accept-Encoding")
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-cache")
             self.end_headers()
