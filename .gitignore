@@ -16,3 +16,8 @@ node_modules/
 
 # Visual QA screenshots (regenerate with tools/shoot.py)
 website/urbania/.sshots/
+
+# Brand build inputs (Inter is re-downloadable; licence is kept)
+brand/fonts/inter.zip
+brand/fonts/inter-extract/
+!brand/fonts/inter-extract/LICENSE.txt
