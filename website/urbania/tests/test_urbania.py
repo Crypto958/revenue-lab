@@ -556,12 +556,22 @@ class MediaPipelineTests(unittest.TestCase):
                           "alt text claims ownership while the flag is False")
 
     def test_seating_section_covers_the_reference_set(self):
+        """The seating section's real content is the LAYOUT comparison (which is
+        structural text, not a photo). Slot *filenames* only appear in placeholder
+        mode, so asserting them here made this test a check on build mode rather
+        than on content.
+        """
+        import site_data
         block = self.SEC.seating_block()
         self.assertIn("1x1", block)
         self.assertIn("2x1", block)
-        import site_data
-        for name, caption in site_data.SEATING_SLOTS:
-            self.assertIn(name, block, f"seating slot {name} missing from the section")
+        for layout in site_data.SEAT_LAYOUTS:
+            self.assertIn(layout["name"], block,
+                          f"seating layout {layout['name']!r} missing from the section")
+        if not site_data.SHOW_MEDIA_PLACEHOLDERS:
+            for name, _ in site_data.SEATING_SLOTS:
+                self.assertNotIn(f"{name}.jpg", block,
+                                 f"seating section publishes the filename {name}.jpg")
 
 
 class ShippedMediaTests(unittest.TestCase):
@@ -664,6 +674,30 @@ class ShippedMediaTests(unittest.TestCase):
                           "photograph of our"):
                 self.assertNotIn(claim, hero,
                                  f"shipped media implies ownership: {claim!r}")
+
+    def test_built_pages_never_publish_media_filenames(self):
+        """A dashed placeholder naming the expected file is a shot list for the
+        owner; on a live page ten of them make the site look unfinished. With the
+        flag off, no built page may carry a slot box.
+        """
+        if self.DATA.SHOW_MEDIA_PLACEHOLDERS:
+            self.skipTest("placeholder mode is deliberately on")
+        offenders = [p.relative_to(SITE).as_posix()
+                     for p in SITE.rglob("*.html")
+                     if 'class="gslot"' in p.read_text(encoding="utf-8")]
+        self.assertEqual(offenders, [],
+                         f"built pages publish media filenames: {offenders}")
+
+    def test_every_referenced_media_url_resolves(self):
+        """Any /media/... URL in the built HTML must point at a file that exists —
+        otherwise the page ships a broken image."""
+        missing = []
+        for page in SITE.rglob("*.html"):
+            text = page.read_text(encoding="utf-8")
+            for url in set(re.findall(r'(?:src|href)="(/media/[^"]+)"', text)):
+                if not (SITE / url.lstrip("/")).exists():
+                    missing.append((page.relative_to(SITE).as_posix(), url))
+        self.assertEqual(missing, [], f"built pages reference missing media: {missing}")
 
 
 class ServerContractTests(unittest.TestCase):

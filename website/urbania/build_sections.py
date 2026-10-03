@@ -18,7 +18,8 @@ from site_data import (CONFIGURATIONS, CONFIG_SPEC_FIELDS, GALLERY_SLOTS, PRICIN
                        RATE_EXCLUSIONS, RATE_INCLUSIONS, RATE_NOTES, RATE_TABLE_COLUMNS,
                        REVIEWS, REVIEWS_EMPTY_MESSAGE, ROUTES, SERVICE_AREAS, SERVICES,
                        TRUST_ASSURANCES, TRUST_FIELDS, FLEET_CONFIRMED, SEATING_SLOTS,
-                       SEAT_LAYOUTS, ASSETS_ARE_OUR_VEHICLE, tbc, money)
+                       SEAT_LAYOUTS, ASSETS_ARE_OUR_VEHICLE, SHOW_MEDIA_PLACEHOLDERS,
+                       tbc, money)
 
 # ------------------------------------------------------------------ media
 # Real photography and video drop into these directories and the site upgrades
@@ -410,7 +411,12 @@ def reviews_block():
 
 # ----------------------------------------------------------------- gallery
 def _media_grid(slots, kind):
-    """Render real photographs when present, labelled slots when not."""
+    """Render real photographs. Empty slots only when SHOW_MEDIA_PLACEHOLDERS.
+
+    A dashed slot naming the expected file is a shot list for the owner, but it
+    publishes build state to customers — ten boxes reading
+    "gallery/exterior-rear.jpg" make a live site look unfinished. Off by default.
+    """
     out, have = "", 0
     for name, caption in slots:
         url = find_image(kind, name)
@@ -419,10 +425,13 @@ def _media_grid(slots, kind):
             out += (f'<figure class="gfig"><img src="{url}" alt="{html.escape(caption)}" '
                     f'loading="lazy" decoding="async">'
                     f'<figcaption>{html.escape(caption)}</figcaption></figure>')
-        else:
+        elif SHOW_MEDIA_PLACEHOLDERS:
             out += (f'<div class="gslot"><span>{html.escape(caption)}<br>'
                     f'<code style="font-size:10px">{html.escape(kind)}/{html.escape(name)}.jpg'
                     f'</code></span></div>')
+    # An empty grid would render as a stray empty flex container.
+    if not out:
+        return "", have
     return f'<div class="gal">{out}</div>', have
 
 
@@ -430,12 +439,19 @@ def _media_note(have, total, kind="photographs", folder="gallery"):
     if have == total:
         return (f'<p class="small" style="margin-top:14px">All {total} {kind} supplied '
                 f'&mdash; images of the vehicle as photographed.</p>')
+    if SHOW_MEDIA_PLACEHOLDERS:
+        if have:
+            return (f'<p class="small" style="margin-top:14px">{have} of {total} {kind} supplied '
+                    f'so far. The remaining slots show the exact filename they expect.</p>')
+        return (f'<p class="small" style="margin-top:14px">{kind.capitalize()} are being prepared. Final '
+                f'images drop into <code>media/{folder}/</code> by filename &mdash; we do not use stock '
+                f'photography to stand in for the real vehicle.</p>')
+    # Customer-facing. Never name a file, a directory or a count of what is missing.
     if have:
-        return (f'<p class="small" style="margin-top:14px">{have} of {total} {kind} supplied so far. '
-                f'The remaining slots show the exact filename they expect.</p>')
-    return (f'<p class="small" style="margin-top:14px">{kind.capitalize()} are being prepared. Final '
-            f'images drop into <code>media/{folder}/</code> by filename &mdash; we do not use stock '
-            f'photography to stand in for the real vehicle.</p>')
+        return (f'<p class="small" style="margin-top:14px">More {kind} of the vehicle are '
+                f'being prepared and will be added here.</p>')
+    return (f'<p class="small" style="margin-top:14px">{kind.capitalize()} are being prepared. '
+            f'We do not use stock photography to stand in for the real vehicle.</p>')
 
 
 def gallery_block():

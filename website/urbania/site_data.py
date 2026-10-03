@@ -32,6 +32,15 @@ FLEET_CONFIRMED = False
 # Force Urbania model rather than as this business's vehicle.
 ASSETS_ARE_OUR_VEHICLE = False
 
+# Media placeholders. The gallery and seating grids can render a dashed box for
+# every slot that has no photo yet, printing the exact filename the build expects
+# (e.g. "gallery/exterior-rear.jpg"). That is a useful SHOT LIST for the owner and
+# a confusing, unfinished-looking mess for a customer — it publishes build state on
+# a marketing page. So it is off by default and the public page shows only real
+# photos plus a plain "being prepared" line.
+# Turn this on to see, on any page, exactly which files the build is waiting for.
+SHOW_MEDIA_PLACEHOLDERS = False
+
 TBC = "To be confirmed"
 
 
