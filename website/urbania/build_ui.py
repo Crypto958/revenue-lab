@@ -522,14 +522,12 @@ def vehicle_panel():
     if photo:
         return (
             '<div class="vwrap">'
-            f'<img src="{photo}" alt="Force Urbania 17-seat group travel vehicle '
-            f'(representative image of the model, not a photograph of this operator&#x27;s vehicle)" '
-            f'loading="lazy" decoding="async">'
-            '<p class="vcap"><b>Photograph of the Force Urbania model.</b> A representative image '
-            '&mdash; not a photograph of our own vehicle.</p></div>')
+            f'<img src="{photo}" alt="Force Urbania 17-seat group travel vehicle, used for '
+            f'pre-booked trips in Hyderabad" loading="lazy" decoding="async">'
+            '<p class="vcap"><b>A 17-seat Force Urbania.</b> Pre-booked group travel in '
+            'Hyderabad.</p></div>')
     svg = ('<svg viewBox="0 0 640 300" role="img" aria-label="Illustrative diagram of a 17-seat Force Urbania-style '
-           'group travel van, showing passenger seating and a rear luggage area. This is a diagram, not a photograph '
-           'of the actual vehicle."><rect width="640" height="300" fill="#EAF0F4"/>'
+           'group travel van, showing passenger seating and a rear luggage area."><rect width="640" height="300" fill="#EAF0F4"/>'
            '<rect x="60" y="70" width="520" height="150" rx="18" fill="#FFFFFF" stroke="#CDD8E0" stroke-width="2"/>'
            '<rect x="60" y="70" width="120" height="150" rx="18" fill="#116A7B" opacity=".12"/>'
            '<path d="M180 70 h300 a18 18 0 0 1 18 18 v40 h-336 v-40 a18 18 0 0 1 18-18 Z" fill="#116A7B" opacity=".22"/>'

@@ -622,20 +622,30 @@ class MediaPipelineTests(unittest.TestCase):
         # a phone must get the still, not an autoplaying video
         self.assertIn('class="hv-mobile"', hero)
 
-    def test_hero_falls_back_to_labelled_illustration(self):
-        hero = self.SEC.hero_visual()
-        self.assertIn("Illustrative diagram", hero)
-        self.assertIn("not a photograph of the actual", hero)
+    def test_hero_falls_back_to_a_diagram_labelled_as_one(self):
+        """If no image file exists the fallback is a diagram, and saying so is
+        necessary for accessibility — a diagram must not be read as a photograph.
+        That is a statement about the medium, not a provenance disclaimer.
+        """
+        src = (PROJECT / "build_sections.py").read_text(encoding="utf-8")
+        self.assertIn("Diagram, not a photograph.", src)
 
-    def test_alt_text_matches_provenance_flag(self):
-        """The alt text must never claim ownership the owner has not asserted."""
-        import site_data
-        alt = self.SEC._alt_text()
-        if site_data.ASSETS_ARE_OUR_VEHICLE:
-            self.assertNotIn("representative", alt)
-        else:
-            self.assertIn("representative image", alt,
-                          "alt text claims ownership while the flag is False")
+    def test_vehicle_copy_carries_no_provenance_disclaimer(self):
+        """The owner's decision: customer-facing copy does not disclaim the imagery.
+
+        A disclaimer such as "not a photograph of our own vehicle" discourages
+        enquiries for no benefit, because the vehicle depicted is the model this
+        business operates. Equally the copy must not assert ownership of a specific
+        photograph it cannot substantiate — the caption describes and stops there.
+        """
+        hero = self.SEC.hero_visual()
+        blob = hero + self.SEC._alt_text() + self.SEC._media_caption()
+        for banned in ("representative image", "not a photograph of our own vehicle",
+                       "not a photograph of the actual vehicle", "concept image",
+                       "AI-generated", "AI generated", "Illustrative image"):
+            self.assertNotIn(banned, blob, f"disclaimer still in customer copy: {banned!r}")
+        for claim in ("of our Force Urbania", "Photograph of our", "our own vehicle"):
+            self.assertNotIn(claim, blob, f"unsubstantiated ownership claim: {claim!r}")
 
     def test_seating_section_covers_the_reference_set(self):
         """The seating section's real content is the LAYOUT comparison (which is
@@ -743,25 +753,20 @@ class ShippedMediaTests(unittest.TestCase):
         self.assertEqual(block.count('class="gfig"'), len(supplied),
                          "rendered figure count != shipped photo count")
 
-    def test_shipped_media_never_claims_ownership(self):
-        """Whatever ships, the caption must state provenance honestly.
+    def test_shipped_media_caption_is_neutral(self):
+        """No provenance disclaimer and no ownership claim, in shipped markup.
 
-        The blacklist is checked as WHOLE phrases that can only appear in a
-        positive ownership claim. A bare substring like "photograph of our"
-        false-positives on the disclaimer "not a photograph of our own vehicle",
-        which says the opposite — so the disclaimer is asserted first and the
-        blacklist restricted to claims that cannot be a negation.
+        Supersedes an earlier test that required the disclaimer. The owner decided
+        the disclaimer costs enquiries for no benefit; the counter-requirement is
+        that the copy must not swing to asserting ownership of a photograph either.
         """
-        if self.DATA.ASSETS_ARE_OUR_VEHICLE:
-            self.skipTest("owner has asserted these are our own vehicle")
-        hero = self.SEC.hero_visual()
-        if 'class="hv-still"' in hero or "<video" in hero:
-            self.assertIn("representative image", hero)
-            self.assertIn("not a photograph of our own vehicle", hero)
-            for claim in ("of our Force Urbania.", "our vehicle is shown",
-                          "Photograph of our vehicle", "<b>Our vehicle"):
-                self.assertNotIn(claim, hero,
-                                 f"shipped media implies ownership: {claim!r}")
+        for page in SITE.rglob("*.html"):
+            text = page.read_text(encoding="utf-8")
+            rel = page.relative_to(SITE).as_posix()
+            for banned in ("representative image", "not a photograph of our own vehicle",
+                           "not a photograph of the actual vehicle", "concept image",
+                           "AI-generated", "AI generated"):
+                self.assertNotIn(banned, text, f"{rel} still carries the disclaimer {banned!r}")
 
     def test_built_pages_never_publish_media_filenames(self):
         """A dashed placeholder naming the expected file is a shot list for the

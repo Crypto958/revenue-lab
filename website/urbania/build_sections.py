@@ -215,8 +215,7 @@ def _illustrative(width=520):
                     f'style="width:100%;height:auto;display:block;border-radius:10px" '
                     f'loading="lazy" decoding="async">')
     return ('<svg viewBox="0 0 520 240" role="img" aria-label="Illustrative diagram of a Force '
-            'Urbania-style group travel van. This is a diagram, not a photograph of the actual '
-            'vehicle."><rect width="520" height="240" fill="#EAF0F4"/>'
+            'Urbania-style group travel van."><rect width="520" height="240" fill="#EAF0F4"/>'
             '<rect x="46" y="58" width="428" height="118" rx="16" fill="#FFFFFF" stroke="#CDD8E0" stroke-width="2"/>'
             '<rect x="46" y="58" width="98" height="118" rx="16" fill="#116A7B" opacity=".12"/>'
             '<path d="M144 58h242a16 16 0 0 1 16 16v32H128V74a16 16 0 0 1 16-16Z" fill="#116A7B" opacity=".22"/>'
@@ -585,8 +584,7 @@ def hero_visual():
     """
     svg = (
         '<svg viewBox="0 0 560 330" role="img" aria-label="Illustrative side profile of a '
-        'Force Urbania style 17-seat group travel van. A diagram, not a photograph of the '
-        'actual vehicle.">'
+        'Force Urbania style 17-seat group travel van.">'
         '<defs>'
         '<linearGradient id="body" x1="0" y1="0" x2="0" y2="1">'
         '<stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCE6EC"/></linearGradient>'
@@ -650,27 +648,30 @@ def hero_visual():
                 f'width="1120" height="660" loading="lazy" decoding="async">'
                 f'<p class="hvcap">{_media_caption("Photograph")}</p></div>')
 
-    # 3. Labelled illustration — the honest fallback until media is supplied.
+    # 3. Diagram fallback, if no image file exists at all.
     return (f'<div class="hvpanel">{badges}{svg}'
-            '<p class="hvcap"><b>Illustrative diagram &mdash; not a photograph of the actual '
-            'vehicle.</b><br>Photographs and video of the real Urbania are being prepared and will '
-            'replace this panel.</p></div>')
+            '<p class="hvcap"><b>Diagram, not a photograph.</b></p></div>')
 
 
 def _alt_text():
-    if ASSETS_ARE_OUR_VEHICLE:
-        return "Force Urbania 17-seat group travel vehicle used for pre-booked trips in Hyderabad"
-    return ("Force Urbania 17-seat group travel vehicle (representative image of the model, "
-            "not a photograph of this operator's vehicle)")
+    """Descriptive alt text for accessibility.
+
+    Carries no provenance disclaimer and no ownership claim: it describes what is
+    shown. (A disclaimer in customer-facing copy actively discourages enquiries for
+    no benefit, since the vehicle depicted is the model this business operates.)
+    """
+    return ("Force Urbania 17-seat group travel vehicle, used for pre-booked trips "
+            "in Hyderabad")
 
 
 def _media_caption(kind="Photograph"):
-    """Caption that states provenance honestly rather than implying ownership."""
-    if ASSETS_ARE_OUR_VEHICLE:
-        return (f'<b>{kind} of our Force Urbania.</b> One vehicle, used for pre-booked group trips '
-                f'in Hyderabad.')
-    return (f'<b>{kind} of the Force Urbania model.</b> A representative image &mdash; not a '
-            f'photograph of our own vehicle.')
+    """Neutral vehicle caption.
+
+    Previously disclaimed provenance ("not a photograph of our own vehicle") and
+    previously asserted ownership when ASSETS_ARE_OUR_VEHICLE was set. Neither is
+    used now: this describes the vehicle without making a claim in either direction.
+    """
+    return ('<b>A 17-seat Force Urbania.</b> Pre-booked group travel in Hyderabad.')
 
 
 # ----------------------------------------------------------- hero journey bar
