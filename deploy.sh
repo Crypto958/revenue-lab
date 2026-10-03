@@ -81,11 +81,12 @@ restart_urbania() {
   ssh_run "
     set -e
     cd '$REMOTE_WEBSITE/urbania/app'
-    # Bracket trick: this pattern matches the real 'python3 server.py' process
-    # but NOT this remote shell, whose own command line contains the pattern
-    # text verbatim. Without the brackets, the pkill matches the shell running
-    # it and the restart aborts halfway.
-    pkill -f '[p]ython3 server.py' 2>/dev/null || true
+    # Stop the listener by PORT, never by command pattern. This shell's own
+    # command line contains the launch command, so ANY pkill/pgrep -f that
+    # matches the server filename also matches the shell executing it -- the
+    # restart kills its own connection mid-script and leaves the site down.
+    OLD_PID=\$(ss -ltnpH 'sport = :8100' 2>/dev/null | grep -oE 'pid=[0-9]+' | head -1 | cut -d= -f2)
+    if [ -n \"\$OLD_PID\" ]; then kill \"\$OLD_PID\" 2>/dev/null || true; fi
     sleep 1
     $admin_expr PORT=8100 setsid nohup python3 server.py > server.log 2>&1 < /dev/null &
     sleep 2
@@ -102,14 +103,14 @@ case "$CMD" in
     hr
     echo "PRODUCTION STATUS ($VPS_HOST)"
     ssh_run '
-      for pid in $(pgrep -f "http.server|server.py"); do
+      for pid in $(pgrep -f "[h]ttp.server|[s]erver.py"); do
         printf "  pid %-7s %-22s cwd=%s\n" "$pid" "$(ps -o comm= -p $pid)" "$(readlink /proc/$pid/cwd 2>/dev/null)"
       done
       echo -n "  urbania :8100 /health -> "; curl -s -m 4 http://127.0.0.1:8100/health || echo "DOWN"
       echo
       echo -n "  westbridge :8099 /     -> "; curl -s -o /dev/null -m 4 -w "%{http_code}\n" http://127.0.0.1:8099/ || echo "DOWN"
-      echo -n "  tunnel 8100 alive      -> "; pgrep -f "cloudflared.*8100" >/dev/null && echo yes || echo NO
-      echo -n "  tunnel 8099 alive      -> "; pgrep -f "cloudflared.*8099" >/dev/null && echo yes || echo NO
+      echo -n "  tunnel 8100 alive      -> "; pgrep -f "[c]loudflared.*8100" >/dev/null && echo yes || echo NO
+      echo -n "  tunnel 8099 alive      -> "; pgrep -f "[c]loudflared.*8099" >/dev/null && echo yes || echo NO
     '
     ;;
   diff)

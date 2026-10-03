@@ -79,14 +79,35 @@ class BuildContractTests(unittest.TestCase):
 
 
 class DeploymentContractTests(unittest.TestCase):
-    def test_restart_does_not_kill_its_own_remote_shell(self):
-        script = (PROJECT.parents[1] / "deploy.sh").read_text(encoding="utf-8")
-        self.assertNotIn("pkill -f 'python3 server.py'", script)
+    """Regression tests for deploy.sh restart logic.
+
+    The remote restart script runs as a shell whose own command line contains
+    the launch command ('python3 server.py'). So any pkill/pgrep -f matching
+    that filename also matches the shell executing it: the restart kills its
+    own SSH connection (exit 255) and leaves the site down with no listener.
+    The server must therefore be stopped by PORT.
+    """
+
+    def setUp(self):
+        self.script = (PROJECT.parents[1] / "deploy.sh").read_text(encoding="utf-8")
+
+    def test_restart_never_pkill_matches_the_server_filename(self):
+        self.assertIsNone(
+            re.search(r"^\s*pkill\b", self.script, re.M),
+            "deploy.sh must not stop the server by command-pattern match",
+        )
+
+    def test_restart_stops_the_listener_by_port(self):
+        self.assertIn("sport = :8100", self.script)
+        self.assertIn("OLD_PID=", self.script)
+
+    def test_status_pgrep_cannot_match_its_own_shell(self):
+        self.assertNotIn('pgrep -f "http.server|server.py"', self.script)
+        self.assertIn('pgrep -f "[h]ttp.server|[s]erver.py"', self.script)
 
     def test_failed_health_check_fails_the_deploy(self):
-        script = (PROJECT.parents[1] / "deploy.sh").read_text(encoding="utf-8")
-        self.assertNotIn("|| echo 'NO RESPONSE'", script)
-        self.assertIn("curl -fsS -m 5 http://127.0.0.1:8100/health", script)
+        self.assertNotIn("|| echo 'NO RESPONSE'", self.script)
+        self.assertIn("curl -fsS -m 5 http://127.0.0.1:8100/health", self.script)
 
 
 class ServerContractTests(unittest.TestCase):
