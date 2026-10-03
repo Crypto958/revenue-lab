@@ -223,6 +223,13 @@ class ContentHonestyTests(unittest.TestCase):
         self.data = site_data
 
     def test_no_invented_rates_distances_or_counts(self):
+        """Figures that were never checked must not be published.
+
+        Distances are now genuinely sourced, so the assertion changed from "must be
+        absent" to "must be sourced": publishing a distance requires an entry in
+        ROUTE_DISTANCE_SOURCES. That keeps the original guarantee — no unsourced
+        number reaches a page — now that real figures exist.
+        """
         d = self.data
         for c in d.CONFIGURATIONS:
             self.assertIsNone(c["per_km"], f'{c["key"]} has an invented per_km rate')
@@ -232,8 +239,16 @@ class ContentHonestyTests(unittest.TestCase):
             for field, val in c["specs"].items():
                 self.assertIsNone(val, f'{c["key"]}.{field} invented')
         for r in d.ROUTES:
-            self.assertIsNone(r["distance_km"], f'{r["name"]} has an invented distance')
-            self.assertIsNone(r["drive_time"], f'{r["name"]} has an invented drive time')
+            if r["distance_km"] is None:
+                continue
+            self.assertIsInstance(r["distance_km"], int,
+                                  f'{r["name"]} distance must be a whole number of km')
+            self.assertTrue(20 <= r["distance_km"] <= 2500,
+                            f'{r["name"]} distance {r["distance_km"]} km is implausible')
+            self.assertTrue(r["drive_time"],
+                            f'{r["name"]} publishes a distance but no drive time')
+            self.assertTrue(d.ROUTE_DISTANCE_SOURCES.get(r["name"]),
+                            f'{r["name"]} publishes a distance with NO RECORDED SOURCE')
         for label, val in d.TRUST_FIELDS:
             self.assertIsNone(val, f'trust field "{label}" is a fabricated number')
         self.assertEqual(d.REVIEWS, [], "reviews must not be fabricated")

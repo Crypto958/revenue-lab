@@ -199,25 +199,52 @@ RATE_NOTES = [
 
 
 # ------------------------------------------------------------------- routes
-# Destinations reachable from Hyderabad. Distances, journey times and prices
-# are deliberately None: the brief says not to invent them, and both are easy
-# to get wrong without a checked source.
+# Destinations reachable from Hyderabad.
+#
+# DISTANCES AND DRIVE TIMES: approximate road distances from central Hyderabad via
+# the usual highway route, researched 2026-10-03 and cross-checked across several
+# independent distance sources (Yatra, Savaari, Uber Intercity, Holidify, Hampi.in,
+# CoveringIndia). Where sources disagreed, the commoner band was taken and a round
+# figure used. They are inherently approximate — routed distance varies with the
+# route taken and the time of day — and every page states that. Recorded with
+# sources in docs/FACTS_LEDGER.md. Do not tighten these into false precision.
 ROUTES = [
-    dict(name="Srisailam", region="Telangana", distance_km=None, drive_time=None,
-         note="Temple town and dam, usually an overnight trip."),
-    dict(name="Tirupati", region="Andhra Pradesh", distance_km=None, drive_time=None,
-         note="Popular pilgrimage run, often combined with an early start."),
-    dict(name="Vijayawada", region="Andhra Pradesh", distance_km=None, drive_time=None,
-         note="City trip or onward stop."),
-    dict(name="Warangal", region="Telangana", distance_km=None, drive_time=None,
+    dict(name="Srisailam", region="Telangana", distance_km=214, drive_time="4h 45m",
+         note="Temple town and dam, usually an overnight trip. The last stretch runs "
+              "through a tiger reserve, so there are gate timings to plan around."),
+    dict(name="Tirupati", region="Andhra Pradesh", distance_km=565, drive_time="10h",
+         note="Popular pilgrimage run, often combined with an early start or an "
+              "overnight stop."),
+    dict(name="Vijayawada", region="Andhra Pradesh", distance_km=273, drive_time="4h 50m",
+         note="City trip or onward stop, comfortable in a day."),
+    dict(name="Warangal", region="Telangana", distance_km=147, drive_time="3h",
          note="Heritage sites and lake, comfortable as a day or overnight trip."),
-    dict(name="Bangalore", region="Karnataka", distance_km=None, drive_time=None,
+    dict(name="Bangalore", region="Karnataka", distance_km=573, drive_time="10h",
          note="Long-distance outstation, usually overnight."),
-    dict(name="Hampi", region="Karnataka", distance_km=None, drive_time=None,
+    dict(name="Hampi", region="Karnataka", distance_km=377, drive_time="8h",
          note="Heritage weekend trip."),
-    dict(name="Goa", region="Goa", distance_km=None, drive_time=None,
-         note="Multi-day coastal trip."),
+    dict(name="Goa", region="Goa", distance_km=644, drive_time="11h",
+         note="Multi-day coastal trip. Figure is to Panaji; North and South Goa "
+              "endpoints differ by well over an hour."),
+    dict(name="Ooty", region="Tamil Nadu", distance_km=845, drive_time="14h",
+         note="Long multi-day run into the Nilgiris, normally with a night stop "
+              "on the way."),
 ]
+
+# Provenance for the figures above. The suite requires an entry for every route
+# that publishes a distance, so a new destination cannot be added with an
+# unsourced number — which is the guarantee the old "must be None" assertion was
+# really providing, kept now that real figures exist.
+ROUTE_DISTANCE_SOURCES = {
+    "Srisailam": "yatra.com/distance-between/hyderabad-to-srisailam; rajadroptaxi.com — 213-215 km, 4h30-5h",
+    "Tirupati": "savaari.com; uber.com/intercity — 560-574 km (~10h); a 625 km bus-site figure excluded as an outlier",
+    "Vijayawada": "yatra.com; savaari.com — 272-275 km (~4h50); a 305 km figure excluded",
+    "Warangal": "savaari.com; uber.com/intercity — 146-149 km (~3h)",
+    "Bangalore": "uber.com/intercity 571 km; savaari.com 575 km — ~570-575 km (~10h); a 610 km figure excluded",
+    "Hampi": "hampi.in; tusktravel.com — 375-380 km, 7h30-8h30",
+    "Goa": "uber.com/intercity 629 km to coveringindia.com 659 km to Panaji; savaari.com 644 km — figure given is to Panaji, hence the wide band",
+    "Ooty": "yatra.com 839 km; holidify.com 847 km; savaari.com 850 km — 839-850 km, ~14h; an 885 km figure excluded",
+}
 
 # Nearby areas named by the local competitor as service areas, useful for
 # local-search relevance.

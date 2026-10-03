@@ -34,6 +34,38 @@ Rule: if a fact is not VERIFIED here, it does not appear as a settled statement 
 | "Luggage capacity depends on passenger numbers — share both and suitability will be confirmed" | Avoids any unverified capacity claim |
 | "Outstation travel depends on the permissions and operating arrangements that apply at the time" | Instructs enquirer to verify; states nothing unverified |
 
+## SOURCED THIRD-PARTY DATA — published, with the source recorded
+
+Distances and drive times are the ONLY figures on this site that come from outside
+the business rather than from the owner. They were researched 2026-10-03 and
+cross-checked across several independent distance sources. They are approximate by
+nature — routed distance varies with the route taken and the time of day — and every
+destination page says so explicitly.
+
+Each figure carries its source in `ROUTE_DISTANCE_SOURCES` in `site_data.py`, and the
+test suite **refuses to publish a distance with no entry there**. That is the
+enforceable version of the original rule ("publish no unsourced number").
+
+| Destination | km | Drive time | Sources | Confidence |
+|---|---|---|---|---|
+| Srisailam | 214 | 4h 45m | Yatra; Rajadrop Taxi (213–215 km) | High |
+| Tirupati | 565 | 10h | Savaari; Uber Intercity (560–574 km) | Medium |
+| Vijayawada | 273 | 4h 50m | Yatra; Savaari (272–275 km) | High |
+| Warangal | 147 | 3h | Savaari; Uber Intercity (146–149 km) | High |
+| Bangalore | 573 | 10h | Uber Intercity 571; Savaari 575 | Medium |
+| Hampi | 377 | 8h | Hampi.in; Tusk Travel (375–380 km) | High |
+| Goa (to Panaji) | 644 | 11h | Uber Intercity 629 → CoveringIndia 659; Savaari 644 | Medium |
+| Ooty | 845 | 14h | Yatra 839; Holidify 847; Savaari 850 | Medium |
+
+**Excluded as outliers** (recorded so they are not reintroduced): Tirupati 625 km · 
+Vijayawada 305 km · Bangalore 610 km · Goa 721 km · Ooty 885 km.
+
+**Goa caveat:** the figure is to Panaji. North and South Goa endpoints differ by well
+over an hour, so the page states which one it means.
+
+Do not tighten these into false precision. If a route is re-verified and the figure
+changes, update both `ROUTES` and `ROUTE_DISTANCE_SOURCES` together.
+
 ## UNVERIFIED — must not be published as fact
 
 Operating base address · permanent driver arrangement · driver vetting or experience · permit status ·
@@ -48,7 +80,8 @@ leaving an inline `<!-- [VERIFY BEFORE PUBLISHING: ...] -->` marker in the sourc
 
 ## OWNER DECISION REQUIRED — blocking publication
 
-1. **Final business name.** The site currently uses the working name `Urbania Hyderabad`.
+1. **Final business name.** RESOLVED — the site now uses the locked brand name `UrbanLoop`
+   throughout (wordmark, header, footer, titles, schema). See `brand/urbanloop-design.md`.
 2. **Domain name.** `BASE` in `build_ui.py` is a placeholder: `https://urbania-hyderabad.example`.
    This also means the `Sitemap:` line in robots.txt and every canonical URL currently point at a
    non-existent domain.
