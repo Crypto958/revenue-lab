@@ -6,6 +6,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import tarfile
 import tempfile
 import threading
 import unittest
@@ -127,6 +128,45 @@ class DeploymentContractTests(unittest.TestCase):
     def test_failed_health_check_fails_the_deploy(self):
         self.assertNotIn("|| echo 'NO RESPONSE'", self.script)
         self.assertIn("curl -fsS -m 5 http://127.0.0.1:8100/health", self.script)
+
+    def test_tar_flag_array_survives_set_u_on_macos_bash(self):
+        """macOS ships bash 3.2, where "${arr[@]}" on an EMPTY array is fatal
+        under `set -u`. An earlier version of this script aborted mid-push with
+        'TAR_FLAGS[@]: unbound variable'. The expansion must be guard-safe."""
+        self.assertIn('${TAR_FLAGS[@]+"${TAR_FLAGS[@]}"}', self.script)
+        self.assertNotIn('tar czf - "${TAR_FLAGS[@]}"', self.script)
+
+        # the actual failure mode: empty array under `set -u` must not abort
+        probe = subprocess.run(
+            ["/bin/bash", "-c",
+             'set -euo pipefail; a=(); printf "%s" ${a[@]+"${a[@]}"}; echo ok'],
+            capture_output=True, text=True)
+        self.assertEqual(probe.returncode, 0, probe.stderr)
+        self.assertIn("ok", probe.stdout)
+
+    def test_tar_flags_are_probed_by_use_not_by_help(self):
+        # bsdtar's abbreviated --help does not list --no-mac-metadata even
+        # though it accepts it, so a --help grep silently detects nothing.
+        self.assertNotIn("--help 2>&1 | grep -q -- '--no-mac-metadata'", self.script)
+        self.assertIn("--no-mac-metadata --no-xattrs", self.script)
+
+    def test_apple_double_twins_are_actually_excluded(self):
+        """`--exclude='._*'` alone does NOT stop bsdtar writing AppleDouble
+        twins -- the archive still carried 102 members for 51 files, and GNU tar
+        then made 51 ._* files on the VPS. Assert the archive matches the tree."""
+        app = PROJECT / "app"
+        real_files = sum(len(f) for _, _, f in os.walk(app)
+                         if "data" not in _ and "__pycache__" not in _)
+        if not real_files:
+            self.skipTest("app tree not built")
+        out = "/tmp/_urbania_tar_test.tgz"
+        subprocess.run(["tar", "czf", out, "--no-mac-metadata", "--no-xattrs",
+                        "--exclude=./data", "--exclude=./.admin_token", "."],
+                       cwd=app, check=True, capture_output=True)
+        with tarfile.open(out) as tf:
+            names = tf.getnames()
+        twins = [n for n in names if os.path.basename(n).startswith("._")]
+        self.assertEqual(twins, [], f"archive still carries AppleDouble twins: {twins[:5]}")
 
 
 class SingleFunnelTests(unittest.TestCase):

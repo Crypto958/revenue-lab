@@ -41,6 +41,20 @@ EXCLUDES=(--exclude='./data' --exclude='./.admin_token' --exclude='./__pycache__
           --exclude='./.DS_Store' --exclude='./_versions' --exclude='*.pyc'
           --exclude='./server.log' --exclude='._*' --exclude='.DS_Store')
 
+# macOS bsdtar stores AppleDouble (._*) twins AND xattr pax headers. Excludes
+# alone do not stop the twins, and GNU tar on Linux then emulates the xattrs
+# into a fresh set of ._* files on extraction (51 of them appeared on the VPS).
+# Both flags are needed: --no-mac-metadata drops the twins, --no-xattrs the pax
+# headers. Probe by USE, not by `tar --help`: bsdtar's abbreviated help does not
+# list these flags even though it accepts them.
+TAR_FLAGS=()
+_probe="$(mktemp -d)"
+: > "$_probe/f"
+if tar czf /dev/null --no-mac-metadata --no-xattrs -C "$_probe" f 2>/dev/null; then
+  TAR_FLAGS=(--no-mac-metadata --no-xattrs)
+fi
+rm -rf "$_probe"
+
 ssh_run() { ssh -i "$SSH_KEY" -o BatchMode=yes -o ConnectTimeout=10 "$VPS_HOST" "$@"; }
 
 hr() { printf '%s\n' "────────────────────────────────────────────────────────────"; }
@@ -60,7 +74,7 @@ push_tree() {
     echo "  [dry-run] nothing sent."
     return 0
   fi
-  ( cd "$LOCAL_WEBSITE/$rel" && tar czf - "${EXCLUDES[@]}" . ) \
+  ( cd "$LOCAL_WEBSITE/$rel" && tar czf - ${TAR_FLAGS[@]+"${TAR_FLAGS[@]}"} "${EXCLUDES[@]}" . ) \
     | ssh_run "mkdir -p '$remote' && tar xzf - -C '$remote'"
   echo "  pushed."
 }
