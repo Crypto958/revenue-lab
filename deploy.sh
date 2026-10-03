@@ -39,7 +39,7 @@ CMD="${1:-status}"
 # tar exclude patterns are matched against the paths inside the archive
 EXCLUDES=(--exclude='./data' --exclude='./.admin_token' --exclude='./__pycache__'
           --exclude='./.DS_Store' --exclude='./_versions' --exclude='*.pyc'
-          --exclude='./server.log')
+          --exclude='./server.log' --exclude='._*' --exclude='.DS_Store')
 
 ssh_run() { ssh -i "$SSH_KEY" -o BatchMode=yes -o ConnectTimeout=10 "$VPS_HOST" "$@"; }
 
