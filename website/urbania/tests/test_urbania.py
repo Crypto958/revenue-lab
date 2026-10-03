@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -468,12 +469,22 @@ class MediaPipelineTests(unittest.TestCase):
     def setUp(self):
         import build_sections as SEC
         self.SEC = SEC
+        # ISOLATION: these tests exercise the pipeline LOGIC, so they must not
+        # depend on which real photos happen to ship. They previously read the
+        # live media/ tree and asserted it was EMPTY — which broke the moment
+        # real media was added, and would break again on every real photo.
+        # Point MEDIA_ROOT at a throwaway dir instead.
+        self._orig_media_root = SEC.MEDIA_ROOT
+        self._tmp = tempfile.mkdtemp(prefix="urbania-media-")
+        SEC.MEDIA_ROOT = self._tmp
         self.addCleanup(self._cleanup)
 
     def _cleanup(self):
         for path in getattr(self, "_made", []):
             if os.path.exists(path):
                 os.remove(path)
+        self.SEC.MEDIA_ROOT = self._orig_media_root
+        shutil.rmtree(self._tmp, ignore_errors=True)
 
     def _place(self, kind, name, ext=".png"):
         """Drop a file into the media tree.
@@ -551,6 +562,89 @@ class MediaPipelineTests(unittest.TestCase):
         import site_data
         for name, caption in site_data.SEATING_SLOTS:
             self.assertIn(name, block, f"seating slot {name} missing from the section")
+
+
+class ShippedMediaTests(unittest.TestCase):
+    """Guards on the media that ACTUALLY ships.
+
+    Deliberately a separate class from MediaPipelineTests: that one isolates
+    MEDIA_ROOT to a temp dir to test the logic, so it can never notice a defect
+    in the real assets. These run against the real tree.
+    """
+
+    def setUp(self):
+        import build_sections as SEC
+        import site_data
+        self.SEC, self.DATA = SEC, site_data
+
+    # ---- dependency-free JPEG dimension reader -------------------------------
+    @staticmethod
+    def _jpeg_size(path):
+        """Width/height from a JPEG's SOF marker.
+
+        The project deliberately has no Pillow, and this exact defect — a source
+        image whose aspect ratio fights the CSS box — is invisible to any test
+        that only checks the file exists. Parsing the header directly costs
+        ~20 lines and catches it.
+        """
+        with open(path, "rb") as fh:
+            data = fh.read()
+        if data[:2] != b"\xff\xd8":
+            raise AssertionError(f"{path} is not a JPEG")
+        i = 2
+        while i < len(data) - 9:
+            if data[i] != 0xFF:
+                i += 1
+                continue
+            marker = data[i + 1]
+            if marker in (0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
+                          0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF):
+                h = int.from_bytes(data[i + 5:i + 7], "big")
+                w = int.from_bytes(data[i + 7:i + 9], "big")
+                return w, h
+            if marker in (0xD8, 0xD9) or 0xD0 <= marker <= 0xD7:
+                i += 2
+            else:
+                i += 2 + int.from_bytes(data[i + 2:i + 4], "big")
+        raise AssertionError(f"no SOF marker found in {path}")
+
+    def test_shipped_hero_poster_is_portrait_like_its_box(self):
+        """The hero still box is portrait; a landscape poster gets centre-cropped
+        by object-fit:cover and can cut the wordmark in half. That shipped once —
+        the wordmark rendered as 'anLoop'. Poster and box must agree.
+        """
+        path = self.SEC.media_path("hero", "hero-poster.jpg")
+        if not os.path.exists(path):
+            self.skipTest("no hero poster shipped yet")
+        w, h = self._jpeg_size(path)
+        self.assertGreater(h, w, f"hero poster is {w}x{h} — landscape in a "
+                                 f"portrait box will be centre-cropped")
+
+    def test_shipped_gallery_photos_render_as_figures(self):
+        import site_data
+        block = self.SEC.gallery_block()
+        supplied = [n for n, _ in site_data.GALLERY_SLOTS
+                    if self.SEC.find_image("gallery", n)]
+        self.assertTrue(supplied, "no gallery photos shipped")
+        for name in supplied:
+            self.assertIn(f'/media/gallery/{name}.', block,
+                          f"shipped gallery photo {name} did not render")
+        self.assertEqual(block.count('class="gfig"'), len(supplied),
+                         "rendered figure count != shipped photo count")
+
+    def test_shipped_media_never_claims_ownership(self):
+        """Whatever ships, the caption and alt text must state provenance
+        honestly whenever the owner has not asserted these are their vehicle."""
+        if self.DATA.ASSETS_ARE_OUR_VEHICLE:
+            self.skipTest("owner has asserted these are our own vehicle")
+        hero = self.SEC.hero_visual()
+        if 'class="hv-still"' in hero or "<video" in hero:
+            self.assertIn("representative image", hero)
+            self.assertIn("Images of our own vehicle are being prepared", hero)
+            for claim in ("of our Force Urbania", "our vehicle is shown",
+                          "photograph of our"):
+                self.assertNotIn(claim, hero,
+                                 f"shipped media implies ownership: {claim!r}")
 
 
 class ServerContractTests(unittest.TestCase):

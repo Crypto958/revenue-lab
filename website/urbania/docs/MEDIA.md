@@ -116,3 +116,64 @@ consumer-law problem, not a design preference.
 - Every page's markup stays balanced (an unclosed `<div>` previously collapsed the
   quote bar).
 - No page renders a rupee figure that was never supplied.
+- The shipped hero poster is **portrait**, matching its box (see the aspect trap below).
+- Shipped media never claims ownership while `ASSETS_ARE_OUR_VEHICLE` is False.
+
+---
+
+## Shipped state
+
+Three files currently ship, all cropped from one owner-supplied AI-generated master
+(`brand/source/urbanloop-hero-original.png`, 1672×941):
+
+| Slot | File | Crop | Size |
+|---|---|---|---|
+| hero still | `hero/hero-poster.jpg` | `crop=585:820:925:100` | 585×820 |
+| gallery | `gallery/exterior-front.jpg` | `crop=736:820:0:150` | 736×820 |
+| gallery | `gallery/exterior-side.jpg` | `crop=585:820:925:100` | 585×820 |
+
+These are **AI-generated concept imagery, not photographs of the actual vehicle**,
+and the site captions them accordingly. They must be replaced with real photography
+(see `PHOTO_SHOT_LIST.md`).
+
+## The play-button problem — why crops look odd
+
+The master has a **play button burned into it** at x 744–912, y 409–577 (centre
+~828,493, ring radius ~80). It was added by whatever generated the image.
+
+It cannot be removed cleanly with the tools in this environment:
+
+- **Interpolating fill** (`ffmpeg -vf delogo`) — smears. The circle crosses the
+  window/pillar edge, so straight-line interpolation produces obvious vertical
+  streaking across the glass and bodywork.
+- **Clone patch** (mirrored copy of nearby pixels + feathered mask, see
+  `brand/patch_play_button.py`) — far better than delogo, but leaves a visible white
+  arc from the ring's outer edge *and* duplicates the door handle and UL monogram
+  into the patched area.
+
+Both were rendered and inspected before being rejected. Cleaning this properly needs
+a real inpainting model, which this environment does not have.
+
+**Consequence:** every shipped crop must exclude the x 744–912 band entirely. That
+is why the hero shows the van's side/rear rather than the whole vehicle, and why the
+front three-quarter crop stops at the nose. A clean, button-free master would remove
+this constraint — it is the single highest-value asset the owner can supply.
+
+## The aspect trap (cost us a shipped defect)
+
+The hero still box measures **471×660 → ratio 0.714 (portrait)** and renders with
+`object-fit: cover`. A landscape source therefore gets scaled to fill the height and
+then centre-cropped to roughly **40% of its width**. Shipping the first (16:9)
+poster cut the wordmark to `anLoop` / `R GROUP MOBILITY` — a truncated brand name on
+the homepage.
+
+Match crops to the box they land in, and check it:
+
+```bash
+# what the box actually is
+node -e "..."   # or: read .hv-still's getBoundingClientRect in tools/shoot.py
+```
+
+`ShippedMediaTests.test_shipped_hero_poster_is_portrait_like_its_box` now parses the
+JPEG's SOF marker directly (there is no Pillow in this project) and fails on a
+landscape poster. It was verified to fail by putting the landscape file back.

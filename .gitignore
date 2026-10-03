@@ -21,3 +21,7 @@ website/urbania/.sshots/
 brand/fonts/inter.zip
 brand/fonts/inter-extract/
 !brand/fonts/inter-extract/LICENSE.txt
+brand/preview/
+
+# brand build intermediates (regenerable; source master IS committed)
+brand/work/
