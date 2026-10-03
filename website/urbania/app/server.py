@@ -202,6 +202,31 @@ class H(SimpleHTTPRequestHandler):
             return self.update_status(parse_qs(u.query))
         return self._json({"ok": False, "error": "not found"}, 404)
 
+    # ---------- branded error pages
+    def send_error(self, code, message=None, explain=None):
+        """Serve the site's own 404 page for unknown paths.
+
+        The parent handler emits a bare stock error page, so /404.html was
+        reachable but any unknown URL (say /definitely-missing) got the plain
+        Python page instead of the branded one. The status stays 404 so search
+        engines are not told a missing page exists.
+        """
+        if code == 404:
+            try:
+                with open(os.path.join(SITE, "404.html"), "rb") as fh:
+                    body = fh.read()
+            except OSError:
+                return super().send_error(code, message, explain)
+            self.send_response(404)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-cache")
+            self.end_headers()
+            if self.command != "HEAD":
+                self.wfile.write(body)
+            return
+        return super().send_error(code, message, explain)
+
     # ---------- API
     def create_trip(self):
         ip = self.client_address[0]

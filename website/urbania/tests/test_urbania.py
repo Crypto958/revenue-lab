@@ -495,6 +495,36 @@ class ServerContractTests(unittest.TestCase):
         with urlopen(req, timeout=3) as response:
             return response.status, json.loads(response.read())
 
+    def get(self, path):
+        req = Request(f"http://127.0.0.1:{self.port}{path}", method="GET")
+        try:
+            with urlopen(req, timeout=3) as response:
+                return response.status, response.read().decode("utf-8", "replace")
+        except HTTPError as e:
+            return e.code, e.read().decode("utf-8", "replace")
+
+    def test_unknown_path_serves_the_branded_404(self):
+        """A missing URL must return the site's own page, not the stock Python
+        error page, and must still carry a 404 status."""
+        status, body = self.get("/definitely-missing")
+        self.assertEqual(status, 404)
+        self.assertIn("skip-link", body, "branded 404 page was not served")
+        self.assertNotIn("Error response", body, "stock Python error page leaked through")
+
+    def test_api_miss_still_returns_json_not_html(self):
+        # the branded page is for pages; API/dynamic routes keep their contract
+        req = Request(f"http://127.0.0.1:{self.port}/api/trip",
+                      data=json.dumps({"_hp": ""}).encode(),
+                      headers={"Content-Type": "application/json"}, method="POST")
+        try:
+            with urlopen(req, timeout=3) as response:
+                status, body = response.status, json.loads(response.read())
+        except HTTPError as e:
+            status, body = e.code, json.loads(e.read())
+        self.assertEqual(status, 400)
+        self.assertIn("error", body)
+        self.assertEqual(body.get("error"), "missing_consent_or_contact")
+
     def test_planner_payload_shape_is_accepted(self):
         """The planner's collect() emits human-labelled keys for trip fields
         ('Pickup point') and snake_case keys for contact fields
