@@ -10,6 +10,7 @@ Covers the two-step funnel the brief specifies:
 
 Exits non-zero on failure. Takes screenshots of each step into .sshots/.
 """
+import argparse
 import pathlib
 import re
 import sys
@@ -29,6 +30,14 @@ def fail(msg):
 
 
 def main():
+    global BASE
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default=BASE, help="site root (default local preview)")
+    ap.add_argument("--prefix", default="", help="screenshot filename prefix")
+    args = ap.parse_args()
+    BASE = args.base.rstrip("/")
+    print(f"base: {BASE}\n")
+
     OUT.mkdir(exist_ok=True)
     ok = True
 
