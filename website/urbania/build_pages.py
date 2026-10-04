@@ -99,12 +99,12 @@ def build_home():
             '<div class="hx-scrim"></div>'
             '<div class="hx-in">'
             '<span class="eyebrow" style="color:#8FD3CB">UrbanLoop &middot; Premium Group Mobility</span>'
-            '<h1 style="margin-top:16px">Force Urbania group transport'
-            '<span class="l2">across India</span></h1>'
+            '<h1 style="margin-top:16px">Force Urbania rental'
+            '<span class="l2">in Hyderabad</span></h1>'
             '<p class="hx-line">Move Together, Better.</p>'
-            '<p class="lede">Private group transportation for airport transfers, family journeys, '
-            'corporate travel, weddings, events and outstation trips. Tell us your city, route and '
-            'dates; UrbanLoop checks the practical vehicle arrangement before sending a quotation.</p>'
+            '<p class="lede">Premium group transportation for airport transfers, family journeys, '
+            'corporate travel, weddings, events and outstation trips &mdash; up to 17 passengers '
+            'travelling together in a single Force Urbania.</p>'
             + (f'<p class="hx-alt"><a href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp us</a>'
                f'<span>&middot;</span><a href="{PHONE_HREF}">Call {PHONE_TXT}</a></p>'
                if WHATSAPP else '')
@@ -120,10 +120,11 @@ def build_home():
     else:
         # No wide crop supplied yet — keep the two-column layout with the visual panel.
         intro = (
-            '<span class="eyebrow">Force Urbania group transport &middot; India</span>'
-            '<h1>Force Urbania group transport across India</h1>'
-            '<p class="lede">Private group travel for up to 17 passengers. Share your city, route, '
-            'dates and group size; we check the practical arrangement before sending a quotation.</p>'
+            '<span class="eyebrow">Force Urbania specialist &middot; ' + CITY + '</span>'
+            '<h1>Force Urbania rental in Hyderabad</h1>'
+            '<p class="lede">Premium group travel for up to 17 passengers. One Force Urbania, '
+            'used for pre-booked group trips &mdash; airport runs, weddings, corporate days, '
+            'outstation travel and sightseeing.</p>'
             '<div class="heroacts">'
             '<a class="btn" href="/request-quote/">Get a quote</a>'
             f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE_TXT}</a>'
@@ -170,11 +171,11 @@ def build_home():
         + section("Services", "What we are booked for.",
                   "Every trip is quoted from your own plan. These are the situations that come up most often.",
                   SEC.services_grid())
-        + section("Popular trips", "Popular routes and trip types.",
-                  "Route details depend on the origin, destination, date and time of day. Tell us "
-                  "where the group is travelling from and we will confirm the practical details.",
-                  SEC.routes_grid()
-                  + '<p style="margin-top:18px"><a class="btn ghost" href="/destinations/">Browse all destination guides</a></p>', alt=True)
+        + section("Popular trips", "Popular trips from Hyderabad.",
+                  "Distances and journey times are approximate road figures from central "
+                  "Hyderabad, and depend on the route and time of day. Tell us your dates and "
+                  "we will confirm the practical details.",
+                  SEC.routes_grid(), alt=True)
         + section("Rates", "Force Urbania rental rates in Hyderabad.",
                   "Indicative market ranges, so you can budget before enquiring. Your quotation "
                   "confirms the figure for your actual trip.",
@@ -244,12 +245,11 @@ def build_home():
         + cta_band()
         + SEC.FIND_JS
     )
-    page("/", "Force Urbania Group Transport Across India | UrbanLoop",
-         "Private group transport across India using suitable vehicle arrangements, subject to route and date confirmation. Airport transfers, weddings, corporate travel and custom trips.",
+    page("/", "17-Seater Force Urbania Hire in Hyderabad | Group Travel",
+         "Pre-booked private group transport in Hyderabad with a 17-seat Force Urbania — airport group transfers, weddings, corporate travel and custom day trips.",
          body,
-         ld=[service_ld("Force Urbania group transport across India",
-                        "Private group transport enquiries across India using suitable vehicle arrangements, with route and date availability confirmed per enquiry.",
-                        area_type="Country", area_name="India"),
+         ld=[service_ld("17-seat Force Urbania hire and private group transport in Hyderabad",
+                        "Pre-booked private group transport in Hyderabad using a 17-seat Force Urbania, for airport transfers, weddings and events, corporate travel, sightseeing and custom multi-stop trips. Quotation provided on request."),
              faq_ld(CORE_FAQ)],
          active="/")
 

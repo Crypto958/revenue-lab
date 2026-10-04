@@ -336,9 +336,9 @@ class NewArchitectureTests(unittest.TestCase):
         m = re.search(r"<h1[^>]*>(.*?)</h1>", home, re.S)
         self.assertIsNotNone(m, "no <h1> found on the homepage")
         text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", m.group(1))).strip()
-        self.assertIn("Force Urbania group transport across India", text,
+        self.assertIn("Force Urbania rental in Hyderabad", text,
                       f"H1 text does not carry the primary keyword: {text!r}")
-        self.assertIn("Private group transportation for airport transfers", home)
+        self.assertIn("Premium group transportation for airport transfers", home)
 
     def test_verified_nationwide_cohort_is_published_and_indexable(self):
         cities = sorted((SITE / "city").glob("*/index.html"))
