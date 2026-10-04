@@ -99,7 +99,8 @@
   var WA="919182126104", EP="/api/trip";
 
   // Street suggestions assist the user, but manual entry always remains valid.
-  // Photon uses OpenStreetMap data and does not require an API key.
+  // Restrict the public directory search to India so unrelated global matches
+  // do not appear in a transport enquiry. Suggestions are never required.
   function locationSuggestions(){
     [].slice.call(document.querySelectorAll('[data-location-suggest]')).forEach(function(input){
       var label=input.closest('.pl-f,.jf'); if(!label) return;
@@ -111,9 +112,9 @@
       function show(items){
         box.innerHTML='';
         items.slice(0,5).forEach(function(item){
-          var p=item.properties||{}, parts=[];
-          [p.name,p.street,p.city||p.town||p.village,p.state].forEach(function(v){if(v&&parts.indexOf(v)<0) parts.push(v);});
-          var text=parts.join(', '); if(!text) return;
+          var p=item.address||{}, parts=[];
+          [p.house_number,p.road,p.neighbourhood,p.suburb,p.city||p.town||p.village,p.state].forEach(function(v){if(v&&parts.indexOf(v)<0) parts.push(v);});
+          var text=parts.join(', ')||item.display_name; if(!text) return;
           var button=document.createElement('button'); button.type='button'; button.className='pl-suggestion';
           button.setAttribute('role','option'); button.textContent=text;
           button.addEventListener('mousedown',function(e){e.preventDefault();input.value=text;close();});
@@ -126,8 +127,8 @@
         if(q.length<3) return;
         timer=setTimeout(function(){
           if(controller) controller.abort(); controller=new AbortController();
-          fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=5&lang=en',{signal:controller.signal})
-            .then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.features) show(j.features);})
+          fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&dedupe=1&countrycodes=in&limit=5&accept-language=en&q='+encodeURIComponent(q),{signal:controller.signal})
+            .then(function(r){return r.ok?r.json():null;}).then(function(j){if(j) show(j);})
             .catch(function(){});
         },280);
       });
