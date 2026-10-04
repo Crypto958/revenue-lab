@@ -63,6 +63,7 @@ def brand_svg(filename, cls="", label=""):
     return svg
 
 NAV = [
+    ("Home", "/"),
     ("How it works", "/how-it-works/"),
     ("Vehicle options", "/find-a-vehicle/"),
     ("Use cases", "/india/"),
