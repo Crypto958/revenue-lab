@@ -143,14 +143,13 @@ table.rate.indic td.small{color:var(--ink-2);line-height:1.5}
 .assure{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-top:22px}
 @media(max-width:720px){.assure{grid-template-columns:1fr}}
 /* ---- gallery ---- */
-.gal{display:grid;gap:12px;grid-template-columns:repeat(4,1fr)}
-@media(max-width:900px){.gal{grid-template-columns:repeat(3,1fr)}}
+.gal{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr));max-width:1120px}
 @media(max-width:620px){.gal{grid-template-columns:repeat(2,1fr)}}
 .gslot{background:var(--alt);border:1px dashed var(--line-2);border-radius:var(--r);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px}
 .gslot span{font-size:11.5px;color:var(--ink-3);line-height:1.35}
 /* real photograph replacing a slot */
 .gfig{margin:0;border-radius:var(--r);overflow:hidden;position:relative;background:var(--alt-2)}
-.gfig img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gfig img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#eef2f3;padding:8px}
 .gfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font-size:11.5px;color:#fff;
 background:linear-gradient(transparent,rgba(6,16,24,.78))}
 /* hero media */
@@ -690,18 +689,43 @@ def journey_bar(action="/request-quote/"):
     instead of growing a second one, which is what caused the drift we just
     removed.
     """
-    return f'''<form class="jbar" action="{action}" method="get" aria-label="Start your trip quote">
+    return ('''<form class="jbar" action="%ACTION%" method="get" aria-label="Start your trip quote">
   <div class="jbar-grid">
     <label class="jf"><span>From</span>
-      <input name="from" type="text" placeholder="Pickup point or area" autocomplete="off"></label>
+      <input name="from" type="text" placeholder="Pickup point or area" autocomplete="street-address" data-location-suggest="true"></label>
     <label class="jf"><span>To</span>
-      <input name="to" type="text" placeholder="Destination" autocomplete="off"></label>
+      <input name="to" type="text" placeholder="Destination" autocomplete="street-address" data-location-suggest="true"></label>
     <label class="jf"><span>Travel date</span>
       <input name="date" type="date"></label>
     <label class="jf"><span>Passengers</span>
       <input name="pax" type="number" inputmode="numeric" min="1" max="20" placeholder="e.g. 14"></label>
     <div class="jgo"><button class="btn" type="submit">Start my quote</button></div>
   </div>
-  <p class="jnote">{_tick()}<span>Free and no obligation &mdash; no payment is taken to request a
+  <p class="jnote">%TICK%<span>Free and no obligation &mdash; no payment is taken to request a
   quotation, and availability is confirmed by a person before anything is agreed.</span></p>
-</form>'''
+</form>
+<script>
+(function(){
+  var form=document.querySelector('.jbar'); if(!form) return;
+  var fields=[form.querySelector('[name="from"]'),form.querySelector('[name="to"]')];
+  function validPlace(value){
+    var v=(value||'').trim();
+    if(v.length<3 || !/[A-Za-z]/.test(v)) return false;
+    if(/^(.)\\1+$/.test(v.replace(/\\s/g,''))) return false;
+    if(/^(test|testing|aaaa|asdf|abcd|none|na)$/i.test(v) || v.toLowerCase()==='n/a') return false;
+    return true;
+  }
+  form.addEventListener('submit',function(e){
+    var bad=false;
+    fields.forEach(function(input){
+      if(!input) return;
+      var ok=validPlace(input.value); input.setCustomValidity(ok?'':'Enter a real pickup point or destination, or choose a suggestion.');
+      input.setAttribute('aria-invalid',ok?'false':'true'); if(!ok) bad=true;
+    });
+    var date=form.querySelector('[name="date"]'), pax=form.querySelector('[name="pax"]');
+    if(date){var dateOk=!!date.value && date.value>=new Date().toISOString().slice(0,10); date.setCustomValidity(dateOk?'':'Choose today or a future travel date.'); if(!dateOk) bad=true;}
+    if(pax){var paxOk=Number(pax.value)>=1 && Number(pax.value)<=100; pax.setCustomValidity(paxOk?'':'Enter the number of passengers.'); if(!paxOk) bad=true;}
+    if(bad){e.preventDefault(); var first=form.querySelector(':invalid'); if(first) first.focus();}
+  });
+})();
+</script>'''.replace("%ACTION%", action).replace("%TICK%", _tick()))

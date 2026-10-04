@@ -12,13 +12,18 @@ Design rules honoured here:
 """
 
 # ---------------------------------------------------------------- field builders
+LOCATION_FIELDS = {"pickup", "main_pickup", "address", "destination", "destinations", "venue", "airport"}
+
+
 def f_text(name, label, ph="", req=False, typ="text", hint="", half=False):
     h = f'<span class="hint">{hint}</span>' if hint else ""
     r = " required" if req else ""
+    location_attrs = (' autocomplete="street-address" data-location-suggest="true"'
+                      if name in LOCATION_FIELDS and typ == "text" else "")
     # placeholder is invalid on date/time inputs — browsers ignore it and validators flag it
     ph_attr = f' placeholder="{ph}"' if ph and typ not in ("date", "time") else ""
     return (f'<label class="pl-f{" half" if half else ""}"><span>{label}{" *" if req else ""}</span>'
-            f'<input type="{typ}" name="{name}"{ph_attr}{r}>{h}</label>')
+            f'<input type="{typ}" name="{name}"{ph_attr}{location_attrs}{r}>{h}</label>')
 
 def f_select(name, label, opts, req=False, half=False):
     o = "".join(f'<option value="{x}">{x}</option>' for x in opts)
@@ -243,7 +248,7 @@ def planner(preset=""):
   <div id="pl-result" tabindex="-1" aria-live="polite"></div>
   <noscript><div style="padding:18px 20px;border-top:1px solid var(--line);background:#FFF7E6;font-size:14.5px">
     <b>This planner needs JavaScript.</b> You can still get a quotation — call
-    <a href="%PHONE_HREF%" style="color:var(--accent);font-weight:600">%PHONE%</a> or email your trip details:
+    <a href="%PHONE_HREF%" style="color:var(--accent);font-weight:600">Call customer care</a> or email your trip details:
     trip type, route, dates, number of passengers and the luggage you are carrying. We will reply with a quotation.
   </div></noscript>
 </div>'''
@@ -307,6 +312,10 @@ padding:9px 14px;font-size:14.5px;color:var(--ink-2);cursor:pointer;background:#
 border:1px solid var(--accent);border-radius:100px;padding:3px 9px;margin-bottom:10px;font-weight:600}
 .pl-ref{font-family:var(--mono);font-size:15px;background:#fff;border:1px dashed var(--line-2);border-radius:8px;
 padding:10px 13px;display:inline-block;margin:10px 0}
+.pl-location{position:relative}
+.pl-suggestions{position:absolute;z-index:20;left:0;right:0;top:100%;margin-top:-10px;padding:4px;background:#fff;border:1px solid var(--line-2);border-radius:10px;box-shadow:0 12px 28px rgba(14,27,42,.14)}
+.pl-suggestion{display:block;width:100%;border:0;background:#fff;text-align:left;padding:10px 11px;border-radius:7px;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.pl-suggestion:hover,.pl-suggestion:focus{background:var(--accent-soft);outline:0}
 """
 
 # ---------------------------------------------------------------- JS
@@ -323,6 +332,44 @@ PLANNER_JS = """<script>
       nextBtn=document.getElementById('pl-next');
   var current=pl.getAttribute('data-preset')||'local', stage='form';
   var WA="%WA%", EP="%ENDPOINT%";
+
+  // Street suggestions assist the user, but manual entry always remains valid.
+  // Photon uses OpenStreetMap data and does not require an API key.
+  function locationSuggestions(){
+    [].slice.call(document.querySelectorAll('[data-location-suggest]')).forEach(function(input){
+      var label=input.closest('.pl-f,.jf'); if(!label) return;
+      label.classList.add('pl-location'); input.setAttribute('aria-autocomplete','list');
+      var box=document.createElement('div'); box.className='pl-suggestions'; box.hidden=true;
+      box.setAttribute('role','listbox'); label.appendChild(box);
+      var timer, controller;
+      function close(){box.hidden=true;box.innerHTML='';}
+      function show(items){
+        box.innerHTML='';
+        items.slice(0,5).forEach(function(item){
+          var p=item.properties||{}, parts=[];
+          [p.name,p.street,p.city||p.town||p.village,p.state].forEach(function(v){if(v&&parts.indexOf(v)<0) parts.push(v);});
+          var text=parts.join(', '); if(!text) return;
+          var button=document.createElement('button'); button.type='button'; button.className='pl-suggestion';
+          button.setAttribute('role','option'); button.textContent=text;
+          button.addEventListener('mousedown',function(e){e.preventDefault();input.value=text;close();});
+          box.appendChild(button);
+        });
+        box.hidden=!box.children.length;
+      }
+      input.addEventListener('input',function(){
+        clearTimeout(timer); close(); var q=input.value.trim();
+        if(q.length<3) return;
+        timer=setTimeout(function(){
+          if(controller) controller.abort(); controller=new AbortController();
+          fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=5&lang=en',{signal:controller.signal})
+            .then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.features) show(j.features);})
+            .catch(function(){});
+        },280);
+      });
+      input.addEventListener('blur',function(){setTimeout(close,160);});
+      input.addEventListener('keydown',function(e){if(e.key==='Escape') close();});
+    });
+  }
 
   function activate(k){
     current=k; stage='form';
@@ -479,6 +526,7 @@ PLANNER_JS = """<script>
     });
   }
   activate(current);
+  locationSuggestions();
   prefill();
 })();
 </script>"""
