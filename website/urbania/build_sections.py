@@ -150,7 +150,7 @@ table.rate.indic td.small{color:var(--ink-2);line-height:1.5}
 /* real photograph replacing a slot */
 .gfig{margin:0;border-radius:var(--r);overflow:hidden;position:relative;background:var(--alt-2)}
 .gfig img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#eef2f3;padding:8px}
-.gfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font-size:11.5px;color:#fff;
+.gfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;font-size:13px;line-height:1.35;color:#fff;
 background:linear-gradient(transparent,rgba(6,16,24,.78))}
 /* hero media */
 .hv-video,.hv-still{width:100%;display:block;border-radius:12px;aspect-ratio:16/9;
@@ -707,21 +707,10 @@ def journey_bar(action="/request-quote/"):
 <script>
 (function(){
   var form=document.querySelector('.jbar'); if(!form) return;
-  var fields=[form.querySelector('[name="from"]'),form.querySelector('[name="to"]')];
-  function validPlace(value){
-    var v=(value||'').trim();
-    if(v.length<3 || !/[A-Za-z]/.test(v)) return false;
-    if(/^(.)\\1+$/.test(v.replace(/\\s/g,''))) return false;
-    if(/^(test|testing|aaaa|asdf|abcd|none|na)$/i.test(v) || v.toLowerCase()==='n/a') return false;
-    return true;
-  }
   form.addEventListener('submit',function(e){
     var bad=false;
-    fields.forEach(function(input){
-      if(!input) return;
-      var ok=validPlace(input.value); input.setCustomValidity(ok?'':'Enter a real pickup point or destination, or choose a suggestion.');
-      input.setAttribute('aria-invalid',ok?'false':'true'); if(!ok) bad=true;
-    });
+    // From and To remain free text: landmarks, villages and unusual spellings
+    // may not exist in the suggestion directory, but are still valid enquiries.
     var date=form.querySelector('[name="date"]'), pax=form.querySelector('[name="pax"]');
     if(date){var dateOk=!!date.value && date.value>=new Date().toISOString().slice(0,10); date.setCustomValidity(dateOk?'':'Choose today or a future travel date.'); if(!dateOk) bad=true;}
     if(pax){var paxOk=Number(pax.value)>=1 && Number(pax.value)<=100; pax.setCustomValidity(paxOk?'':'Enter the number of passengers.'); if(!paxOk) bad=true;}
