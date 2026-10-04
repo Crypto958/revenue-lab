@@ -130,6 +130,22 @@ class SEOQualityTests(unittest.TestCase):
             self.assertIn('content="index, follow', text)
             self.assertIn(f'href="{BASE}{path}"', text)
 
+    def test_legacy_service_aliases_are_not_indexed_or_sitemapped(self):
+        sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+        for path in ("/services/events/", "/services/pilgrimage-tours/"):
+            page = SITE / path.strip("/") / "index.html"
+            text = page.read_text(encoding="utf-8")
+            self.assertIn('content="noindex, follow', text)
+            self.assertNotIn(BASE + path, sitemap)
+
+    def test_header_brand_and_planner_contact_patterns(self):
+        homepage = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertIn('<span class="wordmark">UrbanLoop</span>', homepage)
+        self.assertNotIn("urbanloop-lockup-horizontal-dark", homepage)
+        self.assertIn('data-location-suggest="true"', homepage)
+        self.assertIn('href="tel:+919182126104"', homepage)
+        self.assertIn("Call customer care", homepage)
+
 
 if __name__ == "__main__":
     unittest.main()
