@@ -143,15 +143,17 @@ table.rate.indic td.small{color:var(--ink-2);line-height:1.5}
 .assure{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-top:22px}
 @media(max-width:720px){.assure{grid-template-columns:1fr}}
 /* ---- gallery ---- */
-.gal{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr));max-width:1120px}
-@media(max-width:620px){.gal{grid-template-columns:repeat(2,1fr)}}
+.gal{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr));max-width:1120px;align-items:start}
+@media(max-width:620px){.gal{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
 .gslot{background:var(--alt);border:1px dashed var(--line-2);border-radius:var(--r);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px}
 .gslot span{font-size:11.5px;color:var(--ink-3);line-height:1.35}
 /* real photograph replacing a slot */
 .gfig{margin:0;border-radius:var(--r);overflow:hidden;position:relative;background:var(--alt-2)}
-.gfig img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#eef2f3;padding:8px}
-.gfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;font-size:13px;line-height:1.35;color:#fff;
-background:linear-gradient(transparent,rgba(6,16,24,.78))}
+.gfig img{width:100%;height:auto;display:block;background:#eef2f3}
+.gfig figcaption{padding:10px 12px;font-size:13px;line-height:1.35;color:var(--ink-2);background:var(--alt)}
+.planning-visual{margin:24px 0 0;border-radius:var(--r-lg);overflow:hidden;background:var(--alt-2)}
+.planning-visual img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;display:block}
+.planning-visual figcaption{padding:9px 12px;font-size:12px;color:var(--ink-3);background:var(--alt)}
 .pl-location{position:relative}
 .pl-suggestions{position:absolute;z-index:20;left:0;right:0;top:100%;margin-top:4px;padding:4px;background:#fff;border:1px solid var(--line-2);border-radius:10px;box-shadow:0 12px 28px rgba(14,27,42,.14)}
 .pl-suggestion{display:block;width:100%;border:0;background:#fff;text-align:left;padding:10px 11px;border-radius:7px;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
@@ -557,6 +559,16 @@ def _media_note(have, total, kind="photographs", folder="gallery"):
 def gallery_block():
     grid, have = _media_grid(GALLERY_SLOTS, "gallery")
     return grid + _media_note(have, len(GALLERY_SLOTS), "photographs", "gallery")
+
+
+def planning_visual():
+    """A clearly labelled illustrative visual for the planning journey."""
+    return ('<figure class="planning-visual">'
+            '<img src="/media/illustration/group-travel-planning.png" '
+            'alt="Group travel planning at an airport with luggage and a route plan" '
+            'width="1536" height="1024" loading="lazy" decoding="async">'
+            '<figcaption>Illustrative planning scene. Vehicle photographs are shown separately.</figcaption>'
+            '</figure>')
 
 
 def seating_block():
