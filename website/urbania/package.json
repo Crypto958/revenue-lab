@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "name": "urbanloop-netlify-functions",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^9.0.0"
+  }
+}

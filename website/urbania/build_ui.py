@@ -10,7 +10,7 @@ Visible copy states only what is true: 17-seat Force Urbania, quote-first, group
 import os, json, html, datetime
 
 # ------------------------------------------------------------------ config
-BASE = "https://urbania-hyderabad.example"      # [VERIFY BEFORE PUBLISHING: real domain]
+BASE = "https://urbanloop.co"                    # canonical production domain
 BRAND = "UrbanLoop"                             # LOCKED — never alter, abbreviate or respell
 TAGLINE = "Premium Group Mobility"              # the descriptor; used with the mark, not instead of it
 BRAND_LINE = "Move Together, Better."           # working brand line — not yet published in the header
@@ -332,7 +332,7 @@ def head(title, desc, path, ld=None, noindex=False):
     base_ld = [{
         "@context": "https://schema.org", "@type": "Organization", "@id": BASE + "/#org",
         "name": BRAND, "url": BASE + "/",
-        "description": "Pre-booked private group transport in Hyderabad using a 17-seat Force Urbania. Airport group transfers, weddings and events, corporate travel, sightseeing and custom multi-stop trips. Quotation on request.",
+        "description": "UrbanLoop accepts private group transport enquiries across India and confirms a suitable vehicle arrangement and availability per route and date.",
     }, {
         "@context": "https://schema.org", "@type": "WebSite", "@id": BASE + "/#website",
         "url": BASE + "/", "name": BRAND, "publisher": {"@id": BASE + "/#org"},
@@ -358,7 +358,7 @@ def head(title, desc, path, ld=None, noindex=False):
 <meta property="og:image" content="{BASE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="{html.escape(BRAND)} — 17-seat Force Urbania, private group transport in Hyderabad">
+<meta property="og:image:alt" content="{html.escape(BRAND)} — private group transport across India">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{html.escape(title)}">
 <meta name="twitter:description" content="{html.escape(desc)}">
@@ -419,7 +419,7 @@ def footer():
 <div class="fgrid">
   <div>
     <div class="logo" style="color:#fff;margin-bottom:12px">{brand_svg("urbanloop-lockup-horizontal-dark.svg", cls="brandmark")}<span class="sr">{html.escape(BRAND)} &mdash; {html.escape(TAGLINE)}</span></div>
-    <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">Pre-booked private group transport with a 17-seat Force Urbania. Quotation on request — submitting an enquiry does not confirm a booking.</p>
+    <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">UrbanLoop arranges pre-booked private group transport. We check the vehicle, route and date before sending a quotation.</p>
     <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{PHONE_TXT}</a></p>
   </div>
   {col("Trip types", [("Airport group transfers","/airport-group-transfer-hyderabad/"),
@@ -429,6 +429,7 @@ def footer():
                  ("Sightseeing & day hire","/hyderabad-sightseeing-group-travel/"),
                  ("Family group travel","/family-group-travel-hyderabad/")])}
   {col("Company", [("Find a vehicle","/find-a-vehicle/"),
+                   ("Destinations","/destinations/"),
                    ("Force Urbania hire","/force-urbania-hire-hyderabad/"),
                    ("How it works","/how-it-works/"),
                    ("What to expect","/what-to-expect/"),("Guides","/guides/"),
@@ -438,7 +439,7 @@ def footer():
 </div>
 <div class="fbot">
   <span>&copy; {YEAR} {html.escape(BRAND)} &middot; {CITY}</span>
-  <span>Vehicle: 17-seat Force Urbania &middot; Quotation on request</span>
+  <span>Private group transport &middot; Quotation on request</span>
 </div>
 </div></footer>
 {wa}{sticky}
@@ -461,11 +462,12 @@ def faq_ld(pairs):
             "mainEntity": [{"@type": "Question", "name": q,
                             "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in pairs]}
 
-def service_ld(name, desc):
+def service_ld(name, desc, area_type="City", area_name=None):
+    area_name = area_name or CITY
     return {"@context": "https://schema.org", "@type": "Service", "name": name,
             "serviceType": "Private group transport and vehicle hire",
             "description": desc, "provider": {"@id": BASE + "/#org"},
-            "areaServed": {"@type": "City", "name": CITY},
+            "areaServed": {"@type": area_type, "name": area_name},
             "offers": {"@type": "Offer",
                        "priceSpecification": {"@type": "PriceSpecification",
                                               "description": "Quotation provided on request after trip details are submitted. Availability is not guaranteed and is confirmed per enquiry."}}}

@@ -1,0 +1,47 @@
+[build]
+  base = "website/urbania"
+  command = "python3 build_pages.py"
+  publish = "app/site"
+
+[functions]
+  directory = "website/urbania/netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/trip"
+  to = "/.netlify/functions/trip"
+  status = 200
+
+[[redirects]]
+  from = "/api/trip/*"
+  to = "/.netlify/functions/trip?ref=:splat"
+  status = 200
+
+[[redirects]]
+  from = "https://www.urbanloop.co/*"
+  to = "https://urbanloop.co/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "geolocation=(self), camera=(), microphone=()"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.{jpg,jpeg,png,svg,webp,avif}"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, immutable"

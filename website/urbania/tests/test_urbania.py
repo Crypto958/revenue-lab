@@ -336,9 +336,21 @@ class NewArchitectureTests(unittest.TestCase):
         m = re.search(r"<h1[^>]*>(.*?)</h1>", home, re.S)
         self.assertIsNotNone(m, "no <h1> found on the homepage")
         text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", m.group(1))).strip()
-        self.assertIn("Force Urbania rental in Hyderabad", text,
+        self.assertIn("Force Urbania group transport across India", text,
                       f"H1 text does not carry the primary keyword: {text!r}")
-        self.assertIn("Premium group transportation for airport transfers", home)
+        self.assertIn("Private group transportation for airport transfers", home)
+
+    def test_verified_nationwide_cohort_is_published_and_indexable(self):
+        cities = sorted((SITE / "city").glob("*/index.html"))
+        routes = sorted((SITE / "route").glob("*/index.html"))
+        self.assertEqual(len(cities), 20)
+        self.assertEqual(len(routes), 30)
+        sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+        for page in cities + routes:
+            text = page.read_text(encoding="utf-8")
+            self.assertIn('name="robots" content="index, follow', text, page)
+            prefix = page.parent.parent.name
+            self.assertIn(f"https://urbanloop.co/{prefix}/{page.parent.name}/", sitemap, page)
 
     def test_journey_bar_is_step_one_only(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")
@@ -425,7 +437,8 @@ class NewArchitectureTests(unittest.TestCase):
     def test_every_declared_page_is_in_the_sitemap(self):
         import site_data
         sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
-        expected = [f'/fleet/{c["key"]}/' for c in site_data.CONFIGURATIONS]
+        expected = ([f'/fleet/{c["key"]}/' for c in site_data.CONFIGURATIONS]
+                    if site_data.FLEET_CONFIRMED else [])
         expected += [f'/destinations/hyderabad-to-{r["name"].lower()}/' for r in site_data.ROUTES]
         for path in expected:
             self.assertIn(path, sitemap, f"{path} missing from sitemap.xml")

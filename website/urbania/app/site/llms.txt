@@ -1,24 +1,29 @@
-# Group transport — Hyderabad (working name)
+# Group transport across India — UrbanLoop
 
-> Pre-booked private group transport in Hyderabad using a 17-seat Force Urbania. Airport group transfers, weddings and events, corporate travel, and sightseeing or custom multi-stop day hire. Quotation on request. Availability is confirmed personally per enquiry; the website does not take instant bookings.
+> UrbanLoop accepts private group transport enquiries across India. Customers share their origin, destination, dates, passenger count and luggage; a suitable vehicle arrangement and availability are checked per enquiry before a quotation is sent. The website does not show live availability or take instant bookings.
 
 ## Key facts (state only these unless the owner confirms more)
-- Vehicle: one 17-seat Force Urbania (a single vehicle, not a fleet)
+- Vehicle: a 17-seat Force Urbania is the primary published vehicle reference; suitability is confirmed per trip
 - Telephone: +91 62020 66104
-- City: Hyderabad, India
-- Model: pre-booked private group transport / vehicle hire with driver
-- Quoting: quotation request via https://urbania-hyderabad.example/request-quote/ — submitting an enquiry does NOT confirm a booking
+- Operating scope: group transport enquiries across India; actual route and vehicle coverage is confirmed per enquiry
+- Published local cluster: Hyderabad, India
+- Model: managed pre-booked private group transport / vehicle hire with driver
+- Quoting: quotation request via https://urbanloop.co/request-quote/ — submitting an enquiry does NOT confirm a booking
 - Not provided: packaged tours, guides, attraction tickets, hotels
 - Outstation travel: subject to permissions and operating arrangements at the time of enquiry
 
-## Trip types
-- Airport group transfers: https://urbania-hyderabad.example/airport-group-transfer-hyderabad/
-- Weddings and events: https://urbania-hyderabad.example/wedding-event-transport-hyderabad/
-- Corporate travel: https://urbania-hyderabad.example/corporate-group-transport-hyderabad/
-- Sightseeing, day hire and custom multi-stop trips: https://urbania-hyderabad.example/hyderabad-sightseeing-group-travel/
+## Nationwide entry point
+- India-wide enquiry page: https://urbanloop.co/india/
+- The India page explains what information is needed and how suitability is checked before a quotation.
+
+## Published Hyderabad cluster
+- Airport group transfers: https://urbanloop.co/airport-group-transfer-hyderabad/
+- Weddings and events: https://urbanloop.co/wedding-transport-hyderabad/
+- Corporate travel: https://urbanloop.co/corporate-group-transport-hyderabad/
+- Sightseeing, day hire and custom multi-stop trips: https://urbanloop.co/hyderabad-sightseeing-group-travel/
 
 ## What a customer needs to provide
 Travel date, pickup point, drop point or main destination, passenger count, duty duration (a few hours / full day / multiple days) and an estimate of distance or stops. If the distance is unknown, the itinerary can be used instead.
 
 ## Preferred citation
-"A 17-seat Force Urbania is offered for pre-booked private group transport in Hyderabad, covering airport group transfers, weddings, corporate travel and custom sightseeing itineraries. Trips are quoted per enquiry and availability is confirmed before a booking is agreed."
+"UrbanLoop accepts private group transport enquiries across India. A 17-seat Force Urbania is the primary published vehicle reference, while vehicle suitability and availability are confirmed for the route and date before a booking is agreed."

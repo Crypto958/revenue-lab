@@ -218,7 +218,8 @@ def planner(preset=""):
   <form id="plform" novalidate>
     <div class="pl-modes">{blocks}</div>
     <div class="pl-contact">
-      <h3 class="pl-h">Where should we send your options?</h3>
+      <h3 class="pl-h">Where should we send your quotation?</h3>
+      <p class="pl-help">We check the route and vehicle first, then reply with one clear quotation. No payment is taken to ask.</p>
       {CONTACT}
     </div>
     <div class="pl-summary" id="pl-summary">
@@ -226,13 +227,13 @@ def planner(preset=""):
       {summary_rows}
       <div class="pl-summary-actions">
         <button type="button" class="btn ghost" id="pl-edit">Edit details</button>
-        <button type="submit" class="btn" id="pl-send">Request my trip quote</button>
+        <button type="submit" class="btn" id="pl-send">Send my enquiry</button>
       </div>
     </div>
     <div class="pl-foot">
-      <button type="submit" class="btn wide" id="pl-next">Continue</button>
+      <button type="submit" class="btn wide" id="pl-next">Review my trip</button>
       <p class="pl-disclaim"><b>This is a quotation request.</b> Sending it does not confirm vehicle availability
-      and does not create a booking. We check suitability and availability, then send you a quotation.</p>
+      and does not create a booking. UrbanLoop checks suitability and availability, then sends you a quotation.</p>
     </div>
   </form>
   <!-- OUTSIDE the form on purpose. done() hides the form on success; while this
@@ -271,7 +272,7 @@ display:inline-flex;align-items:center}
 padding:12px 13px;font-size:16px;font-family:inherit;color:var(--ink)}
 .pl-f textarea{min-height:74px;resize:vertical}
 .pl-f input:focus,.pl-f select:focus,.pl-f textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.pl-f.bad input,.pl-f.bad select{border-color:#B42318}
+.pl-f.bad input,.pl-f.bad select,.pl-f.bad textarea{border-color:#B42318}
 .pl-chips{display:flex;flex-wrap:wrap;gap:8px}
 .pl-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:100px;
 padding:9px 14px;font-size:14.5px;color:var(--ink-2);cursor:pointer;background:#fff;transition:.15s}
@@ -281,6 +282,7 @@ padding:9px 14px;font-size:14.5px;color:var(--ink-2);cursor:pointer;background:#
 .pl-full{margin-bottom:15px}
 .pl-contact,.pl-summary{padding:18px 20px;border-top:1px solid var(--line);background:var(--alt)}
 .pl-h{font-size:17px;margin-bottom:14px}
+.pl-help{font-size:13.5px;color:var(--ink-3);margin:-5px 0 16px;line-height:1.5}
 .pl-consent{display:flex;gap:11px;align-items:flex-start;font-size:13px;color:var(--ink-2);line-height:1.5;margin-top:6px}
 .pl-consent input{margin-top:3px;accent-color:var(--accent);flex:none;width:auto}
 .pl-summary{display:none}.pl-summary.on{display:block}
@@ -340,16 +342,16 @@ PLANNER_JS = """<script>
     var scope=pl.querySelector('.pl-mode[data-mode="'+current+'"]'), bad=false;
     [].slice.call(scope.querySelectorAll('[required]')).forEach(function(el){
       var ok = el.type==='radio' ? !!scope.querySelector('input[name="'+el.name+'"]:checked') : !!el.value.trim();
-      if(el.type!=='radio'){ var L=el.closest('label'); if(L) L.classList.toggle('bad',!ok); }
+      if(el.type!=='radio'){ var L=el.closest('label'); if(L){ L.classList.toggle('bad',!ok); el.setAttribute('aria-invalid',ok?'false':'true'); } }
       if(!ok) bad=true;
     });
     var c=document.getElementById('plform');
     [].slice.call(c.querySelectorAll('.pl-contact [required]')).forEach(function(el){
       var ok = el.type==='checkbox' ? el.checked : !!el.value.trim();
-      var L=el.closest('label'); if(L&&el.type!=='checkbox') L.classList.toggle('bad',!ok);
+      var L=el.closest('label'); if(L&&el.type!=='checkbox'){ L.classList.toggle('bad',!ok); el.setAttribute('aria-invalid',ok?'false':'true'); }
       if(!ok) bad=true;
     });
-    if(bad){ var f=pl.querySelector('.pl-f.bad input, .pl-f.bad select'); if(f){f.focus();f.scrollIntoView({block:'center',behavior:'smooth'});} }
+    if(bad){ var f=pl.querySelector('.pl-f.bad input, .pl-f.bad select, .pl-f.bad textarea'); if(f){f.focus();f.scrollIntoView({block:'center',behavior:'smooth'});} }
     return !bad;
   }
   function collect(){
@@ -411,8 +413,8 @@ PLANNER_JS = """<script>
         +'<div class="pl-ref">'+id+'</div>'
         +'<p class="lede" style="font-size:16px">Thank you &mdash; your reference is above. Here is what happens next:</p>'
         +'<div class="pl-sgrid pl-steps" style="margin-top:14px">'
-        +'<div class="pl-srow"><b>1</b><span>We check whether your trip suits the 17-seat Urbania, or whether another option fits better.</span></div>'
-        +'<div class="pl-srow"><b>2</b><span>We confirm availability for your dates.</span></div>'
+        +'<div class="pl-srow"><b>1</b><span>We check the route, dates and group requirements, then identify a suitable vehicle arrangement.</span></div>'
+        +'<div class="pl-srow"><b>2</b><span>We confirm vehicle availability for your dates.</span></div>'
         +'<div class="pl-srow"><b>3</b><span>We send you a quotation with the inclusions and terms.</span></div>'
         +'<div class="pl-srow"><b>4</b><span>A booking is confirmed only after you accept the quotation.</span></div>'
         +'</div>'
