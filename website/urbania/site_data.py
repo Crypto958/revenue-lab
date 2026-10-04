@@ -351,18 +351,9 @@ REVIEWS_EMPTY_MESSAGE = ("Customer reviews will be published here as they are re
 # ---------------------------------------------------------------- photo slots
 # Fixed filenames so real photographs drop in without touching code.
 GALLERY_SLOTS = [
-    ("exterior-front", "Front three-quarter, exterior"),
-    ("exterior-side", "Side profile"),
-    ("exterior-rear", "Rear three-quarter"),
-    ("entry", "Open door and step-in"),
-    ("interior-rows", "Seat rows from the front"),
-    ("interior-aisle", "Aisle and legroom"),
-    ("interior-seats", "Seat detail and trim"),
-    ("ac", "Air-conditioning vents"),
-    ("charging", "Charging points"),
-    ("luggage", "Luggage bay with cases"),
-    ("night-interior", "Interior at night"),
-    ("driver-area", "Driver area and dashboard"),
+    ("exterior-front", "Force Urbania exterior, front view"),
+    ("exterior-side", "Force Urbania exterior, side view"),
+    ("exterior-rear", "Force Urbania exterior, rear three-quarter view"),
 ]
 
 
@@ -371,18 +362,8 @@ GALLERY_SLOTS = [
 # app/site/media/seating/<name>.jpg and this section switches from placeholder to
 # photo automatically on the next build.
 SEATING_SLOTS = [
-    ("layout-1x1", "1x1 (Maharaja) seat layout"),
-    ("layout-2x1", "2x1 seat layout"),
-    ("seat-detail", "Seat type and trim"),
-    ("legroom", "Legroom between rows"),
-    ("aisle", "Aisle width"),
-    ("reclined", "Seat pushed back / reclined"),
-    ("headrest", "Headrest and seat back"),
-    ("charging", "Per-seat charging point"),
-    ("reading-light", "Reading light and air vent"),
-    ("rear-bench", "Rear row / last bench"),
-    ("entry-step", "Entry step and grab handle"),
-    ("luggage-bay", "Luggage bay with cases"),
+    ("standard-seating", "Standard passenger seating reference"),
+    ("premium-recliner", "Premium reclining captain-seat reference"),
 ]
 
 # Descriptions of the two seat layouts. Layout convention is what distinguishes
