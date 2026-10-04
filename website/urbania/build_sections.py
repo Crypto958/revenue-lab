@@ -152,6 +152,10 @@ table.rate.indic td.small{color:var(--ink-2);line-height:1.5}
 .gfig img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#eef2f3;padding:8px}
 .gfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;font-size:13px;line-height:1.35;color:#fff;
 background:linear-gradient(transparent,rgba(6,16,24,.78))}
+.pl-location{position:relative}
+.pl-suggestions{position:absolute;z-index:20;left:0;right:0;top:100%;margin-top:4px;padding:4px;background:#fff;border:1px solid var(--line-2);border-radius:10px;box-shadow:0 12px 28px rgba(14,27,42,.14)}
+.pl-suggestion{display:block;width:100%;border:0;background:#fff;text-align:left;padding:10px 11px;border-radius:7px;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.pl-suggestion:hover,.pl-suggestion:focus{background:var(--accent-soft);outline:0}
 /* hero media */
 .hv-video,.hv-still{width:100%;display:block;border-radius:12px;aspect-ratio:16/9;
 object-fit:cover;background:#0E1B2A}
@@ -707,6 +711,33 @@ def journey_bar(action="/request-quote/"):
 <script>
 (function(){
   var form=document.querySelector('.jbar'); if(!form) return;
+  [].slice.call(form.querySelectorAll('[data-location-suggest]')).forEach(function(input){
+    var label=input.closest('.jf'); if(!label) return;
+    label.classList.add('pl-location');
+    var box=document.createElement('div'); box.className='pl-suggestions'; box.hidden=true; box.setAttribute('role','listbox'); label.appendChild(box);
+    var timer, controller;
+    input.setAttribute('aria-autocomplete','list');
+    input.addEventListener('input',function(){
+      clearTimeout(timer); box.hidden=true; box.innerHTML=''; var q=input.value.trim();
+      if(q.length<3) return;
+      timer=setTimeout(function(){
+        if(controller) controller.abort(); controller=new AbortController();
+        fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&dedupe=1&countrycodes=in&limit=5&accept-language=en&q='+encodeURIComponent(q),{signal:controller.signal})
+          .then(function(r){return r.ok?r.json():null;}).then(function(items){
+            if(!items) return;
+            items.slice(0,5).forEach(function(item){
+              var p=item.address||{}, parts=[];
+              [p.house_number,p.road,p.neighbourhood,p.suburb,p.city||p.town||p.village,p.state].forEach(function(v){if(v&&parts.indexOf(v)<0) parts.push(v);});
+              var text=parts.join(', ')||item.display_name; if(!text) return;
+              var b=document.createElement('button'); b.type='button'; b.className='pl-suggestion'; b.setAttribute('role','option'); b.textContent=text;
+              b.addEventListener('mousedown',function(e){e.preventDefault();input.value=text;box.hidden=true;box.innerHTML='';}); box.appendChild(b);
+            });
+            box.hidden=!box.children.length;
+          }).catch(function(){});
+      },280);
+    });
+    input.addEventListener('blur',function(){setTimeout(function(){box.hidden=true;},160);});
+  });
   form.addEventListener('submit',function(e){
     var bad=false;
     // From and To remain free text: landmarks, villages and unusual spellings
