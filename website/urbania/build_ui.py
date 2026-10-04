@@ -5,7 +5,7 @@ Working name only: the final business name is an OWNER DECISION (see docs/OWNER_
 
 Every fact that is not owner-supplied or independently verified is either omitted from
 visible copy or carries an inline  <!-- [VERIFY BEFORE PUBLISHING: ...] -->  marker.
-Visible copy states only what is true: 17-seat Force Urbania, quote-first, group travel.
+Visible copy positions UrbanLoop as a pan-India, quote-first group-transport aggregator.
 """
 import os, json, html, datetime
 
@@ -63,11 +63,10 @@ def brand_svg(filename, cls="", label=""):
     return svg
 
 NAV = [
-    ("Vehicles", "/find-a-vehicle/"),
-    ("Airport", "/airport-group-transfer-hyderabad/"),
-    ("Outstation", "/outstation-group-travel-hyderabad/"),
-    ("Weddings", "/wedding-transport-hyderabad/"),
-    ("Corporate", "/corporate-group-transport-hyderabad/"),
+    ("How it works", "/how-it-works/"),
+    ("Vehicle options", "/find-a-vehicle/"),
+    ("Use cases", "/india/"),
+    ("Routes", "/india/"),
     ("Guides", "/guides/"),
 ]
 
@@ -419,7 +418,7 @@ def footer():
 <div class="fgrid">
   <div>
     <div class="logo" style="color:#fff;margin-bottom:12px">{brand_svg("urbanloop-lockup-horizontal-dark.svg", cls="brandmark")}<span class="sr">{html.escape(BRAND)} &mdash; {html.escape(TAGLINE)}</span></div>
-    <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">UrbanLoop arranges pre-booked private group transport. We check the vehicle, route and date before sending a quotation.</p>
+    <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">UrbanLoop helps groups arrange private transport across India. We check the route, vehicle option and date before sending a quotation.</p>
     <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{PHONE_TXT}</a></p>
   </div>
   {col("Trip types", [("Airport group transfers","/airport-group-transfer-hyderabad/"),
@@ -438,7 +437,7 @@ def footer():
   {col("Legal", [("Privacy","/privacy/"),("Terms","/terms/")])}
 </div>
 <div class="fbot">
-  <span>&copy; {YEAR} {html.escape(BRAND)} &middot; {CITY}</span>
+  <span>&copy; {YEAR} {html.escape(BRAND)} &middot; India</span>
   <span>Private group transport &middot; Quotation on request</span>
 </div>
 </div></footer>
@@ -524,10 +523,9 @@ def vehicle_panel():
     if photo:
         return (
             '<div class="vwrap">'
-            f'<img src="{photo}" alt="Force Urbania 17-seat group travel vehicle, used for '
-            f'pre-booked trips in Hyderabad" loading="lazy" decoding="async">'
-            '<p class="vcap"><b>A 17-seat Force Urbania.</b> Pre-booked group travel in '
-            'Hyderabad.</p></div>')
+            f'<img src="{photo}" alt="Force Urbania group transport vehicle" loading="lazy" decoding="async">'
+            '<p class="vcap"><b>Force Urbania group transport.</b> One of the vehicle options '
+            'that may suit your route and group size.</p></div>')
     svg = ('<svg viewBox="0 0 640 300" role="img" aria-label="Illustrative diagram of a 17-seat Force Urbania-style '
            'group travel van, showing passenger seating and a rear luggage area."><rect width="640" height="300" fill="#EAF0F4"/>'
            '<rect x="60" y="70" width="520" height="150" rx="18" fill="#FFFFFF" stroke="#CDD8E0" stroke-width="2"/>'

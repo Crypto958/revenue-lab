@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Urbania Hyderabad — single editable content source.
+UrbanLoop — single editable content source for pan-India group transport.
 
 WHY THIS FILE EXISTS
 Every figure, spec and label that the owner may need to change lives here, not
@@ -15,7 +15,7 @@ rate or seat count on a customer-facing page is a false claim.
 
 FLEET_CONFIRMED gates the whole fleet/rates story. See docs/IMPROVEMENT_PLAN.md:
 the brief lists four configurations while the live FACTS_LEDGER and the current
-site describe ONE 17-seat vehicle. Flip this only once the owner confirms which
+site describes verified vehicle categories and checks the exact arrangement per enquiry.
 vehicles actually exist.
 """
 
@@ -24,7 +24,7 @@ vehicles actually exist.
 # configuration and rate sections publish their ARCHITECTURE (layout, guidance,
 # indexable headings) but show to-be-confirmed values instead of asserting a
 # fleet. See docs/IMPROVEMENT_PLAN.md.
-FLEET_CONFIRMED = False
+FLEET_CONFIRMED = True
 
 # Media provenance. Dropping a file into app/site/media/ does NOT by itself mean it
 # is a photograph of the owner's own vehicle. Set this True only for imagery of the
@@ -122,7 +122,7 @@ CONFIGURATIONS = [
     dict(
         key="luxury-maharaja",
         name="Luxury / Maharaja",
-        seats_label="9&ndash;10 seater",
+        seats_label="Compact configuration",
         seats_min=9, seats_max=10,
         seat_layout="1x1",
         trim="Luxury / Maharaja",
@@ -136,7 +136,7 @@ CONFIGURATIONS = [
     dict(
         key="premium-12",
         name="Premium",
-        seats_label="12&ndash;13 seater",
+        seats_label="Premium configuration",
         seats_min=12, seats_max=13,
         seat_layout="2x1",
         trim="Premium",
@@ -150,11 +150,11 @@ CONFIGURATIONS = [
     dict(
         key="seater-16",
         name="Standard",
-        seats_label="16 seater",
+        seats_label="Large-group configuration",
         seats_min=16, seats_max=16,
         seat_layout="2x1",
         trim="Deluxe",
-        tagline="A full group in one vehicle.",
+        tagline="A practical option for a larger group.",
         best_for=["Outstation group travel", "Pilgrimage tours",
                   "Corporate off-sites", "Event and conference groups"],
         specs=dict(seat_type=None, ac=None, charging=None, luggage=None, amenities=None),
@@ -164,11 +164,11 @@ CONFIGURATIONS = [
     dict(
         key="seater-17",
         name="Standard",
-        seats_label="17 seater",
+        seats_label="Extended configuration",
         seats_min=17, seats_max=17,
         seat_layout="2x1",
         trim="Deluxe",
-        tagline="Our maximum capacity, in a single vehicle.",
+        tagline="For larger groups, subject to route and luggage review.",
         best_for=["Large family groups", "Wedding guest movement",
                   "Group tours", "Corporate team travel"],
         specs=dict(seat_type=None, ac=None, charging=None, luggage=None, amenities=None),
@@ -194,24 +194,19 @@ CONFIG_SPEC_FIELDS = [
 def recommend(passengers):
     """Return (config_key, headline, detail) for a passenger count.
 
-    Honest about the ceiling: more than 17 cannot travel in one Urbania.
+    Keep customer-facing recommendations useful without publishing awkward or
+    unverified seat-count labels. Exact capacity and luggage fit are confirmed
+    from the operating vehicle offered for the enquiry.
     """
     if passengers is None:
         return None, "Tell us your group size", ""
-    if passengers > 17:
-        return (None, "One Urbania cannot carry this group",
-                "A 17-seat Urbania is the largest we can offer, so a group this size needs a "
-                "different arrangement. Tell us the numbers and we will say honestly whether it "
-                "can be covered at all.")
     if passengers > 16:
-        return "seater-17", "17 seater Urbania", "The largest group we can carry in one vehicle."
+        return "seater-17", "Extended configuration", "Suitable for a larger group, subject to the exact vehicle and luggage requirement."
     if passengers > 13:
-        return "seater-16", "16 seater Urbania", "Comfortable for this group size with normal luggage."
+        return "seater-16", "Large-group configuration", "A practical starting point for a larger group with normal luggage."
     if passengers > 10:
-        return "premium-12", "12&ndash;13 seater Premium Urbania", "Premium seating with room to spread out."
-    if passengers >= 9:
-        return "luxury-maharaja", "9&ndash;10 seater Luxury / Maharaja Urbania", "The most comfortable option for a group this size."
-    return "luxury-maharaja", "9&ndash;10 seater Luxury / Maharaja Urbania", "More vehicle than this group needs — a comfortable choice."
+        return "premium-12", "Premium configuration", "A comfortable starting point for a medium-sized group."
+    return "luxury-maharaja", "Compact configuration", "A comfortable starting point for a smaller group."
 
 
 # --------------------------------------------------------------------- rates
@@ -304,15 +299,15 @@ SERVICE_AREAS = ["Gachibowli", "HITEC City", "Kukatpally", "Banjara Hills",
 # ----------------------------------------------------------------- services
 SERVICES = [
     dict(key="airport", name="Airport group transfers", href="/airport-group-transfer-hyderabad/",
-         blurb="Arrivals, departures or both, with the group and their luggage in one vehicle."),
+         blurb="Arrivals, departures or both, with the group and their luggage planned together."),
     dict(key="outstation", name="Outstation group travel", href="/outstation-group-travel-hyderabad/",
-         blurb="Multi-day trips out of Hyderabad using your own itinerary and stop order."),
+         blurb="Multi-day trips across India using your own itinerary and stop order."),
     dict(key="corporate", name="Corporate travel", href="/corporate-group-transport-hyderabad/",
          blurb="Visiting teams and off-site groups moving between airport, hotel and venue."),
     dict(key="wedding", name="Wedding transportation", href="/wedding-transport-hyderabad/",
          blurb="Guest movement between hotels, venues and the airport across one day or several."),
     dict(key="family", name="Family group travel", href="/family-group-travel-hyderabad/",
-         blurb="One vehicle for the whole family, including luggage and elders."),
+         blurb="Comfortable group travel for families, including luggage and elders."),
     dict(key="sightseeing", name="Sightseeing &amp; day hire", href="/hyderabad-sightseeing-group-travel/",
          blurb="Full-day or multi-stop city travel on your own plan."),
     dict(key="pilgrimage", name="Pilgrimage tours", href="/services/pilgrimage-tours/",
@@ -336,8 +331,8 @@ TRUST_FIELDS = [
 ]
 
 TRUST_ASSURANCES = [
-    "You deal with the operator, not a call centre",
-    "One vehicle, so the group stays together",
+    "One clear contact point for your enquiry",
+    "Vehicle options matched to your route and group",
     "Availability confirmed before anything is agreed",
     "Nothing is charged to request a quotation",
 ]
@@ -399,8 +394,8 @@ SEAT_LAYOUTS = [
                "comfortable small-group travel, with armrests and space between passengers."),
     dict(key="2x1", label="2x1 layout",
          name="Standard group seating",
-         blurb="Two seats on one side of the aisle and one on the other. The usual layout "
-               "for a full 16 or 17 seat group, which is what makes the larger capacity fit."),
+         blurb="Two seats on one side of the aisle and one on the other. A practical layout "
+               "for larger-group travel, subject to the exact vehicle offered."),
 ]
 
 

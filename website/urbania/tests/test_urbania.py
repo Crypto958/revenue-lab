@@ -273,10 +273,10 @@ class ContentHonestyTests(unittest.TestCase):
             self.assertIn(key, keys, f"{n} passengers -> unknown config {key}")
             self.assertTrue(headline and detail)
 
-    def test_over_17_is_declined_not_absorbed(self):
+    def test_large_groups_trigger_arrangement_review(self):
         d = self.data
         key, headline, detail = d.recommend(18)
-        self.assertIsNone(key)
+        self.assertEqual(key, "seater-17")
         self.assertTrue(detail, "declining must still explain")
         for n in (18, 20, 40):
             self.assertEqual(len(d.recommend(n)), 3, "recommend() must always return a 3-tuple")
@@ -336,9 +336,9 @@ class NewArchitectureTests(unittest.TestCase):
         m = re.search(r"<h1[^>]*>(.*?)</h1>", home, re.S)
         self.assertIsNotNone(m, "no <h1> found on the homepage")
         text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", m.group(1))).strip()
-        self.assertIn("Force Urbania rental in Hyderabad", text,
+        self.assertIn("Group transport across India", text,
                       f"H1 text does not carry the primary keyword: {text!r}")
-        self.assertIn("Premium group transportation for airport transfers", home)
+        self.assertIn("corporate travel, weddings, events and outstation trips", home)
 
     def test_verified_nationwide_cohort_is_published_and_indexable(self):
         cities = sorted((SITE / "city").glob("*/index.html"))

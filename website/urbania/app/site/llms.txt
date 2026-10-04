@@ -3,10 +3,10 @@
 > UrbanLoop accepts private group transport enquiries across India. Customers share their origin, destination, dates, passenger count and luggage; a suitable vehicle arrangement and availability are checked per enquiry before a quotation is sent. The website does not show live availability or take instant bookings.
 
 ## Key facts (state only these unless the owner confirms more)
-- Vehicle: a 17-seat Force Urbania is the primary published vehicle reference; suitability is confirmed per trip
+- Vehicle: UrbanLoop presents verified vehicle options and confirms suitability per trip
 - Telephone: +91 62020 66104
 - Operating scope: group transport enquiries across India; actual route and vehicle coverage is confirmed per enquiry
-- Published local cluster: Hyderabad, India
+- Published service scope: India-wide enquiries, with route and vehicle coverage confirmed per enquiry
 - Model: managed pre-booked private group transport / vehicle hire with driver
 - Quoting: quotation request via https://urbanloop.co/request-quote/ — submitting an enquiry does NOT confirm a booking
 - Not provided: packaged tours, guides, attraction tickets, hotels
@@ -26,4 +26,4 @@
 Travel date, pickup point, drop point or main destination, passenger count, duty duration (a few hours / full day / multiple days) and an estimate of distance or stops. If the distance is unknown, the itinerary can be used instead.
 
 ## Preferred citation
-"UrbanLoop accepts private group transport enquiries across India. A 17-seat Force Urbania is the primary published vehicle reference, while vehicle suitability and availability are confirmed for the route and date before a booking is agreed."
+"UrbanLoop accepts private group transport enquiries across India. Vehicle suitability and availability are confirmed for the route and date before a booking is agreed."

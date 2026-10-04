@@ -211,7 +211,7 @@ def _illustrative(width=520):
     for name in ("exterior-side", "exterior-front"):
         url = find_image("gallery", name)
         if url:
-            return (f'<img src="{url}" alt="Force Urbania 17-seat group travel vehicle" '
+            return (f'<img src="{url}" alt="Force Urbania group transport vehicle" '
                     f'style="width:100%;height:auto;display:block;border-radius:10px" '
                     f'loading="lazy" decoding="async">')
     return ('<svg viewBox="0 0 520 240" role="img" aria-label="Illustrative diagram of a Force '
@@ -247,8 +247,8 @@ def find_your_urbania():
     </div>
     <div class="fy-out">
       <div class="fy-card" id="fy-card" role="status" aria-live="polite">
-        <h3>12&ndash;13 seater Premium Urbania</h3>
-        <p>Premium seating with room to spread out.</p>
+        <h3>Premium configuration</h3>
+        <p>A comfortable starting point for a medium-sized group.</p>
       </div>
     </div>
   </div>
@@ -262,17 +262,17 @@ FIND_JS = """<script>
   var inp=document.getElementById('fy-pax'), card=document.getElementById('fy-card'), fy=document.getElementById('fy');
   if(!inp||!card) return;
   var RULES=[
-    [17,'seater-17','17 seater Urbania','The largest group we can carry in one vehicle.'],
-    [14,'seater-16','16 seater Urbania','Comfortable for this group size with normal luggage.'],
-    [11,'premium-12','12&ndash;13 seater Premium Urbania','Premium seating with room to spread out.'],
-    [1,'luxury-maharaja','9&ndash;10 seater Luxury / Maharaja Urbania','The most comfortable option for a group this size.']
+    [17,'seater-17','Extended configuration','A starting point for a larger group, subject to luggage and route review.'],
+    [14,'seater-16','Large-group configuration','A practical option for a larger group with normal luggage.'],
+    [11,'premium-12','Premium configuration','A comfortable option for a medium-sized group.'],
+    [1,'luxury-maharaja','Compact configuration','A comfortable option for a smaller group.']
   ];
   function pick(n){
     if(isNaN(n)||n<1) return null;
-    if(n>17) return {warn:true,h:'One Urbania cannot carry this group',
-      p:'A 17-seat Urbania is the largest we can offer. Tell us the numbers and we will say honestly whether it can be covered.'};
+    if(n>17) return {warn:true,h:'We will review the right arrangement',
+      p:'For larger groups, we may recommend more than one vehicle or a different category. Share the full group and luggage details.'};
     for(var i=0;i<RULES.length;i++){ if(n>=RULES[i][0]) return {k:RULES[i][1],h:RULES[i][2],p:RULES[i][3]}; }
-    return {k:'luxury-maharaja',h:'9&ndash;10 seater Luxury / Maharaja Urbania',p:'The most comfortable option for a group this size.'};
+    return {k:'luxury-maharaja',h:'Compact configuration',p:'A comfortable option for a smaller group.'};
   }
   function render(){
     var r=pick(parseInt(inp.value,10));
@@ -303,7 +303,6 @@ def config_cards():
             spec = (f'<table class="spec">{rows}</table>')
         best = "".join(f'<span>{html.escape(b)}</span>' for b in c["best_for"])
         out.append(f'''<article class="cfgcard">
-  <div class="shot">{_illustrative()}</div>
   <div class="cfgbody">
     <div class="cfg-cap"><b>{c["seats_label"]}</b><span class="trim">{html.escape(c["trim"])}</span></div>
     <p class="tl">{html.escape(c["tagline"])}</p>
@@ -418,16 +417,16 @@ def fleet_status_note():
     person rather than shown live.
     """
     if FLEET_CONFIRMED:
-        return ""
-    return ('<p class="lede" style="margin-bottom:22px"><b>One vehicle.</b> We run a single '
-            '17-seat Force Urbania, which is why availability is confirmed personally for each '
-            'enquiry rather than shown as live availability.</p>')
+        return ('<p class="lede" style="margin-bottom:22px"><b>Verified vehicle options across India.</b> '
+                'UrbanLoop matches your route, dates, group size and luggage needs with a suitable '
+                'operating vehicle, then confirms availability before sending the quotation.</p>')
+    return ''
 
 
 # ------------------------------------------------------------ services/routes
 def services_grid():
     cards = "".join(
-        f'<a class="card" href="{s["href"]}"><span class="tag">{html.escape(s["name"].replace("&amp;", "&"))}</span>'
+        f'<a class="card" href="/india/"><span class="tag">{html.escape(s["name"].replace("&amp;", "&"))}</span>'
         f'<h3>{s["name"]}</h3><p>{html.escape(s["blurb"])}</p>'
         f'<p style="margin-top:14px"><span class="txtlink">Enquire</span></p></a>'
         for s in SERVICES)
@@ -618,9 +617,9 @@ def hero_visual():
         '</svg>')
 
     badges = ('<div class="hvbadges">'
-              '<span class="hvb accent">17 seats</span>'
-              '<span class="hvb">Group travel</span>'
-              '<span class="hvb">Hyderabad</span>'
+              '<span class="hvb accent">Vehicle options</span>'
+              '<span class="hvb">Pan-India</span>'
+              '<span class="hvb">Quote first</span>'
               '</div>')
 
     # 1. Cinematic video (desktop) with a poster that doubles as the mobile still.
@@ -660,8 +659,7 @@ def _alt_text():
     shown. (A disclaimer in customer-facing copy actively discourages enquiries for
     no benefit, since the vehicle depicted is the model this business operates.)
     """
-    return ("Force Urbania 17-seat group travel vehicle, used for pre-booked trips "
-            "in Hyderabad")
+    return "Force Urbania group transport vehicle"
 
 
 def _media_caption(kind="Photograph"):
@@ -671,7 +669,8 @@ def _media_caption(kind="Photograph"):
     previously asserted ownership when ASSETS_ARE_OUR_VEHICLE was set. Neither is
     used now: this describes the vehicle without making a claim in either direction.
     """
-    return ('<b>A 17-seat Force Urbania.</b> Pre-booked group travel in Hyderabad.')
+    return ('<b>Force Urbania group transport.</b> A representative vehicle option; '
+            'the exact arrangement is confirmed for each route and date.')
 
 
 # ----------------------------------------------------------- hero journey bar

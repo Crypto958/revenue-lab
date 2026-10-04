@@ -43,8 +43,8 @@ def related_block(items, h2="Read next."):
 
 # ------------------------------------------------------------------ shared FAQ pool
 CORE_FAQ = [
- ("Can I hire a 17-seat Force Urbania for one day in Hyderabad?",
-  "Yes — day hire is one of the trip types we quote for. Send the date, pickup point, the stops you want to make and the expected duration, and we will reply with a quotation. Availability is confirmed with the quotation."),
+ ("Can UrbanLoop arrange group transport anywhere in India?",
+  "We accept enquiries from across India. Share the origin, destination, dates, group size and trip type; we check the route and suitable operating vehicle options before sending a quotation."),
  ("What information should I provide to get a quotation?",
   "Travel date, pickup point, main destination or drop point, number of passengers, whether you need a few hours, a full day or multiple days, and an estimate of the distance or number of stops. If you are unsure about distance, select \u201cNot sure\u201d — we can work it out from your itinerary."),
  ("Can we provide our own itinerary?",
@@ -54,7 +54,7 @@ CORE_FAQ = [
  ("Does submitting the form confirm the booking?",
   "No. Submitting the form is a quotation enquiry. It does not confirm vehicle availability or create a booking. We reply with a quotation and confirm availability before anything is agreed."),
  ("How many passengers can travel?",
-  "The vehicle is a 17-seat Force Urbania. Share your exact passenger count in the enquiry, particularly if the group includes children, so seating can be confirmed."),
+  "Vehicle suitability depends on the group size, luggage, route and the operating option available for your dates. Share the exact number of adults and children so we can recommend and confirm the right arrangement."),
  ("How much luggage can we carry?",
   "Luggage space depends on how many passengers are travelling and the size of the bags. Please share the number of passengers and an approximate luggage requirement (for example, number of large suitcases and cabin bags) so suitability can be confirmed for your trip rather than assumed."),
  ("How is the trip price calculated?",
@@ -74,10 +74,10 @@ CORE_FAQ = [
 # ------------------------------------------------------------------ HOME
 def build_home():
     facts = [
-        "One 17-seat Force Urbania — a single vehicle, not a marketplace",
+        "Verified vehicle options across India",
         "Quotation prepared for your actual itinerary",
-        "Availability confirmed personally before anything is agreed",
-        "Airport groups, weddings, corporate travel and day hire",
+        "Availability checked before anything is agreed",
+        "Airport groups, weddings, corporate travel and outstation trips",
         "Your itinerary, not a fixed package",
         "Travelling as one group instead of coordinating several cabs",
     ]
@@ -99,16 +99,17 @@ def build_home():
             '<div class="hx-scrim"></div>'
             '<div class="hx-in">'
             '<span class="eyebrow" style="color:#8FD3CB">UrbanLoop &middot; Premium Group Mobility</span>'
-            '<h1 style="margin-top:16px">Force Urbania rental'
-            '<span class="l2">in Hyderabad</span></h1>'
+            '<h1 style="margin-top:16px">Group transport'
+            '<span class="l2">across India</span></h1>'
             '<p class="hx-line">Move Together, Better.</p>'
             '<p class="lede">Premium group transportation for airport transfers, family journeys, '
-            'corporate travel, weddings, events and outstation trips &mdash; up to 17 passengers '
-            'travelling together in a single Force Urbania.</p>'
+            'corporate travel, weddings, events and outstation trips. Tell us where you are travelling, '
+            'how many people are going and what vehicle category you need; we coordinate suitable options '
+            'across India.</p>'
             + (f'<p class="hx-alt"><a href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp us</a>'
                f'<span>&middot;</span><a href="{PHONE_HREF}">Call {PHONE_TXT}</a></p>'
                if WHATSAPP else '')
-            + '<p class="hx-cap"><b>A 17-seat Force Urbania.</b> Pre-booked group travel across India, subject to route and date confirmation.</p>'
+            + '<p class="hx-cap"><b>Vehicle options matched to your trip.</b> Availability is checked for your route and dates before we quote.</p>'
             f'<div class="qwrap">{SEC.journey_bar()}</div>'
             '</div></section>'
             # The bar hangs below the hero, so this section starts clear of it.
@@ -140,13 +141,11 @@ def build_home():
         hero
         + f'<section class="alt"><div class="wrap"><div class="facts">{facthtml}</div></div></section>'
         + '<section id="find-your-urbania-vehicles"><div class="wrap"><div class="shead">'
-          '<span class="eyebrow">Configuration</span><h2>Find your Urbania</h2>'
-          '<p class="lede">Tell us how many people are travelling. We recommend a configuration &mdash; '
-          'and we will say honestly when a group cannot be carried in one vehicle.</p></div>'
+          '<span class="eyebrow">Vehicle matching</span><h2>Find a suitable vehicle option</h2>'
+          '<p class="lede">Tell us how many people are travelling. We use group size, luggage, route and dates to recommend a suitable arrangement.</p></div>'
           + SEC.find_your_urbania() + '</div></section>'
-        + section("The fleet", "Urbania configurations.",
-                  "Each configuration is listed with its capacity and specification. Where a detail has not "
-                  "been confirmed we say so rather than filling the gap with a guess.",
+        + section("Vehicle options", "Choose the right starting point.",
+                  "These are the operational categories we can consider. The exact vehicle and configuration are confirmed for your route, date and group details.",
                   SEC.config_cards(), alt=True)
         + '<section style="padding-top:0"><div class="wrap">'
           '<div class="shead" style="margin-bottom:18px"><h2 style="font-size:clamp(19px,2.1vw,25px)">'
@@ -155,33 +154,28 @@ def build_home():
         + section("Trip types", "What groups use the vehicle for.",
                   "Every trip is quoted from your own plan. These are the four situations that come up most often.",
                   '<div class="grid g2">'
-                  '<a class="card" href="/airport-group-transfer-hyderabad/"><span class="tag">Airport</span>'
-                  '<h3>Group airport transfers</h3><p>Arrivals, departures or both, with the group and their luggage in one vehicle instead of several taxis. Provide flight timing and passenger count.</p>'
+                  '<a class="card" href="/india/"><span class="tag">Airport</span>'
+                  '<h3>Group airport transfers</h3><p>Arrivals, departures or both, with the group and their luggage planned together. Provide flight timing and passenger count.</p>'
                   '<p style="margin-top:14px"><span class="txtlink">Airport group transfers</span></p></a>'
-                  '<a class="card" href="/wedding-transport-hyderabad/"><span class="tag">Weddings &amp; events</span>'
+                  '<a class="card" href="/india/"><span class="tag">Weddings &amp; events</span>'
                   '<h3>Wedding and event transport</h3><p>Guest movement between hotels, venues and the airport across one day or several. Send the schedule and guest numbers.</p>'
                   '<p style="margin-top:14px"><span class="txtlink">Wedding &amp; event transport</span></p></a>'
-                  '<a class="card" href="/corporate-group-transport-hyderabad/"><span class="tag">Corporate</span>'
+                  '<a class="card" href="/india/"><span class="tag">Corporate</span>'
                   '<h3>Corporate group travel</h3><p>Visiting teams, delegations and off-site groups moving between airport, hotel, office and venue on a schedule.</p>'
                   '<p style="margin-top:14px"><span class="txtlink">Corporate group transport</span></p></a>'
-                  '<a class="card" href="/hyderabad-sightseeing-group-travel/"><span class="tag">Sightseeing &amp; day hire</span>'
+                  '<a class="card" href="/india/"><span class="tag">Sightseeing &amp; day hire</span>'
                   '<h3>Sightseeing and day hire</h3><p>Full-day or multi-stop city travel using your own itinerary — you choose the stops and the running order.</p>'
                   '<p style="margin-top:14px"><span class="txtlink">Sightseeing &amp; custom trips</span></p></a>'
                   '</div>', alt=True)
         + section("Services", "What we are booked for.",
                   "Every trip is quoted from your own plan. These are the situations that come up most often.",
                   SEC.services_grid())
-        + section("Popular trips", "Popular trips from Hyderabad.",
-                  "Distances and journey times are approximate road figures from central "
-                  "Hyderabad, and depend on the route and time of day. Tell us your dates and "
-                  "we will confirm the practical details.",
-                  SEC.routes_grid(), alt=True)
-        + section("Rates", "Force Urbania rental rates in Hyderabad.",
-                  "Indicative market ranges, so you can budget before enquiring. Your quotation "
-                  "confirms the figure for your actual trip.",
-                  SEC.indicative_rates()
-                  + '<p style="margin-top:18px"><a class="btn" '
-                    'href="/rates/force-urbania-rental-rates-hyderabad/">See the full rates page</a></p>')
+        + section("Routes", "Find your route.",
+                  "Share any origin and destination in India. Published route pages provide planning context; the quotation confirms the practical details for your dates.",
+                  '<p><a class="btn" href="/india/">Explore India-wide routes and destinations</a></p>', alt=True)
+        + section("Pricing", "A clear quotation for your trip.",
+                  "We do not publish a one-size-fits-all price. Route, dates, duration, vehicle category and group requirements all affect the quotation.",
+                  '<p><a class="btn" href="/request-quote/">Request a trip quotation</a></p>')
         + section("Trust", "What you can rely on.",
                   "We publish figures we can stand behind. Where we do not have one yet, we say so.",
                   SEC.trust_strip(), alt=True)
@@ -211,45 +205,46 @@ def build_home():
                   '<div class="stepc"><span class="n">04</span><div><h3>Availability is confirmed</h3>'
                   '<p>Nothing is reserved until availability is confirmed with you. The enquiry itself does not hold the vehicle.</p></div></div>'
                   '</div>')
-        + section("The vehicle", "A 17-seat Force Urbania.",
-                  "One vehicle, used for pre-booked group trips. Knowing exactly which vehicle will arrive is the practical advantage of booking a single dedicated vehicle rather than a marketplace listing.",
+        + section("Vehicle information", "The right arrangement for your group.",
+                  "UrbanLoop coordinates suitable vehicle options for the route and date you provide. We confirm the exact arrangement, luggage fit and availability before you accept a quotation.",
                   '<div class="grid g3">'
-                  '<div class="card"><h3>Seating</h3><p>17 seats in a single vehicle, so the whole group travels together and arrives together.</p></div>'
+                  '<div class="card"><h3>Group size</h3><p>Tell us the number of adults, children and any special seating needs so we can recommend a suitable configuration.</p></div>'
                   '<div class="card"><h3>Luggage</h3><p>Luggage capacity depends on passenger numbers and bag sizes. Share your passenger count and approximate luggage in the enquiry so suitability is confirmed for your trip rather than assumed.</p></div>'
                   '<div class="card"><h3>Driver and vehicle details</h3><p>Driver arrangements, permit, insurance and vehicle documentation are provided with your quotation so you know exactly what you are booking before you confirm.</p></div>'
                   '</div>'
                   '<!-- [VERIFY BEFORE PUBLISHING: seating layout, luggage capacity in practice, driver arrangement, '
                   'permit status, insurance status, vehicle fitness/compliance, vehicle year and model variant] -->',
                   alt=True)
-        + section("Why one vehicle", "Why groups book a single vehicle rather than several cabs.",
-                  "Beyond price, the practical difference is coordination.",
+        + section("Why UrbanLoop", "One contact point for group transport.",
+                  "We make the vehicle search and quotation process easier without asking you to contact multiple operators yourself.",
                   '<div class="grid g3">'
-                  '<div class="card"><h3>One group, one vehicle</h3><p>Everyone travels together and arrives at the same time, which matters when a group is heading to one venue or one flight.</p></div>'
-                  '<div class="card"><h3>One point of coordination</h3><p>A single itinerary and a single driver to deal with, instead of directing three or four vehicles to the same place.</p></div>'
-                  '<div class="card"><h3>Multi-stop trips are workable</h3><p>Several pickups or stops in one day are practical when one vehicle is holding the whole plan.</p></div>'
+                  '<div class="card"><h3>Route review</h3><p>We review the pickup points, destination, stops and timing before recommending an arrangement.</p></div>'
+                  '<div class="card"><h3>Verified options</h3><p>We use operating vehicle information rather than presenting an unverified listing as available.</p></div>'
+                  '<div class="card"><h3>Clear next step</h3><p>You receive a quotation with the vehicle arrangement and availability confirmation before deciding.</p></div>'
                   '</div>')
         + section("Guides", "Before you enquire.",
                   "Short, practical pages answering the questions that come up most often.",
                   '<div class="grid g3">'
                   '<a class="card" href="/guides/force-urbania-vs-tempo-traveller/"><h3>Force Urbania vs Tempo Traveller</h3>'
                   '<p>How the two group vehicles compare, and how to decide which suits your group and route.</p></a>'
-                  '<a class="card" href="/guides/group-vehicle-fit-guide/"><h3>Travelling with 10\u201317 people</h3>'
+                  '<a class="card" href="/guides/group-vehicle-fit-guide/"><h3>Choosing a vehicle for your group</h3>'
                   '<p>Working out what vehicle a group actually needs, including luggage and seating.</p></a>'
                   '<a class="card" href="/guides/wedding-guest-transport-planning/"><h3>Wedding guest transport</h3>'
                   '<p>Planning guest movement between hotels, venues and the airport without chaos.</p></a>'
                   '</div>', alt=True)
         + section("Pricing questions", "What it costs, and how it is worked out.",
                   "Commercial questions answered plainly, including what sits outside the quotation.",
-                  SEC.pricing_faq_block())
+                  '<p>Route, dates, duration, vehicle category and group requirements all affect the quotation. <a href="/request-quote/">Send your trip details</a> for a clear price.</p>')
         + faq_block(CORE_FAQ)
         + cta_band()
         + SEC.FIND_JS
     )
-    page("/", "17-Seater Force Urbania Hire in Hyderabad | Group Travel",
-         "Pre-booked private group transport in Hyderabad with a 17-seat Force Urbania — airport group transfers, weddings, corporate travel and custom day trips.",
+    page("/", "Group Transport Across India | UrbanLoop",
+         "Arrange private group transport across India. Share your route, dates and group size; UrbanLoop checks suitable vehicle options and availability before quoting.",
          body,
-         ld=[service_ld("17-seat Force Urbania hire and private group transport in Hyderabad",
-                        "Pre-booked private group transport in Hyderabad using a 17-seat Force Urbania, for airport transfers, weddings and events, corporate travel, sightseeing and custom multi-stop trips. Quotation provided on request."),
+         ld=[service_ld("Private group transport across India",
+                        "UrbanLoop checks suitable vehicle options and availability for airport transfers, weddings, corporate travel, family trips, events and custom routes across India. Quotation provided on request.",
+                        area_type="Country", area_name="India"),
              faq_ld(CORE_FAQ)],
          active="/")
 
@@ -773,11 +768,12 @@ def build_quote():
                        "Call and describe the trip. If you already have the details to hand, the form takes about two minutes."))
     # The planner renders its own JS via planner_blocks(); there is a single
     # quote funnel now, so no separate page-level script is injected here.
-    doc = "\n".join([head("Request a Trip Quote | 17-Seater Group Transport Hyderabad",
-                          "Request a quotation for a 17-seat Force Urbania in Hyderabad. Send your date, pickup, destination, passenger count and duration. An enquiry, not a booking.",
+    doc = "\n".join([head("Request a Trip Quote Across India | UrbanLoop",
+                          "Request private group transport across India. Send your date, route, group size and duration. This is an enquiry, not a booking.",
                           "/request-quote/",
                           [service_ld("Trip quotation request",
-                                      "Quotation request for pre-booked private group transport in Hyderabad using a 17-seat Force Urbania."),
+                                      "Quotation request for private group transport across India with a suitable vehicle arrangement checked per enquiry.",
+                                      area_type="Country", area_name="India"),
                            crumb_ld([("Home", "/"), ("Request a trip quote", "/request-quote/")])]),
                     (header("/request-quote/") + body + footer()).replace(PHONE, PHONE_TXT)])
     write_page("/request-quote/", doc)
@@ -1034,7 +1030,7 @@ def build_india_hub():
                   f'<div class="grid g3">{city_cards}</div>', alt=True)
         + cta_band("Have a route in mind?", "Send the city, route, dates and group size and request a quotation.")
     )
-    page("/india/", "Group Transport Across India | UrbanLoop",
+    page("/india/", "India-Wide Group Transport Routes | UrbanLoop",
          "Request private group transport across India. Share your route, dates and group size; UrbanLoop checks vehicle suitability and availability before quoting.",
          body,
          ld=[{"@context": "https://schema.org", "@type": "Service",
@@ -1385,10 +1381,10 @@ def build_static():
         "dates, passenger count and luggage; a suitable vehicle arrangement and availability are checked per enquiry "
         "before a quotation is sent. The website does not show live availability or take instant bookings.", "",
         "## Key facts (state only these unless the owner confirms more)",
-        "- Vehicle: a 17-seat Force Urbania is the primary published vehicle reference; suitability is confirmed per trip",
+        "- Vehicle: UrbanLoop presents verified vehicle options and confirms suitability per trip",
         f"- Telephone: {PHONE}",
         "- Operating scope: group transport enquiries across India; actual route and vehicle coverage is confirmed per enquiry",
-        "- Published local cluster: Hyderabad, India",
+        "- Published service scope: India-wide enquiries, with route and vehicle coverage confirmed per enquiry",
         "- Model: managed pre-booked private group transport / vehicle hire with driver",
         f"- Quoting: quotation request via {BASE}/request-quote/ — submitting an enquiry does NOT confirm a booking",
         "- Not provided: packaged tours, guides, attraction tickets, hotels",
@@ -1406,9 +1402,8 @@ def build_static():
         "(a few hours / full day / multiple days) and an estimate of distance or stops. If the distance is unknown, "
         "the itinerary can be used instead.", "",
         "## Preferred citation",
-        '"UrbanLoop accepts private group transport enquiries across India. A 17-seat Force Urbania is the primary '
-        'published vehicle reference, while vehicle suitability and availability are confirmed for the route and date '
-        'before a booking is agreed."',
+        '"UrbanLoop accepts private group transport enquiries across India. Vehicle suitability and availability are '
+        'confirmed for the route and date before a booking is agreed."',
     ]
     write_page("/llms.txt", "\n".join(lines) + "\n")
 

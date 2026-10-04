@@ -66,6 +66,21 @@ async function createTrip(request, context) {
   if (!data || typeof data !== "object") return json({ ok: false, error: "empty" }, 400);
   if (text(data._hp, 100)) return json({ ok: true, ref: "GT000000" });
 
+  const stage = text(data.stage, 40) || "quote_request";
+  if (stage === "availability_check") {
+    const ref = makeRef();
+    const now = new Date().toISOString();
+    await store().setJSON(ref, {
+      ref,
+      created_at: now,
+      status: "AVAILABILITY_CHECK_REQUESTED",
+      summary: summary(data),
+      payload: data,
+      source_page: text(data.source_page, 300),
+    });
+    return json({ ok: true, ref, status: "availability_check_requested" });
+  }
+
   const name = text(data.contact_name, 120);
   const phone = text(data.contact_phone, 40);
   const consent = text(data.consent, 20).toLowerCase();

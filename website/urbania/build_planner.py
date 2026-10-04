@@ -42,7 +42,7 @@ def f_row(*fields):
 # CTA wording per mode is specified by the product brief.
 MODES = [
     dict(key="local", label="City / Local", cta="Find local options",
-         blurb="Point-to-point travel inside Hyderabad, with optional stops.",
+         blurb="Point-to-point travel anywhere in India, with optional stops.",
          date_ui="single",
          fields=[
              f_row(f_text("pickup", "Pickup point", "Area, hotel or address", req=True, half=True),
@@ -179,7 +179,7 @@ MODES = [
 VEHICLE_PREF = f_chips(
     "vehicle_pref",
     "Vehicle preference",
-    ["Force Urbania (17 seats)", "Recommend one for my group"],
+    ["Force Urbania", "Recommend the best option for my group"],
     req=False)
 
 CONTACT = (
@@ -217,14 +217,15 @@ def planner(preset=""):
   <div class="pl-tabs" role="tablist" aria-label="Trip type">{chips}</div>
   <form id="plform" novalidate>
     <div class="pl-modes">{blocks}</div>
-    <div class="pl-contact">
+    <div class="pl-contact" id="pl-contact" style="display:none">
       <h3 class="pl-h">Where should we send your quotation?</h3>
-      <p class="pl-help">We check the route and vehicle first, then reply with one clear quotation. No payment is taken to ask.</p>
+      <p class="pl-help">Your trip details are captured first. Now add your contact details so we can send the quotation after checking the route and availability.</p>
       {CONTACT}
     </div>
     <div class="pl-summary" id="pl-summary">
       <h3 class="pl-h">Your trip summary</h3>
       {summary_rows}
+      <p id="pl-status" class="pl-help" role="status">We will check suitable vehicle options for this route and date.</p>
       <div class="pl-summary-actions">
         <button type="button" class="btn ghost" id="pl-edit">Edit details</button>
         <button type="submit" class="btn" id="pl-send">Send my enquiry</button>
@@ -316,6 +317,8 @@ PLANNER_JS = """<script>
       tabs=[].slice.call(pl.querySelectorAll('.pl-tab')),
       modes=[].slice.call(pl.querySelectorAll('.pl-mode')),
       summary=document.getElementById('pl-summary'),
+      contact=document.getElementById('pl-contact'),
+      status=document.getElementById('pl-status'),
       result=document.getElementById('pl-result'),
       nextBtn=document.getElementById('pl-next');
   var current=pl.getAttribute('data-preset')||'local', stage='form';
@@ -338,7 +341,7 @@ PLANNER_JS = """<script>
     var l=el.closest('label'); if(!l) return el.name;
     var s=l.querySelector('span'); return s?s.textContent.replace(/\\s*\\*/,'').trim():el.name;
   }
-  function validate(){
+  function validate(includeContact){
     var scope=pl.querySelector('.pl-mode[data-mode="'+current+'"]'), bad=false;
     [].slice.call(scope.querySelectorAll('[required]')).forEach(function(el){
       var ok = el.type==='radio' ? !!scope.querySelector('input[name="'+el.name+'"]:checked') : !!el.value.trim();
@@ -346,7 +349,7 @@ PLANNER_JS = """<script>
       if(!ok) bad=true;
     });
     var c=document.getElementById('plform');
-    [].slice.call(c.querySelectorAll('.pl-contact [required]')).forEach(function(el){
+    if(includeContact) [].slice.call(c.querySelectorAll('.pl-contact [required]')).forEach(function(el){
       var ok = el.type==='checkbox' ? el.checked : !!el.value.trim();
       var L=el.closest('label'); if(L&&el.type!=='checkbox'){ L.classList.toggle('bad',!ok); el.setAttribute('aria-invalid',ok?'false':'true'); }
       if(!ok) bad=true;
@@ -388,9 +391,17 @@ PLANNER_JS = """<script>
     });
     pl.querySelector('.pl-foot').style.display='none';
     summary.style.display='block'; summary.classList.add('on');
+    contact.style.display='block';
+    status.textContent='Availability check started. We will confirm the suitable vehicle arrangement for your route and dates before sending the quotation.';
+    if(EP){
+      var check=Object.assign({},o,{stage:'availability_check'});
+      fetch(EP,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(check)})
+        .then(function(r){return r.json().catch(function(){return {};});})
+        .then(function(j){if(j&&j.ref){try{localStorage.setItem('availabilityRef',j.ref);}catch(err){}}});
+    }
     summary.scrollIntoView({block:'center',behavior:'smooth'});
   }
-  nextBtn.addEventListener('click',function(e){ e.preventDefault(); if(validate()) showSummary(); });
+  nextBtn.addEventListener('click',function(e){ e.preventDefault(); if(validate(false)) showSummary(); });
   document.getElementById('pl-edit').addEventListener('click',function(){
     summary.classList.remove('on'); summary.style.display='none';
     pl.querySelector('.pl-foot').style.display='';
@@ -398,9 +409,11 @@ PLANNER_JS = """<script>
   });
   form.addEventListener('submit',function(e){
     e.preventDefault();
-    if(!validate()) return;
+    if(!validate(true)) return;
     var hp=form.querySelector('input[name=_hp]'); if(hp&&hp.value) return;
     var o=collect(), clientRef=ref();
+    o.stage='quote_request';
+    try{ if(localStorage.getItem('availabilityRef')) o.availability_ref=localStorage.getItem('availabilityRef'); }catch(err){}
     function lines(id){ return 'Trip request '+id+'\\n'+
       Object.keys(o).map(function(k){return k.replace(/_/g,' ')+': '+o[k];}).join('\\n'); }
     function waFor(id){ return WA?('https://wa.me/'+WA+'?text='+encodeURIComponent(lines(id))):''; }
@@ -409,7 +422,7 @@ PLANNER_JS = """<script>
       var wa=waFor(id);
       form.style.display='none';
       result.innerHTML='<div style="padding:22px 20px"><h3 class="pl-h">'
-        +'Request received</h3>'
+        +'Quote request received</h3>'
         +'<div class="pl-ref">'+id+'</div>'
         +'<p class="lede" style="font-size:16px">Thank you &mdash; your reference is above. Here is what happens next:</p>'
         +'<div class="pl-sgrid pl-steps" style="margin-top:14px">'
