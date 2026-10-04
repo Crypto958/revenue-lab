@@ -1,0 +1,38 @@
+# India-wide group transport - robots.txt
+# Public commercial pages: crawlable by search engines and AI answer engines.
+
+User-agent: *
+Allow: /
+Disallow: /thank-you/
+
+# Answer engines and search assistants: allowed to surface public content.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Training-only crawlers: access not required to be cited as an answer source.
+# Remove the Disallow lines below if the owner chooses to allow model training.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+Sitemap: https://urbanloop.co/sitemap.xml
