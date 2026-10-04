@@ -69,6 +69,33 @@
 <script>
 (function(){
   var form=document.querySelector('.jbar'); if(!form) return;
+  [].slice.call(form.querySelectorAll('[data-location-suggest]')).forEach(function(input){
+    var label=input.closest('.jf'); if(!label) return;
+    label.classList.add('pl-location');
+    var box=document.createElement('div'); box.className='pl-suggestions'; box.hidden=true; box.setAttribute('role','listbox'); label.appendChild(box);
+    var timer, controller;
+    input.setAttribute('aria-autocomplete','list');
+    input.addEventListener('input',function(){
+      clearTimeout(timer); box.hidden=true; box.innerHTML=''; var q=input.value.trim();
+      if(q.length<3) return;
+      timer=setTimeout(function(){
+        if(controller) controller.abort(); controller=new AbortController();
+        fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&dedupe=1&countrycodes=in&limit=5&accept-language=en&q='+encodeURIComponent(q),{signal:controller.signal})
+          .then(function(r){return r.ok?r.json():null;}).then(function(items){
+            if(!items) return;
+            items.slice(0,5).forEach(function(item){
+              var p=item.address||{}, parts=[];
+              [p.house_number,p.road,p.neighbourhood,p.suburb,p.city||p.town||p.village,p.state].forEach(function(v){if(v&&parts.indexOf(v)<0) parts.push(v);});
+              var text=parts.join(', ')||item.display_name; if(!text) return;
+              var b=document.createElement('button'); b.type='button'; b.className='pl-suggestion'; b.setAttribute('role','option'); b.textContent=text;
+              b.addEventListener('mousedown',function(e){e.preventDefault();input.value=text;box.hidden=true;box.innerHTML='';}); box.appendChild(b);
+            });
+            box.hidden=!box.children.length;
+          }).catch(function(){});
+      },280);
+    });
+    input.addEventListener('blur',function(){setTimeout(function(){box.hidden=true;},160);});
+  });
   form.addEventListener('submit',function(e){
     var bad=false;
     // From and To remain free text: landmarks, villages and unusual spellings
