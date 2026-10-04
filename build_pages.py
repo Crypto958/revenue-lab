@@ -16,7 +16,7 @@ LEAD_EMAIL = "fca.abhi007@gmail.com"   # owner-supplied professional address; co
 
 def planner_blocks(preset=""):
     """Adaptive planner markup + its JS, with the delivery endpoint resolved."""
-    mk = planner(preset).replace("%PHONE_HREF%", PHONE_HREF).replace("%PHONE%", PHONE)
+    mk = planner(preset).replace("%PHONE_HREF%", PHONE_HREF)
     return mk + PLANNER_JS.replace("%WA%", WHATSAPP).replace("%ENDPOINT%", FORM_ENDPOINT)
 
 AVAIL_NOTE = ("We check the route, vehicle fit and availability for your dates, then include the "
@@ -107,7 +107,7 @@ def build_home():
             'how many people are going and what vehicle category you need; we coordinate suitable options '
             'across India.</p>'
             + (f'<p class="hx-alt"><a href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp us</a>'
-               f'<span>&middot;</span><a href="{PHONE_HREF}">Call {PHONE_TXT}</a></p>'
+               f'<span>&middot;</span><a href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></p>'
                if WHATSAPP else '')
             + '<p class="hx-cap"><b>Vehicle options matched to your trip.</b> Availability is checked for your route and dates before we quote.</p>'
             f'<div class="qwrap">{SEC.journey_bar()}</div>'
@@ -128,7 +128,7 @@ def build_home():
             'options can be checked before a quotation.</p>'
             '<div class="heroacts">'
             '<a class="btn" href="/request-quote/">Get a quote</a>'
-            f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE_TXT}</a>'
+            f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a>'
             '</div>'
             f'<div class="ucs">{chips}</div>'
         )
@@ -758,7 +758,7 @@ def build_quote():
                 ("What if I do not know the distance?",
                  "Select \u201cNot sure\u201d and describe the stops instead. We can work out the practical distance from your itinerary."),
                 ("How quickly will I hear back?",
-                 "We aim to respond promptly, but we do not publish a guaranteed response time because it depends on enquiry volume. If your trip is time-critical, call " + PHONE + "."),
+                 "We aim to respond promptly, but we do not publish a guaranteed response time because it depends on enquiry volume. If your trip is time-critical, call customer care."),
                 ("Can I request a quotation for several dates?",
                  "Yes. Note the alternative dates in the notes field and we will quote for each."),
                 ("Do you store my details?",
@@ -838,7 +838,7 @@ def build_contact():
                       f'WhatsApp Business profile shows Supaul, Bihar rather than Hyderabad.] --></div>'
                       f'<div class="card"><span class="tag">Phone</span><h3>Call</h3>'
                       f'<p>Describe the trip and we will tell you what we need to quote.</p>'
-                      f'<p style="margin-top:16px"><a class="txtlink" href="{PHONE_HREF}">{PHONE_TXT}</a></p></div>'
+                      f'<p style="margin-top:16px"><a class="txtlink" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></p></div>'
                       '<div class="card"><span class="tag">Form</span><h3>Request a trip quote</h3>'
                       '<p>The fastest way to give us the full picture: date, route, passengers and duration.</p>'
                       '<p style="margin-top:16px"><a class="txtlink" href="/request-quote/">Request a trip quote</a></p></div>'
@@ -852,7 +852,7 @@ def build_contact():
                       "Pre-booked private group transport with a 17-seat Force Urbania.",
                       '<div class="grid g2">'
                       '<div class="card"><h3>By telephone</h3><ul>'
-                      f'<li>Call or message <a href="{PHONE_HREF}">{PHONE}</a></li>'
+                      f'<li><a href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></li>'
                       '<li>Quickest for checking whether a date is free</li>'
                       '<li>Based in Hyderabad</li></ul></div>'
                       '<div class="card"><h3>By quotation request</h3><ul>'
@@ -861,8 +861,8 @@ def build_contact():
                       '<li>Nothing is charged to ask, and an enquiry does not book the vehicle</li>'
                       '</ul></div></div>', alt=True)
             + cta_band())
-    page("/contact/", "Contact | Group Transport Hyderabad " + PHONE,
-         f"Contact for pre-booked private group transport in Hyderabad with a 17-seat Force Urbania. Call {PHONE} or request a trip quote online.",
+    page("/contact/", "Contact UrbanLoop | Group Transport India",
+         "Contact UrbanLoop about private group transport across India or request a trip quote online.",
          body, ld=[crumb_ld([("Home", "/"), ("Contact", "/contact/")])], active="/contact/")
 
 def build_privacy():
@@ -924,7 +924,7 @@ def build_404():
                       '<div class="grid g3">'
                       '<a class="card" href="/"><h3>Home</h3><p>Overview of the vehicle and the trip types.</p></a>'
                       '<a class="card" href="/request-quote/"><h3>Request a trip quote</h3><p>Send your trip details and get a quotation.</p></a>'
-                      f'<a class="card" href="{PHONE_HREF}"><h3>Call {PHONE}</h3><p>Speak to us about the trip.</p></a>'
+                      f'<a class="card" href="{PHONE_HREF}"><h3>Call customer care</h3><p>Speak to us about the trip.</p></a>'
                       '</div>'))
     page("/404.html", "Page not found | " + BRAND,
          "The page you requested could not be found.", body, noindex=True)

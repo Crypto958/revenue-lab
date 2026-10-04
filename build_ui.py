@@ -20,7 +20,6 @@ PHONE = "+91 91821 26104"                       # owner-supplied customer-care n
 PHONE_HREF = "tel:+" + "".join(ch for ch in PHONE if ch.isdigit())
 PHONE_TXT = "+91&nbsp;91821&nbsp;26104"          # display form: never wraps mid-number on mobile
 WHATSAPP = "919182126104"                        # owner-supplied via WhatsApp Business profile
-                                                  # NOTE: differs from PHONE (+91 62020 66104) — see OWNER_DECISIONS #4
 EMAIL = ""                                       # [VERIFY BEFORE PUBLISHING: enquiry email]
 CITY = "Hyderabad"
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app", "site")
@@ -126,9 +125,9 @@ border:2px solid var(--accent-2);border-radius:6px;transform:translateY(-160%);t
 header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:18px;height:72px}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
-.logo .brandmark{height:29px;width:auto;display:block}
-@media(max-width:640px){.logo .brandmark{height:25px}}
+.logo{display:flex;align-items:center;text-decoration:none;color:var(--ink)}
+.wordmark{font-size:20px;letter-spacing:-.035em;font-weight:700;color:inherit}
+@media(max-width:640px){.wordmark{font-size:19px}}
 nav.main{display:flex;gap:24px;align-items:center}
 nav.main a{font-size:15px;color:var(--ink-2);text-decoration:none;font-weight:500}
 nav.main a:hover,nav.main a[aria-current]{color:var(--accent)}
@@ -385,10 +384,9 @@ def header(active=""):
         for t, h in NAV
     )
     mlinks = "".join(f'<a href="{h}">{html.escape(t)}</a>' for t, h in NAV)
-    mark = brand_svg("urbanloop-lockup-horizontal-dark.svg", cls="brandmark")
     return f"""<header>
   <div class="wrap bar">
-    <a class="logo" href="/">{mark}<span class="sr">{html.escape(BRAND)} &mdash; {html.escape(TAGLINE)}. Home.</span></a>
+    <a class="logo" href="/"><span class="wordmark">{html.escape(BRAND)}</span><span class="sr">{html.escape(TAGLINE)}. Home.</span></a>
     <nav class="main">{links}</nav>
     <div class="hact">
       <a class="calllink" href="{PHONE_HREF}">{call_svg()}<span>{PHONE_TXT}</span></a>
@@ -400,7 +398,7 @@ def header(active=""):
     <div class="mcta">
       <a class="btn wide" href="/request-quote/">Request a Trip Quote</a>
       {(f'<a class="btn wide" style="background:#25D366;color:#052E16" href="https://wa.me/{WHATSAPP}">WhatsApp us</a>' if WHATSAPP else '')}
-      <a class="btn ghost wide" href="{PHONE_HREF}">Call {PHONE_TXT}</a>
+      <a class="btn ghost wide" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a>
     </div>
   </div>
 </header>
@@ -411,7 +409,7 @@ def footer():
     sticky = ('<div class="sticky">'
               '<a class="q" href="/request-quote/">Request Quote</a>'
               + (f'<a class="w" href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp</a>' if WHATSAPP else "")
-              + f'<a href="{PHONE_HREF}">Call now</a></div>')
+              + f'<a href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></div>')
     def col(t, items):
         return f'<div><h3 class="fh">{t}</h3>' + "".join(
             f'<a href="{h}">{html.escape(n)}</a>' for n, h in items) + '</div>'
@@ -419,9 +417,9 @@ def footer():
 <footer><div class="wrap">
 <div class="fgrid">
   <div>
-    <div class="logo" style="color:#fff;margin-bottom:12px">{brand_svg("urbanloop-lockup-horizontal-dark.svg", cls="brandmark")}<span class="sr">{html.escape(BRAND)} &mdash; {html.escape(TAGLINE)}</span></div>
+    <div class="logo" style="color:#fff;margin-bottom:12px"><span class="wordmark">{html.escape(BRAND)}</span></div>
     <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">UrbanLoop helps groups arrange private transport across India. We check the route, vehicle option and date before sending a quotation.</p>
-    <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{PHONE_TXT}</a></p>
+    <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{call_svg()}&nbsp;Call customer care</a></p>
   </div>
   {col("Trip types", [("Airport group transfers","/services/airport-group-transfers/"),
                  ("Outstation group travel","/services/outstation-group-travel/"),
@@ -480,7 +478,7 @@ def hero(eyebrow, h1, sub, paras=(), ctas=True, extra=""):
     if ctas:
         acts = ('<div class="heroacts">'
                 '<a class="btn" href="/request-quote/">Request a Trip Quote</a>'
-                f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE}</a></div>')
+                f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></div>')
     return (f'<section class="hero"><div class="wrap"><div class="hgrid"><div>'
             f'<span class="eyebrow">{eyebrow}</span><h1>{h1}</h1>'
             f'<p class="lede" style="margin-top:18px">{sub}</p>{ps}{acts}</div>'
@@ -496,7 +494,7 @@ def cta_band(h2="Tell us about your trip and we will send a quotation.",
     return (f'<section class="alt"><div class="wrap"><div class="shead"><h2>{h2}</h2>'
             f'<p class="lede">{lede}</p></div>'
             f'<div class="heroacts"><a class="btn" href="/request-quote/">Request a Trip Quote</a>'
-            f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE}</a></div>'
+             f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></div>'
             f'</div></section>')
 
 def faq_block(pairs, h2="Questions people ask before enquiring.", eyebrow="FAQ"):

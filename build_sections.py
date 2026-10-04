@@ -693,9 +693,9 @@ def journey_bar(action="/request-quote/"):
     return f'''<form class="jbar" action="{action}" method="get" aria-label="Start your trip quote">
   <div class="jbar-grid">
     <label class="jf"><span>From</span>
-      <input name="from" type="text" placeholder="Pickup point or area" autocomplete="off"></label>
+      <input name="from" type="text" placeholder="Pickup point or area" autocomplete="street-address" data-location-suggest="true"></label>
     <label class="jf"><span>To</span>
-      <input name="to" type="text" placeholder="Destination" autocomplete="off"></label>
+      <input name="to" type="text" placeholder="Destination" autocomplete="street-address" data-location-suggest="true"></label>
     <label class="jf"><span>Travel date</span>
       <input name="date" type="date"></label>
     <label class="jf"><span>Passengers</span>
