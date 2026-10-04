@@ -1347,7 +1347,12 @@ def build_static():
         print("wrote /og.png")
     except Exception as e:
         print("og.png not generated:", e)
-    write_page("/favicon.svg", brand_svg("urbanloop-favicon.svg", label="UrbanLoop"))
+    write_page("/favicon.svg",
+               '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="UrbanLoop">'
+               '<rect width="100" height="100" rx="18" fill="#111518"/>'
+               '<g transform="translate(19.136 19.136) scale(0.61728)" fill="none" stroke="#FAFBFC" stroke-width="13" stroke-linecap="butt" stroke-linejoin="miter">'
+               '<path d="M5.5 5.5 V71.25 A23.25 23.25 0 0 0 52 71.25 V5.5"/><path d="M72 5.5 V94.5 H94.5"/>'
+               '</g></svg>')
     write_page("/robots.txt",
                "# Group transport Hyderabad - robots.txt\n"
                "# Public commercial pages: crawlable by search engines and AI answer engines.\n\n"
