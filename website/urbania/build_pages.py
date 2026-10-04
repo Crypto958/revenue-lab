@@ -204,7 +204,7 @@ def build_home():
                   '<p>A price for the trip you described, plus confirmation of whether the vehicle is free on that date.</p></div></div>'
                   '<div class="stepc"><span class="n">04</span><div><h3>Availability is confirmed</h3>'
                   '<p>Nothing is reserved until availability is confirmed with you. The enquiry itself does not hold the vehicle.</p></div></div>'
-                  '</div>')
+                  '</div>' + SEC.planning_visual())
         + section("Vehicle information", "The right arrangement for your group.",
                   "UrbanLoop coordinates suitable vehicle options for the route and date you provide. We confirm the exact arrangement, luggage fit and availability before you accept a quotation.",
                   '<div class="grid g3">'

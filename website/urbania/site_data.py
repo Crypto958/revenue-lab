@@ -372,6 +372,7 @@ GALLERY_SLOTS = [
     ("exterior-front", "Force Urbania exterior, front view"),
     ("exterior-side", "Force Urbania exterior, side view"),
     ("exterior-rear", "Force Urbania exterior, rear three-quarter view"),
+    ("fleet-lineup", "Force Urbania vehicles, fleet-lineup reference"),
 ]
 
 
@@ -382,6 +383,7 @@ GALLERY_SLOTS = [
 SEATING_SLOTS = [
     ("standard-seating", "Standard passenger seating reference"),
     ("premium-recliner", "Premium reclining captain-seat reference"),
+    ("luxury-tan-interior", "Luxury tan interior reference"),
 ]
 
 # Supplied asset dimensions prevent image layout shift and keep the gallery
@@ -390,8 +392,10 @@ MEDIA_DIMENSIONS = {
     "exterior-front": (1200, 900),
     "exterior-side": (1200, 900),
     "exterior-rear": (1200, 900),
+    "fleet-lineup": (1536, 1152),
     "standard-seating": (1200, 800),
     "premium-recliner": (1200, 675),
+    "luxury-tan-interior": (678, 452),
 }
 
 # Descriptions of the two seat layouts. Layout convention is what distinguishes
