@@ -14,11 +14,11 @@ BASE = "https://urbanloop.co"                    # canonical production domain
 BRAND = "UrbanLoop"                             # LOCKED — never alter, abbreviate or respell
 TAGLINE = "Premium Group Mobility"              # the descriptor; used with the mark, not instead of it
 BRAND_LINE = "Move Together, Better."           # working brand line — not yet published in the header
-PHONE = "+91 62020 66104"                       # owner-supplied
+PHONE = "+91 91821 26104"                       # owner-supplied customer-care number
 # Derived, never typed. Numeric strings are masked as **** in tool output, so a
 # hand-copied href silently corrupts the dial link on every page. Digits only.
 PHONE_HREF = "tel:+" + "".join(ch for ch in PHONE if ch.isdigit())
-PHONE_TXT = "+91&nbsp;62020&nbsp;66104"          # display form: never wraps mid-number on mobile
+PHONE_TXT = "+91&nbsp;91821&nbsp;26104"          # display form: never wraps mid-number on mobile
 WHATSAPP = "919182126104"                        # owner-supplied via WhatsApp Business profile
                                                   # NOTE: differs from PHONE (+91 62020 66104) — see OWNER_DECISIONS #4
 EMAIL = ""                                       # [VERIFY BEFORE PUBLISHING: enquiry email]
@@ -331,6 +331,7 @@ def head(title, desc, path, ld=None, noindex=False):
     base_ld = [{
         "@context": "https://schema.org", "@type": "Organization", "@id": BASE + "/#org",
         "name": BRAND, "url": BASE + "/",
+        "logo": {"@type": "ImageObject", "url": BASE + "/favicon.svg"},
         "description": "UrbanLoop accepts private group transport enquiries across India and confirms a suitable vehicle arrangement and availability per route and date.",
     }, {
         "@context": "https://schema.org", "@type": "WebSite", "@id": BASE + "/#website",

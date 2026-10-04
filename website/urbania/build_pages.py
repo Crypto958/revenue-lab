@@ -3,7 +3,7 @@
 import os, json, html, urllib.parse
 from build_ui import (BASE, BRAND, PHONE, PHONE_HREF, PHONE_TXT, WHATSAPP, CITY, OUT, TODAY, YEAR, CSS,
                       NAV, head, header, footer, crumb_ld, faq_ld, service_ld,
-                      hero, section, cta_band, faq_block, vehicle_panel, write_page, call_svg)
+                      hero, section, cta_band, faq_block, vehicle_panel, write_page, call_svg, brand_svg)
 from build_planner import planner, PLANNER_CSS, PLANNER_JS, MODES
 import build_sections as SEC
 import site_data as DATA
@@ -19,8 +19,8 @@ def planner_blocks(preset=""):
     mk = planner(preset).replace("%PHONE_HREF%", PHONE_HREF).replace("%PHONE%", PHONE)
     return mk + PLANNER_JS.replace("%WA%", WHATSAPP).replace("%ENDPOINT%", FORM_ENDPOINT)
 
-AVAIL_NOTE = ("Availability is confirmed personally for each enquiry — this site does not show "
-              "live availability or take instant bookings.")
+AVAIL_NOTE = ("We check the route, vehicle fit and availability for your dates, then include the "
+              "confirmation with your quotation.")
 
 def page(path, title, desc, body, ld=None, active="", noindex=False):
     # Telephone numbers must not wrap mid-number on narrow screens: display form uses &nbsp;.
@@ -1335,22 +1335,19 @@ def build_static():
                 try: return ImageFont.truetype(path, sz)
                 except Exception: pass
             return ImageFont.load_default()
-        d.text((72, 88), "17-SEAT FORCE URBANIA", font=fnt(28, True), fill="#6FD3E0")
+        d.text((72, 88), "URBANLOOP", font=fnt(28, True), fill="#6FD3E0")
         d.text((72, 146), "Private group transport", font=fnt(64, True), fill="#FFFFFF")
-        d.text((72, 228), "in Hyderabad", font=fnt(64, True), fill="#FFFFFF")
+        d.text((72, 228), "across India", font=fnt(64, True), fill="#FFFFFF")
         d.text((72, 344), "Airport groups  \u00b7  Weddings & events", font=fnt(28), fill="#C7D3DD")
         d.text((72, 388), "Corporate travel  \u00b7  Sightseeing & day hire", font=fnt(28), fill="#C7D3DD")
-        d.text((72, 492), "+91 62020 66104", font=fnt(34, True), fill="#FFFFFF")
-        d.text((72, 548), "Quotation on request \u2014 availability confirmed before booking",
+        d.text((72, 492), "Request a trip quotation", font=fnt(34, True), fill="#FFFFFF")
+        d.text((72, 548), "Vehicle options checked for your route and dates",
                font=fnt(22), fill="#8FA0AF")
         im.save(os.path.join(OUT, "og.png"), optimize=True)
         print("wrote /og.png")
     except Exception as e:
         print("og.png not generated:", e)
-    write_page("/favicon.svg",
-               '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0F6E68"/>'
-               '<text x="32" y="43" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="700" '
-               'fill="#fff" text-anchor="middle">17</text></svg>')
+    write_page("/favicon.svg", brand_svg("urbanloop-favicon.svg", label="UrbanLoop"))
     write_page("/robots.txt",
                "# Group transport Hyderabad - robots.txt\n"
                "# Public commercial pages: crawlable by search engines and AI answer engines.\n\n"
@@ -1378,8 +1375,8 @@ def build_static():
     lines = [
         "# Group transport across India — UrbanLoop", "",
         "> UrbanLoop accepts private group transport enquiries across India. Customers share their origin, destination, "
-        "dates, passenger count and luggage; a suitable vehicle arrangement and availability are checked per enquiry "
-        "before a quotation is sent. The website does not show live availability or take instant bookings.", "",
+        "dates, passenger count and luggage; a suitable vehicle arrangement is checked and availability is included "
+        "with the quotation.", "",
         "## Key facts (state only these unless the owner confirms more)",
         "- Vehicle: UrbanLoop presents verified vehicle options and confirms suitability per trip",
         f"- Telephone: {PHONE}",

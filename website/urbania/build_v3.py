@@ -24,20 +24,16 @@ def build_find_a_vehicle():
     faqs = [
         ("How do I know which vehicle my group needs?",
          "Start with the number of passengers including children, then the luggage. Luggage, not seat count, is what usually decides it: a vehicle that seats a group comfortably may not also carry everyone's large suitcases. Send both numbers and we will tell you what fits."),
-        ("What vehicle do I need for 10 people in Hyderabad?",
-         "Ten passengers usually fit comfortably in a group vehicle with room for luggage. For short city transfers, two cabs can also work and may be cheaper. Tell us the trip and we will recommend rather than assume."),
-        ("What vehicle do I need for 15 people in Hyderabad?",
-         "A 17-seat vehicle is the usual answer for fifteen passengers. Confirm the luggage position as well — fifteen people with a full set of large suitcases is a different requirement from fifteen with hand baggage."),
-        ("What if we are more than 17 people?",
-         "Then one 17-seat vehicle will not carry the group. Tell us the total and we will be honest about whether it can be covered at all."),
+        ("What vehicle do I need for my group?",
+         "Vehicle fit depends on passengers, luggage, route and dates. Tell us the full requirement and we will recommend a suitable arrangement rather than assume from passenger count alone."),
         ("Can I request a specific vehicle?",
          "You can state a preference and we will take it into account. Preference is a request, not a guarantee — availability and suitability are confirmed before anything is agreed."),
-        ("Do you have other vehicles available?",
-         "We operate one 17-seat Force Urbania ourselves. Where a trip is not suitable for it, or it is already committed, we may be able to source an option through other operators. Nothing is offered as available until it is verified and confirmed."),
+        ("Do you have different vehicle options?",
+         "Yes. UrbanLoop is positioned around suitable vehicle options rather than one fixed vehicle. The exact category and availability are checked for each route and date before a quotation is sent."),
     ]
     body = (breadcrumb([("Home", "/"), ("Find a vehicle", "/find-a-vehicle/")])
             + planner_hero(
-                "Vehicle recommendation · " + CITY,
+                "Vehicle recommendation · India",
                 "Find the right vehicle for your group size.",
                 "Tell us how many are travelling and how much luggage there is. We will recommend what suits your trip — and say so honestly if one vehicle will not cover it.",
                 "custom",
@@ -45,18 +41,18 @@ def build_find_a_vehicle():
             + section("Sizing", "How to work out what your group needs.",
                       "Group size is the easy part. These are the ranges people usually land in.",
                       '<div class="grid g3">'
-                      '<div class="card"><h3>Under 10 people</h3><p>A large SUV or two cabs may be more economical. A 17-seat vehicle is not usually necessary unless luggage is heavy or you want everyone in one vehicle.</p></div>'
-                      '<div class="card"><h3>10 to 13 people</h3><p>A group vehicle works comfortably and leaves room for luggage. Often the most straightforward range.</p></div>'
-                      '<div class="card"><h3>14 to 17 people</h3><p>The vehicle is close to full, so luggage becomes the deciding factor — particularly on airport runs with large suitcases.</p></div>'
-                      '<div class="card"><h3>Over 17 people</h3><p>A single 17-seat vehicle cannot carry the whole group. Tell us the total and we will say honestly what is possible.</p></div>'
+                      '<div class="card"><h3>Smaller groups</h3><p>A compact configuration may be the most practical choice, especially for city transfers or lighter luggage.</p></div>'
+                      '<div class="card"><h3>Medium-sized groups</h3><p>A premium configuration can provide a comfortable balance of passenger space and luggage room.</p></div>'
+                      '<div class="card"><h3>Larger groups</h3><p>A large-group or extended configuration may be appropriate, subject to luggage and route review.</p></div>'
+                      '<div class="card"><h3>Very large groups</h3><p>We may recommend more than one vehicle or a different category. Tell us the total requirement and we will explain the practical options.</p></div>'
                       '<div class="card"><h3>Heavy luggage</h3><p>Airport runs, wedding groups and multi-day trips carry far more baggage. Mention it at the enquiry stage, not on the day.</p></div>'
                       '<div class="card"><h3>Children and infants</h3><p>Count children in the passenger total. Mention infants separately, since they affect seating.</p></div>'
                       '</div>', alt=True)
             + section("Preference", "Vehicle preference is a request, not a booking.",
                       "You can tell us what you would prefer. What we can promise is that we will tell you honestly what is available for your dates.",
                       '<div class="grid g2">'
-                      '<div class="card"><h3>What we operate</h3><ul><li>One 17-seat Force Urbania</li>'
-                      '<li>Used for pre-booked group trips</li><li>Offered when it genuinely suits the trip</li></ul></div>'
+                      '<div class="card"><h3>What we arrange</h3><ul><li>Verified vehicle categories matched to the enquiry</li>'
+                      '<li>Pre-booked group transport across India</li><li>Exact arrangement confirmed before acceptance</li></ul></div>'
                       '<div class="card"><h3>What we may source</h3><ul>'
                       '<li>Other vehicle categories through third-party operators, as that network is built and verified</li>'
                       '<li>Never shown as available until verified and confirmed for your dates</li>'
@@ -71,11 +67,12 @@ def build_find_a_vehicle():
             + faq_block(faqs, h2="Vehicle size questions.")
             + cta_band("Not sure what you need?",
                        "Describe the trip and the group, and we will recommend rather than guess."))
-    page("/find-a-vehicle/", "Find the Right Vehicle for Your Group | Hyderabad Group Travel",
-         "Work out which vehicle suits your group size and luggage in Hyderabad. Send your passenger count and baggage and we will recommend what fits.",
+    page("/find-a-vehicle/", "Find the Right Group Vehicle Across India | UrbanLoop",
+         "Work out which vehicle arrangement suits your group size, luggage, route and dates across India.",
          body,
-         ld=[service_ld("Group vehicle recommendation in Hyderabad",
-                        "Guidance on which vehicle suits a group of a given size and luggage requirement, for trips in and around Hyderabad."),
+         ld=[service_ld("Group vehicle recommendation across India",
+                        "Guidance on which vehicle arrangement suits a group of a given size and luggage requirement across India.",
+                        area_type="Country", area_name="India"),
              faq_ld(faqs), crumb_ld([("Home", "/"), ("Find a vehicle", "/find-a-vehicle/")])],
          active="/find-a-vehicle/")
 
@@ -84,12 +81,12 @@ def build_urbania_page():
     faqs = [
         ("Can I hire a Force Urbania in Hyderabad for one day?",
          "Yes — day hire is one of the trip types we quote for. Send the date, pickup point, the stops you want and the expected duration, and we will reply with a quotation. Availability is confirmed with the quotation."),
-        ("How many seats does the Urbania have?",
-         "The vehicle we operate is a 17-seat Force Urbania. Share your exact passenger count, including children, so seating can be confirmed for your group."),
+        ("How many people can travel in a Force Urbania?",
+         "The suitable configuration depends on the exact vehicle, passenger count, luggage and route. Share the number of adults and children so seating can be confirmed for your group."),
         ("Can 17 people travel with luggage?",
          "Not necessarily with a full set of large suitcases as well. Luggage space depends on passenger numbers and bag sizes, so share both and suitability will be confirmed for your trip rather than assumed."),
-        ("Is this your own vehicle?",
-         "Yes. We operate one 17-seat Force Urbania ourselves. That is why availability is confirmed per enquiry rather than shown as live — there is a single vehicle."),
+        ("How does UrbanLoop arrange the vehicle?",
+         "UrbanLoop checks verified operating vehicle options for the route and date. The exact vehicle arrangement and availability are confirmed before a quotation is accepted."),
         ("Can I see the vehicle before booking?",
          "Ask us. We will describe the vehicle, its seating and its current condition in writing with your quotation, and answer anything you want to check before you confirm."),
         ("What is not included?",
@@ -97,9 +94,9 @@ def build_urbania_page():
     ]
     body = (breadcrumb([("Home", "/"), ("Force Urbania hire", "/force-urbania-hire-hyderabad/")])
             + planner_hero(
-                "Force Urbania · 17 seats · " + CITY,
-                "Force Urbania hire in Hyderabad.",
-                "One 17-seat Force Urbania, used for pre-booked group trips — airport runs, weddings, corporate days, outstation travel and sightseeing.",
+                "Force Urbania · India",
+                "Force Urbania group transport across India.",
+                "Force Urbania group transport for airport runs, weddings, corporate days, outstation travel and sightseeing, subject to route and date confirmation.",
                 "custom",
                 ["You can note Force Urbania as your preference in the planner. Preference is a request rather than a guarantee: availability is confirmed for your dates before anything is agreed."])
             + section("The vehicle", "What we are offering.",
@@ -131,11 +128,11 @@ def build_urbania_page():
                       '</div>')
             + faq_block(faqs, h2="Force Urbania questions.")
             + cta_band())
-    page("/force-urbania-hire-hyderabad/", "Force Urbania Hire Hyderabad | 17-Seat Group Vehicle",
-         "Force Urbania hire in Hyderabad — one 17-seat vehicle for pre-booked group trips: airport transfers, weddings, corporate travel and outstation. Request a quotation.",
+    page("/force-urbania-hire-hyderabad/", "Force Urbania Group Transport Across India | UrbanLoop",
+         "Request Force Urbania group transport across India. Share your route, dates, group size and luggage for a checked quotation.",
          body,
-         ld=[service_ld("Force Urbania hire in Hyderabad",
-                        "Hire of a 17-seat Force Urbania with a driver for pre-booked private group trips in and around Hyderabad. Quotation on request."),
+         ld=[service_ld("Force Urbania group transport across India",
+                        "Force Urbania group transport with a driver for pre-booked private group trips across India. Quotation on request.", area_type="Country", area_name="India"),
              faq_ld(faqs), crumb_ld([("Home", "/"), ("Force Urbania hire", "/force-urbania-hire-hyderabad/")])],
          active="/find-a-vehicle/")
 
