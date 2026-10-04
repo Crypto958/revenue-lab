@@ -1,7 +1,9 @@
 import json
 import re
 import unittest
+from html import unescape
 from pathlib import Path
+from urllib.parse import urlsplit
 
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -70,6 +72,79 @@ class SEOQualityTests(unittest.TestCase):
         for path in (SITE / "destinations").glob("hyderabad-to-*/index.html"):
             text = path.read_text(encoding="utf-8")
             self.assertIn('href="/destinations/"', text, str(path))
+
+    def test_internal_page_links_resolve_without_treating_assets_as_pages(self):
+        known = {"/"}
+        for path in pages():
+            if path == SITE / "index.html":
+                continue
+            known.add("/" + str(path.relative_to(SITE).parent).replace("\\", "/") + "/")
+        asset_prefixes = ("/media/", "/style.css", "/favicon.svg", "/og.png")
+        broken = []
+        for path in pages():
+            text = path.read_text(encoding="utf-8")
+            for href in re.findall(r'href="(/[^"#?]*)', text):
+                href = unescape(href)
+                if href.startswith(asset_prefixes) or href.startswith("/api/"):
+                    continue
+                target = href if href == "/" or href.endswith("/") else href + "/"
+                if target not in known:
+                    broken.append((str(path.relative_to(SITE)), href))
+        self.assertEqual(broken, [], f"broken internal page links: {broken[:20]}")
+
+    def test_indexable_images_have_alt_text_and_dimensions(self):
+        missing = []
+        for path in pages():
+            for tag in re.findall(r"<img\b[^>]*>", path.read_text(encoding="utf-8"), re.I):
+                if 'aria-hidden="true"' in tag:
+                    continue
+                if not re.search(r'\balt="[^"]+"', tag):
+                    missing.append((str(path.relative_to(SITE)), "alt"))
+                if not re.search(r'\bwidth="\d+"', tag) or not re.search(r'\bheight="\d+"', tag):
+                    missing.append((str(path.relative_to(SITE)), "dimensions"))
+        self.assertEqual(missing, [], f"image accessibility/performance gaps: {missing}")
+
+    def test_national_shared_pages_do_not_leak_local_service_copy(self):
+        local_terms = ("hyderabad", "telangana", "rgia", "shamshabad")
+        for rel in ("index.html", "find-a-vehicle/index.html", "how-it-works/index.html", "guides/index.html"):
+            text = (SITE / rel).read_text(encoding="utf-8").lower()
+            leaked = {term: text.count(term) for term in local_terms if term in text}
+            self.assertEqual(leaked, {}, f"local copy leaked into shared page {rel}: {leaked}")
+
+    def test_national_service_cohort_is_crawlable_and_linked_from_india(self):
+        india = (SITE / "india/index.html").read_text(encoding="utf-8")
+        paths = (
+            "/services/airport-group-transfers/",
+            "/services/wedding-guest-transport/",
+            "/services/corporate-group-transport/",
+            "/services/outstation-group-travel/",
+            "/services/pilgrimage-group-travel/",
+            "/services/events-group-transport/",
+        )
+        sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+        for path in paths:
+            self.assertIn(f'href="{path}"', india)
+            self.assertIn(BASE + path, sitemap)
+            page = SITE / path.strip("/") / "index.html"
+            text = page.read_text(encoding="utf-8")
+            self.assertIn('content="index, follow', text)
+            self.assertIn(f'href="{BASE}{path}"', text)
+
+    def test_legacy_service_aliases_are_not_indexed_or_sitemapped(self):
+        sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+        for path in ("/services/events/", "/services/pilgrimage-tours/"):
+            page = SITE / path.strip("/") / "index.html"
+            text = page.read_text(encoding="utf-8")
+            self.assertIn('content="noindex, follow', text)
+            self.assertNotIn(BASE + path, sitemap)
+
+    def test_header_brand_and_planner_contact_patterns(self):
+        homepage = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertIn('<span class="wordmark">UrbanLoop</span>', homepage)
+        self.assertNotIn("urbanloop-lockup-horizontal-dark", homepage)
+        self.assertIn('data-location-suggest="true"', homepage)
+        self.assertIn('href="tel:+919182126104"', homepage)
+        self.assertIn("Call customer care", homepage)
 
 
 if __name__ == "__main__":

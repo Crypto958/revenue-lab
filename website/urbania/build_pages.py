@@ -121,11 +121,11 @@ def build_home():
     else:
         # No wide crop supplied yet — keep the two-column layout with the visual panel.
         intro = (
-            '<span class="eyebrow">Force Urbania specialist &middot; ' + CITY + '</span>'
-            '<h1>Force Urbania rental in Hyderabad</h1>'
-            '<p class="lede">Premium group travel for up to 17 passengers. One Force Urbania, '
-            'used for pre-booked group trips &mdash; airport runs, weddings, corporate days, '
-            'outstation travel and sightseeing.</p>'
+            '<span class="eyebrow">UrbanLoop &middot; India-wide group transport</span>'
+            '<h1>Group transport across India</h1>'
+            '<p class="lede">Private group travel for airport transfers, weddings, corporate days, '
+            'outstation travel and sightseeing. Share the route and dates so suitable vehicle '
+            'options can be checked before a quotation.</p>'
             '<div class="heroacts">'
             '<a class="btn" href="/request-quote/">Get a quote</a>'
             f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call {PHONE_TXT}</a>'
@@ -529,7 +529,7 @@ def build_sightseeing():
 def build_guides_hub():
     body = (breadcrumb([("Home", "/"), ("Guides", "/guides/")])
             + hero("Guides", "Practical answers before you enquire.",
-                   "Short pages about planning group travel in Hyderabad — written to help you work out whether a 17-seat vehicle suits your trip.",
+                   "Short, practical pages about planning group travel across India — from vehicle fit and luggage to wedding schedules.",
                    ctas=False)
             + section("Guides", "Start here.",
                       "These answer the questions that come up most often in enquiries.",
@@ -542,8 +542,8 @@ def build_guides_hub():
                       '<p>Planning guest movements between hotels, venues and the airport.</p></a>'
                       '</div>')
             + cta_band())
-    page("/guides/", "Group Travel Guides | Hyderabad 17-Seater Urbania",
-         "Practical guides to planning group travel in Hyderabad — Urbania vs Tempo Traveller, choosing a vehicle for 10-17 people, and wedding guest transport.",
+    page("/guides/", "Group Transport Guides Across India | UrbanLoop",
+         "Practical guides to planning group transport across India — vehicle comparison, passenger and luggage fit, and wedding guest transport.",
          body, ld=[crumb_ld([("Home", "/"), ("Guides", "/guides/")])], active="/guides/")
 
 def guide_page(path, title, desc, h1, sub, intro_paras, sections_html, faqs, crumb,
@@ -599,8 +599,8 @@ def build_guide_urbania_vs_tempo():
       "Price depends on the trip, the duration, the distance and the date rather than on the vehicle category alone. A quotation for your actual itinerary is the only meaningful comparison."),
     ]
     guide_page("/guides/force-urbania-vs-tempo-traveller/",
-               "Force Urbania vs Tempo Traveller | Group Travel Hyderabad",
-               "How the Force Urbania and Tempo Traveller compare for group travel in Hyderabad, and the four questions that decide which suits your group and route.",
+               "Force Urbania vs Tempo Traveller | Group Travel India",
+               "How the Force Urbania and Tempo Traveller compare for group travel across India, and the questions that decide which suits your group and route.",
                "Force Urbania vs Tempo Traveller for group travel",
                "An honest comparison, and how to decide for your own group.",
                ["Both vehicles are widely used for group travel in India. The choice usually comes down to group size, luggage and how long you are on the road — not to the badge on the front."],
@@ -610,9 +610,9 @@ def build_guide_urbania_vs_tempo():
                related=[("What vehicle fits a group of 10\u201317?",
                          "/guides/group-vehicle-fit-guide/",
                          "Work out seating and luggage before you start comparing vehicles."),
-                        ("Sightseeing and day hire",
-                         "/hyderabad-sightseeing-group-travel/",
-                         "Full-day and multi-stop trips on your own itinerary.")])
+                        ("Plan an India-wide group trip",
+                         "/india/",
+                         "Start with your route, dates, passengers and luggage.")])
 
 def build_guide_fit():
     secs = (
@@ -645,7 +645,7 @@ def build_guide_fit():
                   '</div>')
     )
     faqs = [
-     ("What vehicle do I need for 15 people in Hyderabad?",
+     ("What vehicle do I need for 15 people?",
       "A 17-seat group vehicle is the usual answer, but confirm the luggage position as well as the passenger count. Fifteen passengers with a full set of large suitcases is a different requirement from fifteen passengers with hand baggage."),
      ("Can 15 people with luggage fit in an Urbania?",
       "It depends entirely on the luggage. Share the number of passengers and how many large and cabin bags there are, and suitability will be confirmed for your specific trip rather than assumed."),
@@ -657,18 +657,18 @@ def build_guide_fit():
       "Then a single 17-seat vehicle will not carry the whole group. Tell us the total number and we will be honest about whether it can be covered at all."),
     ]
     guide_page("/guides/group-vehicle-fit-guide/",
-               "What Vehicle for 10\u201317 People? | Hyderabad Group Travel",
-               "How to work out what vehicle a group of 10 to 17 people needs in Hyderabad, including the luggage question that most group travel plans get wrong.",
+               "What Vehicle Fits a Group of 10\u201317 People? | UrbanLoop",
+               "How to work out what vehicle a group of 10 to 17 people needs, including the luggage question that most group travel plans get wrong.",
                "Travelling with 10\u201317 people: what vehicle do you need?",
                "Group size is the easy part. Luggage and duration decide whether a plan actually works.",
-               ["If you are moving a group in Hyderabad, this page is meant to help you work out the requirement before you start asking for prices."],
+               ["This page is meant to help you work out the requirement before you start asking for prices."],
                secs, faqs,
                [("Home", "/"), ("Guides", "/guides/"), ("Vehicle fit guide", "/guides/group-vehicle-fit-guide/")],
                related=[("Force Urbania vs Tempo Traveller",
                          "/guides/force-urbania-vs-tempo-traveller/",
                          "How the two group vehicles compare, and how to choose between them."),
                         ("Group airport transfers",
-                         "/airport-group-transfer-hyderabad/",
+                         "/services/airport-group-transfers/",
                          "Planning an airport run for a group travelling with luggage.")])
 
 def build_guide_wedding():
@@ -715,16 +715,16 @@ def build_guide_wedding():
       "A vehicle can be hired for the duty, but it cannot be in two places. Waiting arrangements and any charges are set out in your quotation."),
     ]
     guide_page("/guides/wedding-guest-transport-planning/",
-               "How to Arrange Transport for Wedding Guests in Hyderabad",
-               "A practical approach to planning wedding guest transport in Hyderabad — building the movement list, grouping guests and avoiding the common failures.",
-               "How to arrange transport for wedding guests in Hyderabad",
+               "How to Arrange Transport for Wedding Guests | UrbanLoop",
+               "A practical approach to planning wedding guest transport across India — building the movement list, grouping guests and avoiding common failures.",
+               "How to arrange transport for wedding guests",
                "Build the movement list first. Vehicles are the easy part.",
                ["Wedding transport is a scheduling problem, not a vehicle problem. Get the schedule right and the vehicle follows."],
                secs, faqs,
                [("Home", "/"), ("Guides", "/guides/"),
                 ("Wedding guest transport", "/guides/wedding-guest-transport-planning/")],
                related=[("Wedding &amp; event transport",
-                         "/wedding-transport-hyderabad/",
+                        "/services/wedding-guest-transport/",
                          "How we quote guest movement across a wedding schedule."),
                         ("What vehicle fits a group of 10\u201317?",
                          "/guides/group-vehicle-fit-guide/",
@@ -947,6 +947,7 @@ if DATA.FLEET_CONFIRMED:
     SITEMAP += [f'/fleet/{c["key"]}/' for c in DATA.CONFIGURATIONS]
 SITEMAP += [f'/destinations/hyderabad-to-{r["name"].lower()}/' for r in DATA.ROUTES]
 SITEMAP += [s["href"] for s in DATA.SERVICES if s["href"].startswith("/services/")]
+SITEMAP += [s["href"] for s in DATA.NATIONAL_SERVICES]
 SITEMAP += [f'/city/{slug}/' for _, slug, _, _ in CITY_COHORT]
 SITEMAP += [f'/route/{origin_slug}-to-{destination.lower().replace(" ", "-")}/'
             for _, origin_slug, _, destination in ROUTE_COHORT]
@@ -1008,11 +1009,12 @@ def build_india_hub():
         + section("Use cases", "Plan the journey your group actually needs.",
                   "Airport transfers, weddings, corporate movement, family travel, pilgrimage and multi-stop outstation trips can all be assessed from one enquiry.",
                   '<div class="grid g3">'
-                  '<a class="card" href="/airport-group-transfer-hyderabad/"><h3>Airport transfers</h3><p>Share flight timing, pickup points, passengers and luggage.</p></a>'
-                  '<a class="card" href="/wedding-transport-hyderabad/"><h3>Wedding transport</h3><p>Send the guest movements, hotels, venues and dates.</p></a>'
-                  '<a class="card" href="/corporate-group-transport-hyderabad/"><h3>Corporate travel</h3><p>Describe the team, schedule, stops and invoice needs.</p></a>'
-                  '<a class="card" href="/outstation-group-travel-hyderabad/"><h3>Outstation trips</h3><p>Give us the route, stop order, dates and passenger count.</p></a>'
-                  '<a class="card" href="/services/pilgrimage-tours/"><h3>Pilgrimage travel</h3><p>Plan early starts, temple stops and multi-day movement.</p></a>'
+                  '<a class="card" href="/services/airport-group-transfers/"><h3>Airport transfers</h3><p>Share flight timing, pickup points, passengers and luggage.</p></a>'
+                  '<a class="card" href="/services/wedding-guest-transport/"><h3>Wedding transport</h3><p>Send the guest movements, hotels, venues and dates.</p></a>'
+                  '<a class="card" href="/services/corporate-group-transport/"><h3>Corporate travel</h3><p>Describe the team, schedule, stops and invoice needs.</p></a>'
+                  '<a class="card" href="/services/outstation-group-travel/"><h3>Outstation trips</h3><p>Give us the route, stop order, dates and passenger count.</p></a>'
+                  '<a class="card" href="/services/pilgrimage-group-travel/"><h3>Pilgrimage travel</h3><p>Plan early starts, temple stops and multi-day movement.</p></a>'
+                  '<a class="card" href="/services/events-group-transport/"><h3>Events and group tours</h3><p>Share the schedule, venues and group requirements.</p></a>'
                   '<a class="card" href="/request-quote/"><h3>Custom itinerary</h3><p>Start with your own route if it does not fit a listed use case.</p></a>'
                   '</div>')
         + section("How it works", "One enquiry, checked before quotation.",
@@ -1022,9 +1024,9 @@ def build_india_hub():
                   '<div class="stepc"><span class="n">02</span><div><h3>We check the practical fit</h3><p>We review the route and suitable vehicle arrangement for the enquiry.</p></div></div>'
                   '<div class="stepc"><span class="n">03</span><div><h3>We send a quotation</h3><p>The quotation sets out the inclusions, terms and availability position.</p></div></div>'
                   '</div>', alt=True)
-        + section("Local information", "Hyderabad route guides.",
-                  "The first published route cluster is Hyderabad-based. More city and route pages should only be added when their underlying operating data has been verified.",
-                  '<p><a class="btn ghost" href="/destinations/">Browse Hyderabad destination guides</a></p>')
+        + section("Published information", "Cities and routes with verified data.",
+                  "Browse the published city and route cohort for planning context. A page is added only when its underlying location or route data has been verified.",
+                  '<p><a class="btn ghost" href="/destinations/">Browse published routes</a></p>')
         + section("Verified service areas", "Choose a city.",
                   "These cities are the first nationwide cohort. Each page explains what to send in an enquiry without exposing internal operator details.",
                   f'<div class="grid g3">{city_cards}</div>', alt=True)
@@ -1280,6 +1282,72 @@ def build_destination_pages():
                   f'Pre-booked Force Urbania group transport from Hyderabad to {r["name"]}.')
 
 
+def build_national_service_pages():
+    """Publish one useful page per broad service intent, not keyword variants."""
+    details = {
+        "airport": ("Airport group transfers across India",
+                     "Group airport transfers across India. Share flight timing, pickup points, passengers and luggage for a checked quotation.",
+                     "Airport pickup and drop planning for groups.",
+                     "Give us the airport, flight timing, pickup or drop points, passenger count and luggage. The route and vehicle arrangement are checked before quotation."),
+        "wedding": ("Wedding guest transport across India",
+                     "Wedding guest transport across India for hotel, venue and airport movements. Share the schedule and group details for a quotation.",
+                     "Wedding guest movement across a planned schedule.",
+                     "Send the hotels, venues, airport movements, dates and approximate guest numbers. We use the schedule to assess the practical vehicle arrangement."),
+        "corporate": ("Corporate group transport across India",
+                      "Corporate group transport across India for teams, delegations and events. Share the timetable, stops and passenger details for a quotation.",
+                      "Scheduled transport for teams and corporate groups.",
+                      "Tell us the team size, pickup points, venues, timings, stops and billing requirements. The quotation follows the itinerary you provide."),
+        "outstation": ("Outstation group travel across India",
+                       "Outstation group travel across India for one-way, return and multi-city itineraries. Share the route and dates for a checked quotation.",
+                       "Intercity and multi-day travel built around your route.",
+                       "Tell us the origin, destination, stop order, dates, nights away, passengers and luggage. Interstate permissions and operating arrangements are confirmed for the enquiry."),
+        "pilgrimage": ("Pilgrimage group travel across India",
+                       "Pilgrimage group travel across India planned around your temples, stops, dates and passenger requirements. Request a quotation.",
+                       "Pilgrimage travel planned around the full itinerary.",
+                       "Share the temples or destinations, early-start requirements, stop order, dates, passengers and luggage so the trip can be assessed as one itinerary."),
+        "events": ("Event and group tour transport across India",
+                   "Event and group tour transport across India for conferences, functions and organised groups. Share the schedule and route for a quotation.",
+                   "Fixed-schedule transport for events and organised groups.",
+                   "Tell us the venue schedule, pickup points, dates, passenger movements and waiting requirements. We quote from the actual event plan rather than a generic package."),
+    }
+    for service in DATA.NATIONAL_SERVICES:
+        title, desc, sub, detail = details[service["key"]]
+        path = service["href"]
+        faqs = [
+            (f"Can UrbanLoop arrange {service['name'].lower()} anywhere in India?",
+             "We accept enquiries from across India. Share the route and dates and we will confirm whether a suitable vehicle arrangement can be quoted for the specific trip."),
+            ("What should I include in the enquiry?",
+             "Include the date, pickup point, destination or stops, number of passengers, luggage and the expected duration. Add timings where the trip has a fixed schedule."),
+            ("Is availability confirmed before booking?",
+             AVAIL_NOTE),
+        ]
+        sections = (
+            section("Plan the trip", "What to include in your enquiry.", detail,
+                    '<div class="grid g3">'
+                    '<div class="card"><h3>Route and timing</h3><p>Origin, destination, stops and the time the group needs to move.</p></div>'
+                    '<div class="card"><h3>Passengers and luggage</h3><p>Adults, children, large bags and any special seating requirement.</p></div>'
+                    '<div class="card"><h3>Trip shape</h3><p>One way, return, local duty or several days — describe the plan in your own words.</p></div>'
+                    '</div>')
+            + section("How it works", "One route, one checked quotation.",
+                      "UrbanLoop reviews the trip details, checks the suitable vehicle arrangement and sends the quotation with the availability position for those dates.",
+                      '<div class="steps">'
+                      '<div class="stepc"><span class="n">01</span><div><h3>Share the itinerary</h3><p>Tell us where the group starts, where it needs to go and when.</p></div></div>'
+                      '<div class="stepc"><span class="n">02</span><div><h3>We review the fit</h3><p>Passenger count, luggage, route and timing are considered together.</p></div></div>'
+                      '<div class="stepc"><span class="n">03</span><div><h3>Receive the quotation</h3><p>The quotation sets out the arrangement and terms before you decide.</p></div></div>'
+                      '</div>', alt=True)
+            + related_block([("Find the right vehicle for your group", "/find-a-vehicle/", "Compare the practical factors that affect vehicle fit."),
+                             ("Request a trip quotation", "/request-quote/", "Send the route, dates and group details directly.")])
+        )
+        page(path, title, desc,
+             breadcrumb([("Home", "/"), ("Services", "/india/"), (service["name"], path)])
+             + hero("Service · India", service["name"], sub, paras=[detail, AVAIL_NOTE], ctas=True)
+             + sections + faq_block(faqs, h2="Questions before you enquire.") + cta_band(),
+             ld=[service_ld(title, desc, area_type="Country", area_name="India"),
+                 faq_ld(faqs),
+                 crumb_ld([("Home", "/"), ("Services", "/india/"), (service["name"], path)])],
+             active="/india/")
+
+
 def build_extra_service_pages():
     for s in DATA.SERVICES:
         if not s["href"].startswith("/services/"):
@@ -1312,6 +1380,7 @@ def build_extra_service_pages():
 
 def build_seo_pages():
     build_india_hub()
+    build_national_service_pages()
     build_verified_city_pages()
     build_verified_route_pages()
     build_destinations_hub()
@@ -1354,7 +1423,7 @@ def build_static():
                '<path d="M5.5 5.5 V71.25 A23.25 23.25 0 0 0 52 71.25 V5.5"/><path d="M72 5.5 V94.5 H94.5"/>'
                '</g></svg>')
     write_page("/robots.txt",
-               "# Group transport Hyderabad - robots.txt\n"
+               "# India-wide group transport - robots.txt\n"
                "# Public commercial pages: crawlable by search engines and AI answer engines.\n\n"
                "User-agent: *\nAllow: /\nDisallow: /thank-you/\n\n"
                "# Answer engines and search assistants: allowed to surface public content.\n"

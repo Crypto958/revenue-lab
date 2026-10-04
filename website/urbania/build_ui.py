@@ -50,7 +50,8 @@ def brand_svg(filename, cls="", label=""):
             f"\nBRAND ASSET MISSING: {path}\n"
             f"  Every page header depends on it. Rebuild the identity with:\n"
             f"      python3 brand/build_wordmark.py && python3 brand/build_marks.py\n")
-    svg = open(path, encoding="utf-8").read()
+    with open(path, encoding="utf-8") as source:
+        svg = source.read()
     for c in ("#111518", "#FFFFFF", "#0F6A63", "#FAFBFC"):
         svg = svg.replace(f'fill="{c}"', 'fill="currentColor"')
         svg = svg.replace(f'stroke="{c}"', 'stroke="currentColor"')
@@ -422,15 +423,15 @@ def footer():
     <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">UrbanLoop helps groups arrange private transport across India. We check the route, vehicle option and date before sending a quotation.</p>
     <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{PHONE_TXT}</a></p>
   </div>
-  {col("Trip types", [("Airport group transfers","/airport-group-transfer-hyderabad/"),
-                 ("Outstation group travel","/outstation-group-travel-hyderabad/"),
-                 ("Weddings & events","/wedding-transport-hyderabad/"),
-                 ("Corporate travel","/corporate-group-transport-hyderabad/"),
-                 ("Sightseeing & day hire","/hyderabad-sightseeing-group-travel/"),
-                 ("Family group travel","/family-group-travel-hyderabad/")])}
+  {col("Trip types", [("Airport group transfers","/services/airport-group-transfers/"),
+                 ("Outstation group travel","/services/outstation-group-travel/"),
+                 ("Weddings & events","/services/wedding-guest-transport/"),
+                 ("Corporate travel","/services/corporate-group-transport/"),
+                 ("Pilgrimage travel","/services/pilgrimage-group-travel/"),
+                 ("Events and group tours","/services/events-group-transport/")])}
   {col("Company", [("Find a vehicle","/find-a-vehicle/"),
-                   ("Destinations","/destinations/"),
-                   ("Force Urbania hire","/force-urbania-hire-hyderabad/"),
+                   ("Published routes","/india/"),
+                   ("Force Urbania options","/find-a-vehicle/"),
                    ("How it works","/how-it-works/"),
                    ("What to expect","/what-to-expect/"),("Guides","/guides/"),
                    ("Partner with us","/partner-with-us/"),
@@ -524,7 +525,7 @@ def vehicle_panel():
     if photo:
         return (
             '<div class="vwrap">'
-            f'<img src="{photo}" alt="Force Urbania group transport vehicle" loading="lazy" decoding="async">'
+            f'<img src="{photo}" alt="Force Urbania group transport vehicle" width="747" height="685" loading="lazy" decoding="async">'
             '<p class="vcap"><b>Force Urbania group transport.</b> One of the vehicle options '
             'that may suit your route and group size.</p></div>')
     svg = ('<svg viewBox="0 0 640 300" role="img" aria-label="Illustrative diagram of a 17-seat Force Urbania-style '
