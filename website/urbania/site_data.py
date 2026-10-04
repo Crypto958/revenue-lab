@@ -311,9 +311,27 @@ SERVICES = [
     dict(key="sightseeing", name="Sightseeing &amp; day hire", href="/hyderabad-sightseeing-group-travel/",
          blurb="Full-day or multi-stop city travel on your own plan."),
     dict(key="pilgrimage", name="Pilgrimage tours", href="/services/pilgrimage-tours/",
-         blurb="Temple and pilgrimage runs within Telangana, Andhra Pradesh and beyond."),
+         blurb="Temple and pilgrimage travel planned around your route, dates and group."),
     dict(key="events", name="Events &amp; group tours", href="/services/events/",
          blurb="Conference, event and tour group movement with a fixed schedule."),
+]
+
+# Shared components use these national intent pages. Hyderabad-specific pages
+# remain in SERVICES for the verified local cohort, but must not be the default
+# destination from the India-wide homepage or other shared components.
+NATIONAL_SERVICES = [
+    dict(key="airport", name="Airport group transfers", href="/services/airport-group-transfers/",
+         blurb="Airport pickup and drop planning for groups, passengers and luggage."),
+    dict(key="wedding", name="Wedding guest transport", href="/services/wedding-guest-transport/",
+         blurb="Guest movement between hotels, venues and airports across a planned schedule."),
+    dict(key="corporate", name="Corporate group transport", href="/services/corporate-group-transport/",
+         blurb="Transport for teams, delegations, conferences and scheduled group movement."),
+    dict(key="outstation", name="Outstation group travel", href="/services/outstation-group-travel/",
+         blurb="Intercity and multi-day group travel built around your route and stop order."),
+    dict(key="pilgrimage", name="Pilgrimage group travel", href="/services/pilgrimage-group-travel/",
+         blurb="Pilgrimage travel planned around early starts, stops and the full itinerary."),
+    dict(key="events", name="Events and group tours", href="/services/events-group-transport/",
+         blurb="Fixed-schedule transport for events, conferences and organised groups."),
 ]
 
 
@@ -365,6 +383,16 @@ SEATING_SLOTS = [
     ("standard-seating", "Standard passenger seating reference"),
     ("premium-recliner", "Premium reclining captain-seat reference"),
 ]
+
+# Supplied asset dimensions prevent image layout shift and keep the gallery
+# stable before lazy-loaded photos arrive.
+MEDIA_DIMENSIONS = {
+    "exterior-front": (1200, 900),
+    "exterior-side": (1200, 900),
+    "exterior-rear": (1200, 900),
+    "standard-seating": (1200, 800),
+    "premium-recliner": (1200, 675),
+}
 
 # Descriptions of the two seat layouts. Layout convention is what distinguishes
 # the trims in the Indian market; nothing here claims a specific vehicle spec.

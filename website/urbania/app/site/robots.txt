@@ -1,4 +1,4 @@
-# Group transport Hyderabad - robots.txt
+# India-wide group transport - robots.txt
 # Public commercial pages: crawlable by search engines and AI answer engines.
 
 User-agent: *

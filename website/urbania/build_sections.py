@@ -17,8 +17,10 @@ import os
 from site_data import (CONFIGURATIONS, CONFIG_SPEC_FIELDS, GALLERY_SLOTS, PRICING_FAQS,
                        RATE_EXCLUSIONS, RATE_INCLUSIONS, RATE_NOTES, RATE_TABLE_COLUMNS,
                        REVIEWS, REVIEWS_EMPTY_MESSAGE, ROUTES, SERVICE_AREAS, SERVICES,
+                       NATIONAL_SERVICES,
                        TRUST_ASSURANCES, TRUST_FIELDS, FLEET_CONFIRMED, SEATING_SLOTS,
                        SEAT_LAYOUTS, ASSETS_ARE_OUR_VEHICLE, SHOW_MEDIA_PLACEHOLDERS,
+                       MEDIA_DIMENSIONS,
                        RATE_INDICATIVE, tbc, money)
 
 # ------------------------------------------------------------------ media
@@ -211,7 +213,9 @@ def _illustrative(width=520):
     for name in ("exterior-side", "exterior-front"):
         url = find_image("gallery", name)
         if url:
+            dimensions = MEDIA_DIMENSIONS.get(name, (1200, 900))
             return (f'<img src="{url}" alt="Force Urbania group transport vehicle" '
+                    f'width="{dimensions[0]}" height="{dimensions[1]}" '
                     f'style="width:100%;height:auto;display:block;border-radius:10px" '
                     f'loading="lazy" decoding="async">')
     return ('<svg viewBox="0 0 520 240" role="img" aria-label="Illustrative diagram of a Force '
@@ -310,7 +314,7 @@ def config_cards():
     <div class="bestfor">{best}</div>
     <div class="cfgacts">
       <a class="btn sm" href="/request-quote/">Get quote</a>
-      <a class="btn ghost sm" href="/rates/force-urbania-rental-rates-hyderabad/">View rates</a>
+      <a class="btn ghost sm" href="/find-a-vehicle/">View vehicle guidance</a>
     </div>
   </div>
 </article>''')
@@ -426,10 +430,10 @@ def fleet_status_note():
 # ------------------------------------------------------------ services/routes
 def services_grid():
     cards = "".join(
-        f'<a class="card" href="/india/"><span class="tag">{html.escape(s["name"].replace("&amp;", "&"))}</span>'
+        f'<a class="card" href="{s["href"]}"><span class="tag">{html.escape(s["name"].replace("&amp;", "&"))}</span>'
         f'<h3>{s["name"]}</h3><p>{html.escape(s["blurb"])}</p>'
-        f'<p style="margin-top:14px"><span class="txtlink">Enquire</span></p></a>'
-        for s in SERVICES)
+        f'<p style="margin-top:14px"><span class="txtlink">Read the service guide</span></p></a>'
+        for s in NATIONAL_SERVICES)
     return f'<div class="grid g3">{cards}</div>'
 
 
@@ -509,8 +513,11 @@ def _media_grid(slots, kind):
         url = find_image(kind, name)
         if url:
             have += 1
+            dimensions = MEDIA_DIMENSIONS.get(name, ())
+            size_attrs = (f' width="{dimensions[0]}" height="{dimensions[1]}"'
+                          if len(dimensions) == 2 else "")
             out += (f'<figure class="gfig"><img src="{url}" alt="{html.escape(caption)}" '
-                    f'loading="lazy" decoding="async">'
+                    f'{size_attrs} loading="lazy" decoding="async">'
                     f'<figcaption>{html.escape(caption)}</figcaption></figure>')
         elif SHOW_MEDIA_PLACEHOLDERS:
             out += (f'<div class="gslot"><span>{html.escape(caption)}<br>'

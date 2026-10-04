@@ -119,12 +119,12 @@ def build_urbania_page():
             + section("Use cases", "Trips it suits.",
                       "The Urbania works best where a group wants to stay together for a planned journey.",
                       '<div class="grid g3">'
-                      '<a class="card" href="/airport-group-transfer-hyderabad/"><h3>Airport group transfers</h3><p>Arrivals, departures and multiple pickups with luggage.</p></a>'
-                      '<a class="card" href="/wedding-transport-hyderabad/"><h3>Weddings and events</h3><p>Guest movement across a schedule, not a single trip.</p></a>'
-                      '<a class="card" href="/corporate-group-transport-hyderabad/"><h3>Corporate travel</h3><p>Teams and delegations moving together on a timetable.</p></a>'
-                      '<a class="card" href="/outstation-group-travel-hyderabad/"><h3>Outstation trips</h3><p>Intercity and multi-day travel, subject to permissions and arrangements.</p></a>'
-                      '<a class="card" href="/hyderabad-sightseeing-group-travel/"><h3>Sightseeing and day hire</h3><p>Multi-stop city travel on your own itinerary.</p></a>'
-                      '<a class="card" href="/family-group-travel-hyderabad/"><h3>Family trips</h3><p>Family groups travelling together with children and luggage.</p></a>'
+                      '<a class="card" href="/services/airport-group-transfers/"><h3>Airport group transfers</h3><p>Arrivals, departures and multiple pickups with luggage.</p></a>'
+                      '<a class="card" href="/services/wedding-guest-transport/"><h3>Weddings and events</h3><p>Guest movement across a schedule, not a single trip.</p></a>'
+                      '<a class="card" href="/services/corporate-group-transport/"><h3>Corporate travel</h3><p>Teams and delegations moving together on a timetable.</p></a>'
+                      '<a class="card" href="/services/outstation-group-travel/"><h3>Outstation trips</h3><p>Intercity and multi-day travel, subject to permissions and arrangements.</p></a>'
+                      '<a class="card" href="/india/"><h3>Sightseeing and day hire</h3><p>Multi-stop city travel on your own itinerary.</p></a>'
+                      '<a class="card" href="/india/"><h3>Family trips</h3><p>Family groups travelling together with children and luggage.</p></a>'
                       '</div>')
             + faq_block(faqs, h2="Force Urbania questions.")
             + cta_band())
