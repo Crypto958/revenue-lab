@@ -224,7 +224,7 @@ def planner(preset=""):
     <div class="pl-modes">{blocks}</div>
     <div class="pl-contact" id="pl-contact" style="display:none">
       <h3 class="pl-h">Where should we send your quotation?</h3>
-      <p class="pl-help">Your trip details are captured first. Now add your contact details so we can send the quotation after checking the route and availability.</p>
+      <p class="pl-help">Review your trip details, then add your contact information and agree to the privacy notice before sending your enquiry to UrbanLoop.</p>
       {CONTACT}
     </div>
     <div class="pl-summary" id="pl-summary">
@@ -427,7 +427,6 @@ PLANNER_JS = """<script>
     ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid'].forEach(function(x){ if(q.get(x)) o[x]=q.get(x); });
     return o;
   }
-  function ref(){ var s='GT'+Date.now().toString(36).toUpperCase().slice(-6); return s; }
   function showSummary(){
     var o=collect(), g=document.getElementById('pl-sgrid'); g.innerHTML='';
     Object.keys(o).forEach(function(k){
@@ -440,13 +439,7 @@ PLANNER_JS = """<script>
     pl.querySelector('.pl-foot').style.display='none';
     summary.style.display='block'; summary.classList.add('on');
     contact.style.display='block';
-    status.textContent='Availability check started. We will confirm the suitable vehicle arrangement for your route and dates before sending the quotation.';
-    if(EP){
-      var check=Object.assign({},o,{stage:'availability_check'});
-      fetch(EP,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(check)})
-        .then(function(r){return r.json().catch(function(){return {};});})
-        .then(function(j){if(j&&j.ref){try{localStorage.setItem('availabilityRef',j.ref);}catch(err){}}});
-    }
+    status.textContent='We will check suitable vehicle options for this route and date after you send your enquiry.';
     summary.scrollIntoView({block:'center',behavior:'smooth'});
   }
   nextBtn.addEventListener('click',function(e){ e.preventDefault(); if(validate(false)) showSummary(); });
@@ -459,20 +452,21 @@ PLANNER_JS = """<script>
     e.preventDefault();
     if(!validate(true)) return;
     var hp=form.querySelector('input[name=_hp]'); if(hp&&hp.value) return;
-    var o=collect(), clientRef=ref();
+    var o=collect();
     o.stage='quote_request';
-    try{ if(localStorage.getItem('availabilityRef')) o.availability_ref=localStorage.getItem('availabilityRef'); }catch(err){}
     function lines(id){ return 'Trip request '+id+'\\n'+
       Object.keys(o).map(function(k){return k.replace(/_/g,' ')+': '+o[k];}).join('\\n'); }
     function waFor(id){ return WA?('https://wa.me/'+WA+'?text='+encodeURIComponent(lines(id))):''; }
-    function done(id, serverOk){
+    var send=document.getElementById('pl-send');
+    send.disabled=true; send.setAttribute('aria-busy','true');
+    function done(id){
       try{ localStorage.setItem('lastTripRef',id); }catch(err){}
       var wa=waFor(id);
       form.style.display='none';
       result.innerHTML='<div style="padding:22px 20px"><h3 class="pl-h">'
-        +'Quote request received</h3>'
+        +'Your vehicle request has been received</h3>'
         +'<div class="pl-ref">'+id+'</div>'
-        +'<p class="lede" style="font-size:16px">Thank you &mdash; your reference is above. Here is what happens next:</p>'
+        +'<p class="lede" style="font-size:16px">Thank you. Keep this reference number. Our team will review your route, dates and group requirements, then follow up with suitable options and a quotation.</p>'
         +'<div class="pl-sgrid pl-steps" style="margin-top:14px">'
         +'<div class="pl-srow"><b>1</b><span>We check the route, dates and group requirements, then identify a suitable vehicle arrangement.</span></div>'
         +'<div class="pl-srow"><b>2</b><span>We confirm vehicle availability for your dates.</span></div>'
@@ -480,13 +474,20 @@ PLANNER_JS = """<script>
         +'<div class="pl-srow"><b>4</b><span>A booking is confirmed only after you accept the quotation.</span></div>'
         +'</div>'
         +'<p class="pl-disclaim" style="margin-top:16px">This is a quotation request and does not confirm vehicle '
-        +'availability or create a booking.'+(serverOk?'':' We could not reach our system, so please also send this '
-        +'on WhatsApp to make sure it reaches us.')+'</p>'
+        +'availability or create a booking.</p>'
         +'<p style="margin-top:14px;display:flex;gap:14px;flex-wrap:wrap">'
-        +(wa?'<a class="btn" href="'+wa+'" target="_blank" rel="noopener">Send a copy on WhatsApp</a>':'')
         +'<a class="btn ghost" href="/">Back to start</a></p>'
         +'<p class="small" style="margin-top:12px">Keep your reference number. You can check progress at '
         +'<code>/api/trip/'+id+'</code>.</p></div>';
+      result.focus(); result.scrollIntoView({block:'start',behavior:'smooth'});
+    }
+    function failed(){
+      send.disabled=false; send.removeAttribute('aria-busy');
+      var wa=waFor('');
+      result.innerHTML='<div style="padding:20px" role="alert"><h3 class="pl-h">Your request has not been saved yet</h3>'
+        +'<p>We could not save your enquiry. Please try sending it again. You can also contact UrbanLoop on WhatsApp and share the trip details below.</p>'
+        +(wa?'<p style="margin-top:14px"><a class="btn" href="'+wa+'" target="_blank" rel="noopener">Continue on WhatsApp</a></p>':'')
+        +'</div>';
       result.focus(); result.scrollIntoView({block:'start',behavior:'smooth'});
     }
     if(EP){
@@ -494,13 +495,11 @@ PLANNER_JS = """<script>
         body:JSON.stringify(o)})
         .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok:r.ok&&j.ok,ref:j.ref}; }); })
         .then(function(j){
-          var id=j.ok&&j.ref?j.ref:clientRef;
-          if(j.ok){ done(id,true); } else { if(WA) window.open(waFor(clientRef),'_blank'); done(clientRef,false); }
+          if(j.ok&&j.ref){ done(j.ref); } else { failed(); }
         })
-        .catch(function(){ if(WA) window.open(waFor(clientRef),'_blank'); done(clientRef,false); });
+        .catch(failed);
     }
-    else if(WA){ window.open(waFor(clientRef),'_blank'); done(clientRef,true); }
-    else { done(clientRef,true); }
+    else { failed(); }
   });
   // Prefill from the hero journey bar (?from=&to=&date=&pax=). Field names
   // differ per trip mode (pickup vs main_pickup, destination vs destinations),

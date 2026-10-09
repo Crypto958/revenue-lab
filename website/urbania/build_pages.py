@@ -127,7 +127,7 @@ def build_home():
             'outstation travel and sightseeing. Share the route and dates so suitable vehicle '
             'options can be checked before a quotation.</p>'
             '<div class="heroacts">'
-            '<a class="btn" href="/request-quote/">Get a quote</a>'
+            '<a class="btn" href="/request-quote/">Request vehicle options</a>'
             f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a>'
             '</div>'
             f'<div class="ucs">{chips}</div>'
@@ -175,7 +175,7 @@ def build_home():
                   '<p><a class="btn" href="/india/">Explore India-wide routes and destinations</a></p>', alt=True)
         + section("Pricing", "A clear quotation for your trip.",
                   "We do not publish a one-size-fits-all price. Route, dates, duration, vehicle category and group requirements all affect the quotation.",
-                  '<p><a class="btn" href="/request-quote/">Request a trip quotation</a></p>')
+                  '<p><a class="btn" href="/request-quote/">Request vehicle options</a></p>')
         + section("Trust", "What you can rely on.",
                   "We publish figures we can stand behind. Where we do not have one yet, we say so.",
                   SEC.trust_strip(), alt=True)
@@ -826,9 +826,8 @@ def build_contact():
                    "Call to discuss the trip, or send the details through the quotation form.",
                    ctas=False)
             + section("Contact", "How to reach us.",
-                      "WhatsApp, phone, or the quotation form. The form records your trip details, "
-                      "and the confirmation screen gives you a one-tap option to send the same "
-                      "summary to us on WhatsApp.",
+                      "WhatsApp, phone, or the request form. The form saves your enquiry after you "
+                      "provide contact details and agree to the privacy notice.",
                       '<div class="grid g3">'
                       f'<div class="card"><span class="tag">WhatsApp</span><h3>Message us</h3>'
                       f'<p>The fastest route. Send the date, route, passenger count and duration and we will reply with a quotation.</p>'
@@ -841,7 +840,7 @@ def build_contact():
                       f'<p style="margin-top:16px"><a class="txtlink" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></p></div>'
                       '<div class="card"><span class="tag">Form</span><h3>Request a trip quote</h3>'
                       '<p>The fastest way to give us the full picture: date, route, passengers and duration.</p>'
-                      '<p style="margin-top:16px"><a class="txtlink" href="/request-quote/">Request a trip quote</a></p></div>'
+                      '<p style="margin-top:16px"><a class="txtlink" href="/request-quote/">Request vehicle options</a></p></div>'
                       f'<div class="card"><span class="tag">Email</span><h3>Email</h3>'
                       f'<p>Include your trip details so we can quote without a round of questions.</p>'
                       f'<p style="margin-top:16px"><a class="txtlink" href="mailto:{LEAD_EMAIL}">{LEAD_EMAIL}</a></p>'
@@ -869,7 +868,7 @@ def build_privacy():
     rows = [
         ("What we collect", "For a trip enquiry, we collect the trip and contact details you choose to submit. For a supplier enquiry, we may collect business and contact details, operating base and service areas, fleet size, vehicle configuration and registration details, driver arrangements and the checks you carry out, indicative rates and commercial terms, and optional rate cards, business documents, vehicle registration certificates, permits, insurance, fitness documents and vehicle photos."),
         ("Why we use it", "Trip details are used to prepare and respond to your quotation request. Supplier details and documents are used to review the operator, vehicle, service area, compliance information, driver-check process and commercial fit, and to contact you about the enquiry. A supplier enquiry is not an approval or promise of work. We do not add these details to a marketing list."),
-        ("Who processes the forms", "Website forms are submitted to UrbanLoop through Netlify's form handling service. Submission records are available to authorized site account administrators for enquiry handling and supplier review. Supplier rates and documents are not published or presented to customers as live availability."),
+        ("Who processes the forms", "When you send a trip enquiry and agree to the privacy notice, the request is saved in Netlify Blobs through a Netlify Function. Authorized UrbanLoop site administrators can access it to respond. UrbanLoop uses Zoho ZeptoMail to email the business inbox a limited callback summary: your name, phone number, trip type, route, date, group size and request reference, once the verified sending address and service credentials are configured. Your trip notes and other form details remain in the saved request. An email delivery issue does not remove the saved request. Supplier rates and documents are not published or presented to customers as live availability."),
         ("AI chat", "When the AI chat is available, the messages you send and recent chat context are sent to OpenAI's API to generate a reply. Do not share payment details or sensitive personal information in chat. UrbanLoop does not add chat transcripts to its trip enquiry records; use the trip form or WhatsApp if you want us to follow up about a journey."),
         ("How long we keep it", "We keep an enquiry while it is being handled and remove it when it is no longer needed for that purpose, unless a legal record-keeping requirement applies. You may ask us to correct or delete a submission."),
         ("Your choices and requests", f"You may ask to access, correct or delete your details, or withdraw consent for an enquiry, by calling {PHONE} or using the contact page. We will use reasonable steps to locate the relevant submission."),
@@ -924,7 +923,7 @@ def build_404():
                       "Or call and we will point you to the right place.",
                       '<div class="grid g3">'
                       '<a class="card" href="/"><h3>Home</h3><p>Overview of the vehicle and the trip types.</p></a>'
-                      '<a class="card" href="/request-quote/"><h3>Request a trip quote</h3><p>Send your trip details and get a quotation.</p></a>'
+                      '<a class="card" href="/request-quote/"><h3>Request vehicle options</h3><p>Send your trip details and get a quotation.</p></a>'
                       f'<a class="card" href="{PHONE_HREF}"><h3>Call customer care</h3><p>Speak to us about the trip.</p></a>'
                       '</div>'))
     page("/404.html", "Page not found | " + BRAND,
@@ -1216,7 +1215,7 @@ def build_fleet_pages():
                     SEC.fleet_status_note() + '<div class="grid g2">'
                     + spec_card
                     + f'<div class="card"><h3>Well suited to</h3><ul>{best}</ul>'
-                    '<p style="margin-top:14px"><a class="btn" href="/request-quote/">Get a quote</a></p>'
+                    '<p style="margin-top:14px"><a class="btn" href="/request-quote/">Request vehicle options</a></p>'
                     '</div></div>')
             + section("Rates", "What this configuration costs.",
                       "Per-kilometre and per-day rates for this configuration.",

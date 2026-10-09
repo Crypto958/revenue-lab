@@ -56,6 +56,54 @@ function summary(data) {
   return bits.join(" · ").slice(0, 180);
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>\"]/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;",
+  })[char]);
+}
+
+function callbackSummary(data, ref) {
+  const value = (...keys) => {
+    for (const key of keys) if (data[key]) return text(data[key], 180);
+    return "Not provided";
+  };
+  return [
+    ["Name", value("contact_name")],
+    ["Phone", value("contact_phone")],
+    ["Trip type", value("trip_type")],
+    ["Route", `${value("Pickup point", "pickup", "main_pickup", "address")} → ${value("Destination(s)", "Destination", "destinations", "destination", "venue", "temple")}`],
+    ["Date", value("Travel date", "date", "Start date", "date_from")],
+    ["Group size", value("Passengers", "passengers", "Guests needing transport", "guests", "Team size", "team_size")],
+    ["Reference", ref],
+  ];
+}
+
+async function sendOwnerAlert(data, ref) {
+  const token = process.env.ZEPTOMAIL_SEND_MAIL_TOKEN;
+  const fromAddress = process.env.ZEPTOMAIL_FROM_ADDRESS;
+  if (!token || !fromAddress) return;
+  const fields = callbackSummary(data, ref);
+  const rows = fields.map(([label, value]) => `<tr><th align="left">${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join("");
+  const textBody = fields.map(([label, value]) => `${label}: ${value}`).join("\n");
+  const response = await fetch("https://api.zeptomail.com/v1.1/email", {
+    method: "POST",
+    headers: {
+      "Authorization": `zoho-enczapikey ${token}`,
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    signal: AbortSignal.timeout(8000),
+    body: JSON.stringify({
+      from: { address: fromAddress, name: "UrbanLoop Enquiries" },
+      to: [{ email_address: { address: "fca.abhi007@gmail.com", name: "UrbanLoop" } }],
+      subject: `New vehicle request ${ref}`,
+      textbody: textBody,
+      htmlbody: `<p>A customer requested vehicle options. Follow up using the saved request.</p><table>${rows}</table>`,
+    }),
+  });
+  if (!response.ok) throw new Error(`ZeptoMail returned HTTP ${response.status}`);
+}
+
 async function createTrip(request, context) {
   if (!allowedOrigin(request)) return json({ ok: false, error: "origin_not_allowed" }, 403);
   const ip = context.ip || request.headers.get("x-forwarded-for") || "unknown";
@@ -67,19 +115,7 @@ async function createTrip(request, context) {
   if (text(data._hp, 100)) return json({ ok: true, ref: "GT000000" });
 
   const stage = text(data.stage, 40) || "quote_request";
-  if (stage === "availability_check") {
-    const ref = makeRef();
-    const now = new Date().toISOString();
-    await store().setJSON(ref, {
-      ref,
-      created_at: now,
-      status: "AVAILABILITY_CHECK_REQUESTED",
-      summary: summary(data),
-      payload: data,
-      source_page: text(data.source_page, 300),
-    });
-    return json({ ok: true, ref, status: "availability_check_requested" });
-  }
+  if (stage === "availability_check") return json({ ok: false, error: "consent_required" }, 400);
 
   const name = text(data.contact_name, 120);
   const phone = text(data.contact_phone, 40);
@@ -99,6 +135,13 @@ async function createTrip(request, context) {
     source_page: text(data.source_page, 300),
   };
   await store().setJSON(ref, record);
+  try {
+    await sendOwnerAlert(data, ref);
+  } catch (error) {
+    // The durable request is the source of truth. A mail provider outage must
+    // never make a saved customer request appear to have failed.
+    console.error("trip owner alert failed", error?.message || "unknown error");
+  }
   return json({ ok: true, ref });
 }
 
