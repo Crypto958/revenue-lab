@@ -1,28 +1,33 @@
 # FORM_LOGIC.md
 
-Auto-generated from `build_planner.py` (the single source of truth) on 2026-10-03.
-If this file and the code disagree, the code is correct — regenerate this file.
+Form lifecycle notes for the planner generated from `build_planner.py`.
 
 ## Submission lifecycle
 
 1. **Client validation** — required fields scoped to the *active* trip mode only, plus the
    contact block. Failures focus the first bad field and flag it `.bad` (red border + message).
-2. **Summary step** — the customer sees every value they entered, with an **Edit** control that
-   returns to the form with all input preserved. Nothing is submitted before they press
-   *Request my trip quote*.
-3. **POST `/api/trip`** — JSON body. Server validates again (name, phone, explicit consent),
-   applies a honeypot check and a per-IP rate limit (12 per 10 minutes).
-4. **Server issues the reference** — `GT` + 6 hex characters, e.g. `GT0F4C1A`. The client
-   reference is generated locally too, and is only used if the API is unreachable.
-5. **Fallback** — if the API fails, the client opens WhatsApp with the same payload and the
-   result panel says plainly that the system could not be reached and the details should be
-   sent on WhatsApp as well. A lead is never silently dropped.
-6. **Payoff** — reference shown, four-step "what happens next", the quotation-is-not-a-booking
-   disclaimer repeated, a WhatsApp copy link, and the reference saved to `localStorage`.
+2. **Review step** — the customer sees trip details and can edit them. Reviewing does not send
+   or store trip details.
+3. **Consent and contact** — only after name, phone, and explicit privacy consent are supplied
+   does the browser POST the complete request to `/api/trip`.
+4. **Save and notify** — the function validates contact and consent, then stores the full
+   request in Netlify Blobs. Once saved, it attempts a ZeptoMail owner alert containing only
+   name, phone, trip type, route, date, group size, and reference. Mail failure does not undo
+   the saved request.
+5. **Confirmation or recovery** — a successful save shows the server reference and says the
+   request is an enquiry, not a booking. A failed save shows no false confirmation and keeps
+   the form available to retry, with a WhatsApp fallback.
 
 **Field collection rule:** only fields belonging to the *selected* trip mode are collected, using
 the visible label text as the key. Fields from other modes are never included — this was a real
 defect that shipped in the first build and was fixed on 2026-10-03.
+
+### Owner alert setup
+
+Create a Zoho ZeptoMail Agent, authenticate the UrbanLoop sending domain, and verify the sender
+address. Then add `ZEPTOMAIL_SEND_MAIL_TOKEN` and `ZEPTOMAIL_FROM_ADDRESS` as server-side
+environment variables in Netlify. Do not put the token in site files or browser-visible settings.
+Until both values are set, requests still save normally and email alerts remain off.
 
 ### City / Local  ·  CTA: “Find local options”  ·  date UI: single
 

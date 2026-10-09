@@ -464,13 +464,13 @@ def header(active=""):
     <div class="hact">
       <a class="header-icon" href="{PHONE_HREF}" aria-label="Call UrbanLoop" title="Call UrbanLoop">{call_svg()}</a>
       {(f'<a class="header-icon whatsapp" href="https://wa.me/{WHATSAPP}" aria-label="Message UrbanLoop on WhatsApp" title="Message us on WhatsApp" rel="noopener">{whatsapp_svg()}</a>' if WHATSAPP else '')}
-      <a class="btn sm" href="/request-quote/">Request a Trip Quote</a>
+      <a class="btn sm" href="/request-quote/">Request vehicle options</a>
       <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mnav"><span></span><span></span><span></span></button>
     </div>
   </div>
   <div id="mnav">{mlinks}
     <div class="mcta">
-      <a class="btn wide" href="/request-quote/">Request a Trip Quote</a>
+      <a class="btn wide" href="/request-quote/">Request vehicle options</a>
       {(f'<a class="btn wide" style="background:#E7F4EE;color:#126E4D" href="https://wa.me/{WHATSAPP}" aria-label="Message UrbanLoop on WhatsApp" rel="noopener">{whatsapp_svg()}<span class="sr">Message us on WhatsApp</span></a>' if WHATSAPP else '')}
       <a class="btn ghost wide" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a>
     </div>
@@ -488,7 +488,7 @@ def footer():
       '<span id="chat-state-label">Checking chat</span></span>')
     dock = f'<div class="contact-dock" aria-label="Contact UrbanLoop">{chat}{wa}{call}</div>'
     sticky = ('<div class="sticky" aria-label="Quick contact">'
-              '<a class="q" href="/request-quote/">Request Quote</a>'
+              '<a class="q" href="/request-quote/">Request vehicle options</a>'
               + (f'<a class="w contact-action" href="https://wa.me/{WHATSAPP}" aria-label="Message UrbanLoop on WhatsApp" rel="noopener">{whatsapp_svg()}<span class="sr">WhatsApp</span></a>' if WHATSAPP else "")
               + f'<a class="contact-action" href="{PHONE_HREF}" aria-label="Call UrbanLoop">{call_svg()}<span class="sr">Call UrbanLoop</span></a></div>')
     def col(t, items):
@@ -610,7 +610,7 @@ def hero(eyebrow, h1, sub, paras=(), ctas=True, extra=""):
     acts = ""
     if ctas:
         acts = ('<div class="heroacts">'
-                '<a class="btn" href="/request-quote/">Request a Trip Quote</a>'
+                '<a class="btn" href="/request-quote/">Request vehicle options</a>'
                 f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></div>')
     return (f'<section class="hero"><div class="wrap"><div class="hgrid"><div>'
             f'<span class="eyebrow">{eyebrow}</span><h1>{h1}</h1>'
@@ -626,7 +626,7 @@ def cta_band(h2="Tell us about your trip and we will send a quotation.",
              lede="Share the date, pickup point, destination, number of passengers and expected duration. We reply with a quotation — this is an enquiry, not a confirmed booking."):
     return (f'<section class="alt"><div class="wrap"><div class="shead"><h2>{h2}</h2>'
             f'<p class="lede">{lede}</p></div>'
-            f'<div class="heroacts"><a class="btn" href="/request-quote/">Request a Trip Quote</a>'
+            f'<div class="heroacts"><a class="btn" href="/request-quote/">Request vehicle options</a>'
              f'<a class="btn ghost" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></div>'
             f'</div></section>')
 

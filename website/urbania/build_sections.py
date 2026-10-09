@@ -315,7 +315,7 @@ def config_cards():
     {spec}
     <div class="bestfor">{best}</div>
     <div class="cfgacts">
-      <a class="btn sm" href="/request-quote/">Get quote</a>
+      <a class="btn sm" href="/request-quote/">Request vehicle options</a>
       <a class="btn ghost sm" href="/find-a-vehicle/">View vehicle guidance</a>
     </div>
   </div>
