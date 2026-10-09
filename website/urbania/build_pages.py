@@ -183,9 +183,7 @@ def build_home():
         # "coming soon" copy. An empty box advertises the absence and is the
         # clearest "unfinished" signal a page can carry; each rendered photograph
         # already carries its own provenance caption.
-        + (section("Reviews", "What customers say.",
-                   "Reviews appear here only when they are genuine.",
-                   SEC.reviews_block()) if SEC.REVIEWS else "")
+        + SEC.demo_testimonials_section()
         + (section("Gallery", "The vehicle, photographed.",
                    "Images of the Force Urbania model.",
                    SEC.gallery_block(), alt=True) if SEC.media_status()["gallery"] else "")
