@@ -73,6 +73,29 @@ def media_status():
 
 # ------------------------------------------------------------------ CSS
 SECTIONS_CSS = """
+/* ---- traveller experiences: demo testimonial carousel ---- */
+.testimonials{--testimonial-gap:20px}
+.testimonial-track{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 40px)/3);gap:var(--testimonial-gap);overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px 2px 12px;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.testimonial-card{min-width:0;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;scroll-snap-align:start;box-shadow:0 8px 24px rgba(14,27,42,.06)}
+.testimonial-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--alt)}
+.testimonial-copy{padding:20px 21px 22px}
+.testimonial-stars{color:#B97812;letter-spacing:.12em;font-size:15px;line-height:1}
+.testimonial-quote{font-size:15.5px;line-height:1.62;color:var(--ink);margin-top:13px}
+.testimonial-byline{margin-top:18px;font-size:14px;font-weight:650;color:var(--ink)}
+.testimonial-meta{margin-top:3px;font-size:13px;color:var(--ink-3)}
+.testimonial-controls{display:flex;justify-content:flex-end;gap:9px;margin:-8px 0 14px}
+.testimonial-arrow{width:44px;height:44px;border:1px solid var(--line-2);border-radius:50%;background:#fff;color:var(--ink);font:inherit;font-size:20px;cursor:pointer;display:grid;place-items:center}
+.testimonial-arrow:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.testimonial-arrow:focus-visible,.testimonial-dot:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.testimonial-arrow:disabled{opacity:.4;cursor:not-allowed}
+.testimonial-pagination{display:flex;justify-content:center;gap:8px;margin:14px auto 0}
+.testimonial-dot{width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;cursor:pointer;display:grid;place-items:center}
+.testimonial-dot:before{content:"";width:9px;height:9px;border-radius:50%;background:#C8D1D8;transition:transform .16s,background .16s}
+.testimonial-dot[aria-current="true"]:before{background:var(--accent);transform:scale(1.25)}
+.testimonial-disclosure{margin-top:20px;text-align:center;color:var(--ink-3);font-size:12px}
+@media(max-width:900px){.testimonial-track{grid-auto-columns:calc((100% - 20px)/2)}}
+@media(max-width:620px){.testimonial-track{grid-auto-columns:100%;gap:14px;padding-inline:1px}.testimonial-copy{padding:18px}.testimonial-controls{margin-top:-6px}}
+@media(prefers-reduced-motion:reduce){.testimonial-track{scroll-behavior:auto}}
 /* ---- find your urbania ---- */
 .fy{background:linear-gradient(180deg,var(--alt),#fff);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,3vw,30px)}
 .fy-row{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
@@ -500,6 +523,90 @@ def reviews_block():
                 f'<p class="small" style="margin-top:12px">{html.escape(r["author"])}'
                 f' &middot; {html.escape(r["trip_type"])}</p></div>')
     return f'<div class="grid g3">{out}</div>'
+
+
+# These invented examples are intentionally isolated from REVIEWS so they can
+# never be treated as customer-supplied reviews or copied into review schema.
+DEMO_TESTIMONIALS = [
+    dict(name="Rahul M.", city="Hyderabad", trip_type="Family Airport Transfer", rating=5,
+         quote="We were six people travelling with my parents and two children, so taking separate cabs would have been a headache. The vehicle had enough space for everyone and our luggage, and the airport pickup was very smooth.",
+         image="family-airport.webp", alt="Illustrative Indian family with luggage beside a passenger van at an airport pickup."),
+    dict(name="Priya S.", city="Patna", trip_type="Wedding Guest Transport", rating=5,
+         quote="We had relatives staying at two different hotels during my sister’s wedding. UrbanLoop helped us coordinate one vehicle for the main family group, which made things much simpler.",
+         image="wedding-guests.webp", alt="Illustrative Indian wedding guests gathered outside a hotel with a passenger van nearby."),
+    dict(name="Arjun K.", city="Bengaluru", trip_type="Corporate Travel", rating=5,
+         quote="Our team had an early morning outstation meeting and we wanted everyone travelling together. The vehicle was comfortable and the pickup happened on time.",
+         image="corporate-group.webp", alt="Illustrative Indian colleagues travelling together with bags beside a passenger van."),
+    dict(name="Neha R.", city="Patna", trip_type="Family Outstation Trip", rating=5,
+         quote="We travelled with our parents to Bodh Gaya. Having one comfortable vehicle for the whole family was much better than booking multiple cars.",
+         image="bodh-gaya-family.webp", alt="Illustrative multigenerational Indian family beside a van near Bodh Gaya temple architecture."),
+    dict(name="Sanjay P.", city="Delhi", trip_type="Airport Transfer", rating=5,
+         quote="We had five adults, three children and quite a lot of luggage. The larger vehicle made the airport transfer much easier than trying to fit everything into two cabs.",
+         image="airport-transfer.webp", alt="Illustrative Indian family with luggage trolley beside a passenger van at an airport."),
+    dict(name="Ankit S.", city="Hyderabad", trip_type="Group Outstation Travel", rating=5,
+         quote="The booking was straightforward. I shared the pickup, destination and number of passengers and received the vehicle details before the trip.",
+         image="friends-outstation.webp", alt="Illustrative group of Indian friends travelling together beside a van at a scenic roadside stop."),
+]
+
+
+def demo_testimonials_section():
+    cards = []
+    for review in DEMO_TESTIMONIALS:
+        stars = "★" * int(review["rating"])
+        cards.append(
+            f'<article class="testimonial-card" role="listitem">'
+            f'<img src="{media_url("testimonials", review["image"])}" alt="{html.escape(review["alt"], quote=True)}" '
+            f'width="960" height="720" loading="lazy" decoding="async">'
+            f'<div class="testimonial-copy"><div class="testimonial-stars" aria-hidden="true">{stars}</div>'
+            f'<p class="testimonial-quote">&ldquo;{html.escape(review["quote"])}&rdquo;</p>'
+            f'<p class="testimonial-byline">{html.escape(review["name"])}</p>'
+            f'<p class="testimonial-meta">{html.escape(review["trip_type"])} &middot; {html.escape(review["city"])}</p></div></article>')
+    return (
+        '<section class="testimonials alt" aria-labelledby="traveller-experiences-title">'
+        '<div class="wrap"><div class="shead"><span class="eyebrow">Traveller experiences</span>'
+        '<h2 id="traveller-experiences-title">What Group Travel Should Feel Like</h2>'
+        '<p class="lede">Families, teams and groups choose larger vehicles when travelling together matters.</p></div>'
+        '<div class="testimonial-controls" aria-label="Testimonial carousel controls">'
+        '<button class="testimonial-arrow" type="button" data-testimonial-prev aria-label="Previous testimonials">&#8592;</button>'
+        '<button class="testimonial-arrow" type="button" data-testimonial-next aria-label="Next testimonials">&#8594;</button></div>'
+        '<div class="testimonial-track" id="testimonial-track" role="list" aria-label="Traveller experiences" tabindex="0">'
+        + "".join(cards) + '</div><div class="testimonial-pagination" data-testimonial-pagination '
+        'role="group" aria-label="Testimonial pages"></div>'
+        '<p class="testimonial-disclosure" id="testimonial-disclosure">* Demo testimonials and images shown for illustrative purposes.</p>'
+        '</div></section>' + TESTIMONIALS_JS)
+
+
+TESTIMONIALS_JS = """<script>
+(function(){
+  var track=document.getElementById('testimonial-track'); if(!track) return;
+  var prev=document.querySelector('[data-testimonial-prev]'), next=document.querySelector('[data-testimonial-next]'),
+      pagination=document.querySelector('[data-testimonial-pagination]'), dots=[], page=0, pages=1, perPage=1, stride=1, timer;
+  var cards=[].slice.call(track.children);
+  function update(){
+    var cardWidth=cards.length?cards[0].getBoundingClientRect().width:track.clientWidth;
+    var gap=parseFloat(window.getComputedStyle(track).columnGap)||0;
+    stride=Math.max(1,cardWidth+gap);
+    perPage=Math.max(1,Math.floor((track.clientWidth+gap)/stride));
+    pages=Math.max(1,Math.ceil(cards.length/perPage));
+    page=Math.max(0,Math.min(pages-1,Math.round(track.scrollLeft/(perPage*stride))));
+    if(dots.length!==pages){
+      pagination.innerHTML=''; dots=[];
+      for(var i=0;i<pages;i++){
+        var dot=document.createElement('button'); dot.type='button'; dot.className='testimonial-dot';
+        dot.setAttribute('aria-label','Show testimonial page '+(i+1)+' of '+pages);
+        (function(index,button){button.addEventListener('click',function(){track.scrollTo({left:index*perPage*stride,behavior:'smooth'});});})(i,dot);
+        pagination.appendChild(dot); dots.push(dot);
+      }
+    }
+    dots.forEach(function(dot,index){if(index===page)dot.setAttribute('aria-current','true');else dot.removeAttribute('aria-current');});
+    prev.disabled=page===0; next.disabled=page>=pages-1;
+  }
+  prev.addEventListener('click',function(){track.scrollTo({left:Math.max(0,(page-1)*perPage*stride),behavior:'smooth'});});
+  next.addEventListener('click',function(){track.scrollTo({left:Math.min(track.scrollWidth,(page+1)*perPage*stride),behavior:'smooth'});});
+  track.addEventListener('scroll',function(){clearTimeout(timer);timer=setTimeout(update,80);},{passive:true});
+  window.addEventListener('resize',update); update();
+})();
+</script>"""
 
 
 # ----------------------------------------------------------------- gallery
