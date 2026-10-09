@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="UrbanLoop">
+  <rect x="1" y="1" width="98" height="98" rx="22" fill="#0F6E68"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17 19v43a20 20 0 0 0 40 0V19"/>
+    <path d="M70 19v62h14"/>
+  </g>
+</svg>
