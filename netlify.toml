@@ -4,7 +4,7 @@
   publish = "app/site"
 
 [functions]
-  directory = "website/urbania/netlify/functions"
+  directory = "netlify/functions"
   node_bundler = "esbuild"
 
 [[redirects]]
