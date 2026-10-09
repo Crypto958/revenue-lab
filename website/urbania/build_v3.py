@@ -302,59 +302,95 @@ def build_how():
 # ------------------------------------------------------------------ /partner-with-us/
 def build_partner():
     faqs = [
-     ("What kind of operators are you looking for?",
-      "Commercial operators in and around Hyderabad with vehicles suitable for group travel — Traveller, MPV/SUV, minibus and bus categories, as well as additional Urbania capacity."),
-     ("Do you have partners already?",
-      "No. This page is an open invitation, not a claim that a network exists. Nothing is presented as a partnership until an operator has been verified and supplied under agreed terms."),
-     ("What information will you ask for?",
-      "Business identity, vehicle documentation, permit, insurance and fitness, driver arrangements, service history and the categories you can genuinely cover."),
-     ("Will my vehicles appear on the website?",
-      "Not as live inventory. Categories may be referred to as options we can request. Individual vehicles are not advertised as available, because we are not displaying a live fleet."),
-     ("How would work be allocated?",
-      "On suitability and reliability for the specific trip, not on the lowest price alone. Fit, compliance and dependability come first."),
-     ("How do I get in touch?",
-      f"Call {PHONE} or email with your business name, the vehicle categories you operate and the areas you cover."),
+     ("Does submitting this form make me an UrbanLoop partner?",
+      "No. It is an expression of interest only. We review the details and contact you if there is a potential fit. No work, customer referral or availability is promised."),
+     ("Can I share more than one vehicle?",
+      "Please send one submission for each vehicle configuration so its seating, operating areas and rates stay clear."),
+     ("What should I upload?",
+      "You can include your rate card, vehicle registration, permit, insurance, fitness and business documents to help us review your submission. Uploads are optional in the first enquiry; we may ask for missing or updated information before any supplier is approved."),
+     ("Does UrbanLoop charge partners commission?",
+      "No. UrbanLoop charges transport partners 0% commission. Any trip-specific terms are discussed before you accept work."),
+     ("What do you mean by driver vetting?",
+      "Tell us what checks you carry out, such as licence and badge checks, identity verification or reference checks. We use your answer for supplier review and do not publish it as a claim about your drivers."),
+     ("Will customers see my rates or vehicle details?",
+      "No. These details are for an initial supplier review and are not published or treated as live availability."),
+     ("What happens next?",
+      "We may contact you to clarify the details. Any further checks or commercial terms would be discussed separately; this form does not approve a supplier or confirm a trip."),
     ]
+    intake_form = (
+      '<form class="partner-form" name="partner-interest" method="POST" action="/partner-with-us/thank-you/" '
+      'data-netlify="true" data-netlify-honeypot="bot-field" enctype="multipart/form-data">'
+      '<input type="hidden" name="form-name" value="partner-interest">'
+      '<p class="partner-hp"><label>Leave this field empty <input name="bot-field"></label></p>'
+      '<fieldset><legend>About your business</legend><div class="grid g2">'
+      '<label>Business or trading name<input name="business_name" autocomplete="organization" required maxlength="120"></label>'
+      '<label>Your name<input name="contact_name" autocomplete="name" required maxlength="100"></label>'
+      '<label>Phone / WhatsApp<input name="phone" type="tel" autocomplete="tel" required maxlength="30"></label>'
+      '<label>Email address<input name="email" type="email" autocomplete="email" required maxlength="160"></label>'
+      '<label>Operating base city and state<input name="base_location" required maxlength="120" placeholder="For example: Patna, Bihar"></label>'
+      '<label>Number of vehicles you operate<input name="fleet_size" type="number" min="1" max="500" placeholder="Optional"></label>'
+      '<label class="span2">Areas or routes you genuinely cover<input name="service_areas" required maxlength="240" placeholder="For example: Patna–Bodh Gaya, Goa, Hyderabad"></label>'
+      '<label>Business registration / GST status<select name="business_status"><option value="">Choose if applicable</option><option>Registered business</option><option>GST registered</option><option>Individual operator</option><option>Other</option></select></label>'
+      '<label>GSTIN or business registration reference<input name="business_reference" maxlength="80" placeholder="Optional"></label>'
+      '</div></fieldset>'
+      '<fieldset><legend>One vehicle configuration</legend><div class="grid g2">'
+      '<label>Vehicle category<select name="vehicle_category" required><option value="">Choose a category</option><option>Force Urbania</option><option>Tempo Traveller</option><option>MPV / SUV</option><option>Minibus</option><option>Bus</option><option>Other group vehicle</option></select></label>'
+      '<label>Make, model and variant<input name="vehicle_model" required maxlength="120" placeholder="For example: Force Urbania, 2024"></label>'
+      '<label>Passenger seating capacity<input name="seating_capacity" type="number" min="1" max="100" required></label>'
+      '<label>Vehicle year<input name="vehicle_year" type="number" min="1990" max="2035" placeholder="Optional"></label>'
+      '<label>Registration number<input name="registration_number" maxlength="24" placeholder="Optional"></label>'
+      '<label>Vehicle availability pattern<input name="availability_pattern" maxlength="120" placeholder="For example: weekends, advance notice"></label>'
+      '<label>Driver arrangement<select name="driver_arrangement"><option value="">Choose if known</option><option>Employed drivers</option><option>Contracted drivers</option><option>Owner-operated</option><option>Varies by trip</option></select></label>'
+      '<label>Do you vet or check your drivers?<select name="driver_vetting"><option value="">Choose an option</option><option>Yes, checks are completed</option><option>Some checks are completed</option><option>Not currently</option><option>Not applicable</option></select></label>'
+      '<label class="span2">What checks do you carry out?<input name="driver_vetting_details" maxlength="180" placeholder="For example: licence, badge, identity or references"></label>'
+      '</div></fieldset>'
+      '<fieldset><legend>Indicative rates</legend><p class="small">For initial review only. Rates are not shown to customers or treated as a public offer.</p><div class="grid g2">'
+      '<label>How do you usually price?<select name="rate_basis"><option value="">Select if known</option><option>Per kilometre</option><option>Per day</option><option>Fixed trip rate</option><option>Depends on itinerary</option></select></label>'
+      '<label>Indicative starting rate (₹)<input name="starting_rate" inputmode="decimal" maxlength="40" placeholder="Optional"></label>'
+      '<label>Minimum duty / kilometres<input name="minimum_duty" maxlength="100" placeholder="Optional"></label>'
+      '<label>Typical extras or inclusions<input name="rate_notes" maxlength="180" placeholder="Tolls, parking, driver allowance, taxes…"></label>'
+      '<label class="span2">Cancellation, overtime or night-duty terms<input name="commercial_terms" maxlength="240" placeholder="Optional"></label>'
+      '</div></fieldset>'
+      '<fieldset><legend>Documents for supplier review</legend><p class="small">Uploads are optional now. You can combine related documents into a single PDF for each field.</p><div class="grid g2">'
+      '<label>Rate card or vehicle specification<input name="rate_card_file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png,.webp"></label>'
+      '<label>Business registration or GST certificate<input name="business_document" type="file" accept=".pdf,.jpg,.jpeg,.png"></label>'
+      '<label>Vehicle registration certificate (RC)<input name="vehicle_rc" type="file" accept=".pdf,.jpg,.jpeg,.png"></label>'
+      '<label>Commercial permit<input name="commercial_permit" type="file" accept=".pdf,.jpg,.jpeg,.png"></label>'
+      '<label>Insurance and fitness documents<input name="insurance_fitness" type="file" accept=".pdf,.jpg,.jpeg,.png"></label>'
+      '<label>Vehicle photos or seating layout<input name="vehicle_photos" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp"></label>'
+      '</div></fieldset>'
+      '<label class="partner-consent"><input type="checkbox" name="review_consent" value="yes" required> '
+      'I agree that UrbanLoop may review the business, vehicle, rate and document details I provide, and contact me about this supplier enquiry. '
+      'I have read the <a href="/privacy/">privacy notice</a>.</label>'
+      '<button class="btn" type="submit">Send supplier enquiry</button>'
+      '<p class="small form-note">This is an enquiry only. It does not create a partnership, confirm a booking or promise work.</p>'
+      '</form>')
+    thanks_body = (breadcrumb([("Home", "/"), ("Partner with us", "/partner-with-us/"), ("Enquiry received", "/partner-with-us/thank-you/")])
+      + hero("Thank you", "Your supplier enquiry is with us.",
+             "We’ll review the business and vehicle details you shared. If there may be a fit, we’ll contact you to discuss next steps. This is not a partner approval or work confirmation.", ctas=False)
+      + section("Next steps", "No further documents are needed yet.",
+                "We’ll review your details and any documents attached, then contact you if we need an update or clarification.",
+                f'<p class="small">Need to correct something? Call <a href="tel:+919182126104">{PHONE}</a>.</p>'))
     body = (breadcrumb([("Home", "/"), ("Partner with us", "/partner-with-us/")])
             + hero("Operators &amp; suppliers",
-                   "Partner with us.",
-                   "We operate one 17-seat Force Urbania. As demand grows beyond what a single vehicle can cover, we want to work with verified local operators rather than turn enquiries away.",
-                   paras=["This is an invitation, not an announcement. We have no partner network to advertise yet, and we will not describe one until operators are verified and supplying."],
+                   "Let’s explore working together.",
+                   "Do you operate group vehicles for outstation journeys, local travel, events or airport transfers? Share a few details and your indicative rate card so we can understand what you offer.",
+                   paras=["0% commission charged to transport partners."],
                    ctas=False)
-            + section("Who we are looking for", "Categories we expect to need.",
-                      "Stated as categories we may request, never as available inventory.",
-                      '<div class="grid g3">'
-                      '<div class="card"><h3>Force Urbania</h3><p>Additional 17-seat capacity for periods when our own vehicle is committed.</p></div>'
-                      '<div class="card"><h3>Tempo Traveller</h3><p>Group travel across a range of seating configurations.</p></div>'
-                      '<div class="card"><h3>MPV / SUV</h3><p>Smaller groups, airport runs and executive movement.</p></div>'
-                      '<div class="card"><h3>Minibus</h3><p>Groups larger than a single group vehicle can carry.</p></div>'
-                      '<div class="card"><h3>Bus</h3><p>Large groups, events and corporate movement.</p></div>'
-                      '<div class="card"><h3>Wedding and event fleets</h3><p>Operators used to multi-vehicle guest movement across a schedule.</p></div>'
-                      '</div>', alt=True)
-            + section("Verification", "What we check before sending work.",
-                      "We would rather have a small verified list than a long unverified one — and the same standard applies to what we tell customers about our own vehicle.",
-                      '<div class="grid g2">'
-                      '<div class="card"><h3>Business and vehicles</h3><ul>'
-                      '<li>Registered business identity</li>'
-                      '<li>Vehicle registration and documentation</li>'
-                      '<li>Commercial permit applicable to the routes</li>'
-                      '<li>Insurance and fitness certification</li>'
-                      '<li>Driver licensing and arrangements</li></ul></div>'
-                      '<div class="card"><h3>Working together</h3><ul>'
-                      '<li>Reliability and response, tracked over time</li>'
-                      '<li>Service fit for group and event travel</li>'
-                      '<li>Agreed terms, inclusions and exclusions</li>'
-                      '<li>Documented validity dates, rechecked on expiry</li></ul></div>'
-                      '</div>')
+            + section("Supplier enquiry", "Tell us what you operate.",
+                      "Share your service area, one vehicle configuration, indicative rates and any documents you already have ready. One vehicle configuration per submission keeps each supplier record clear.", intake_form, alt=True)
             + faq_block(faqs, h2="Partner questions.")
-            + cta_band("Operate group vehicles in Hyderabad?",
-                       "Tell us what you run and where, and we will start with verification rather than promises. "
-                       f"Call {PHONE} or use the contact page."))
-    page("/partner-with-us/", "Partner With Us | Group Transport Operators, Hyderabad",
-         "Invitation for verified Hyderabad transport operators — Urbania, Traveller, MPV/SUV, minibus and bus categories. Verification requirements and how work is allocated.",
+            + cta_band("Prefer to talk first?",
+                       f"Call {PHONE} and tell us your business name, vehicle type and service area."))
+    page("/partner-with-us/", "Work With UrbanLoop | Group Travel Supplier Enquiry",
+         "Share your group vehicle configuration, service areas and indicative rates with UrbanLoop. A simple supplier enquiry for operators across India.",
          body,
          ld=[faq_ld(faqs), crumb_ld([("Home", "/"), ("Partner with us", "/partner-with-us/")])],
          active="")
+    page("/partner-with-us/thank-you/", "Enquiry Received | UrbanLoop Supplier Enquiry",
+         "Your supplier enquiry has been received by UrbanLoop.", thanks_body,
+         ld=[crumb_ld([("Home", "/"), ("Partner with us", "/partner-with-us/"), ("Enquiry received", "/partner-with-us/thank-you/")])],
+         noindex=True)
 
 def build_expect():
     """Genuine trust content that does not depend on owner-supplied facts."""

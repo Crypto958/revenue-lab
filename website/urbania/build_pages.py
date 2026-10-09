@@ -867,24 +867,24 @@ def build_contact():
 
 def build_privacy():
     rows = [
-        ("What we collect", "The trip details you submit — trip type, travel date, pickup and drop points, passenger count, duty duration, estimated distance, and your name, phone number and email if you provide one."),
-        ("Why we use it", "Only to prepare your quotation and reply to your enquiry. We do not sell, rent or share your details with third parties, and we do not add you to a marketing list."),
-        ("Sending the form", "When you submit the form, your details are used to compose the quotation request that reaches us. Please be aware that the enquiry travels over ordinary email unless a different delivery method is confirmed."),
-        ("How long we keep it", "While your enquiry is active, and for a reasonable period afterwards for our records. Ask us and we will delete it sooner."),
-        ("Your choices", f"Call or email us to see what we hold, correct it, or ask us to delete it. See the contact page for how to reach us."),
+        ("What we collect", "For a trip enquiry, we collect the trip and contact details you choose to submit. For a supplier enquiry, we may collect business and contact details, operating base and service areas, fleet size, vehicle configuration and registration details, driver arrangements and the checks you carry out, indicative rates and commercial terms, and optional rate cards, business documents, vehicle registration certificates, permits, insurance, fitness documents and vehicle photos."),
+        ("Why we use it", "Trip details are used to prepare and respond to your quotation request. Supplier details and documents are used to review the operator, vehicle, service area, compliance information, driver-check process and commercial fit, and to contact you about the enquiry. A supplier enquiry is not an approval or promise of work. We do not add these details to a marketing list."),
+        ("Who processes the forms", "Website forms are submitted to UrbanLoop through Netlify's form handling service. Submission records are available to authorized site account administrators for enquiry handling and supplier review. Supplier rates and documents are not published or presented to customers as live availability."),
+        ("How long we keep it", "We keep an enquiry while it is being handled and remove it when it is no longer needed for that purpose, unless a legal record-keeping requirement applies. You may ask us to correct or delete a submission."),
+        ("Your choices and requests", f"You may ask to access, correct or delete your details, or withdraw consent for an enquiry, by calling {PHONE} or using the contact page. We will use reasonable steps to locate the relevant submission."),
         ("Cookies and analytics", "This site currently sets no analytics or advertising cookies. If measurement is added later, this page will be updated before it is enabled."),
     ]
     inner = "".join(f'<div class="card" style="margin-bottom:14px"><h3>{a}</h3><p>{b}</p></div>' for a, b in rows)
     body = (breadcrumb([("Home", "/"), ("Privacy", "/privacy/")])
-            + hero("Privacy", "Privacy notice.", "Short, because it should be readable.", ctas=False)
+            + hero("Privacy", "Privacy notice.", "A clear note about the information you share with UrbanLoop.", ctas=False)
             + section("Privacy", "How your information is handled.",
-                      "Your trip details are used to prepare your quotation and reply to you, and for nothing else.",
+                      "We use the details you submit only for the enquiry purpose described here.",
                       inner, alt=False)
             + f'<section><div class="wrap"><p class="small">Last updated {TODAY}.</p>'
               f'<!-- [VERIFY BEFORE PUBLISHING: legal entity name and contact for data requests; '
               f'confirm DPDP Act compliance wording with the owner] --></div></section>')
-    page("/privacy/", "Privacy Notice | Group Transport Hyderabad",
-         "How trip enquiry details are handled for this Hyderabad group transport service.",
+    page("/privacy/", "Privacy Notice | UrbanLoop",
+         "How UrbanLoop handles trip enquiries and supplier interest form details.",
          body, ld=[crumb_ld([("Home", "/"), ("Privacy", "/privacy/")])], noindex=True)
 
 def build_terms():

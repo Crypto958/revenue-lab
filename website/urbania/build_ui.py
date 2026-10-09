@@ -127,6 +127,9 @@ header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdro
 .bar{display:flex;align-items:center;justify-content:space-between;gap:18px;height:72px}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .logo{display:flex;align-items:center;text-decoration:none;color:var(--ink)}
+.brandmark{width:34px;height:34px;flex:none;color:var(--accent)}
+.brandmark svg{width:100%;height:100%}
+.brandmark.inverse{color:#fff}
 .wordmark{font-size:20px;letter-spacing:-.035em;font-weight:700;color:inherit}
 @media(max-width:640px){.wordmark{font-size:19px}}
 nav.main{display:flex;gap:24px;align-items:center}
@@ -300,6 +303,19 @@ font-size:14.5px;color:#0B4351;margin-top:20px}
 .err{color:#B42318;font-size:13.5px;margin-top:6px;display:none}
 label.bad input,label.bad select,label.bad textarea{border-color:#B42318}
 label.bad .err{display:block}
+.partner-form{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,3vw,34px);box-shadow:var(--sh)}
+.partner-form fieldset{border:0;border-bottom:1px solid var(--line);padding:0 0 8px;margin:0 0 24px}
+.partner-form legend{font-size:19px;font-weight:650;margin:0 0 16px;padding:0}
+.partner-form label{font-size:14px;font-weight:600;color:var(--ink)}
+.partner-form input,.partner-form select{margin-top:7px}
+.partner-form input[type="file"]{font-size:14px;padding:10px}
+.partner-form input[type="checkbox"]{width:18px;height:18px;flex:none;margin:2px 0 0}
+.partner-form .span2{grid-column:1/-1}
+.partner-consent{display:flex!important;align-items:flex-start;gap:10px;font-weight:400!important;line-height:1.5;max-width:78ch}
+.partner-consent a{color:var(--accent);font-weight:600}
+.partner-form .form-note{margin:14px 0 0}
+.partner-hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+@media(max-width:640px){.partner-form .span2{grid-column:auto}.partner-form{padding:18px}}
 /* footer */
 footer{background:#131A24;color:#C7D3DD;padding:52px 0 34px;border-top:1px solid #1D2E3E}
 .fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px}
@@ -387,7 +403,7 @@ def header(active=""):
     mlinks = "".join(f'<a href="{h}">{html.escape(t)}</a>' for t, h in NAV)
     return f"""<header>
   <div class="wrap bar">
-    <a class="logo" href="/"><span class="wordmark">{html.escape(BRAND)}</span><span class="sr">{html.escape(TAGLINE)}. Home.</span></a>
+    <a class="logo" href="/" aria-label="UrbanLoop home">{brand_svg("urbanloop-monogram-accent.svg", "brandmark")}<span class="wordmark">{html.escape(BRAND)}</span><span class="sr">{html.escape(TAGLINE)}. Home.</span></a>
     <nav class="main">{links}</nav>
     <div class="hact">
       <a class="calllink" href="{PHONE_HREF}">{call_svg()}<span>{PHONE_TXT}</span></a>
@@ -418,7 +434,7 @@ def footer():
 <footer><div class="wrap">
 <div class="fgrid">
   <div>
-    <div class="logo" style="color:#fff;margin-bottom:12px"><span class="wordmark">{html.escape(BRAND)}</span></div>
+    <div class="logo" style="color:#fff;margin-bottom:12px">{brand_svg("urbanloop-monogram-light.svg", "brandmark inverse")}<span class="wordmark">{html.escape(BRAND)}</span></div>
     <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">UrbanLoop helps groups arrange private transport across India. We check the route, vehicle option and date before sending a quotation.</p>
     <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{call_svg()}&nbsp;Call customer care</a></p>
   </div>
