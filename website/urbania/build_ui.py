@@ -35,7 +35,7 @@ BRAND_DIR = os.path.abspath(os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "..", "..", "brand", "logo"))
 
 
-def brand_svg(filename, cls="", label=""):
+def brand_svg(filename, cls="", label="", preserve_colors=False):
     """Inline a master mark from brand/logo/.
 
     Deliberately raises instead of falling back: this is the brand mark in the
@@ -51,9 +51,10 @@ def brand_svg(filename, cls="", label=""):
             f"      python3 brand/build_wordmark.py && python3 brand/build_marks.py\n")
     with open(path, encoding="utf-8") as source:
         svg = source.read()
-    for c in ("#111518", "#FFFFFF", "#0F6A63", "#FAFBFC"):
-        svg = svg.replace(f'fill="{c}"', 'fill="currentColor"')
-        svg = svg.replace(f'stroke="{c}"', 'stroke="currentColor"')
+    if not preserve_colors:
+        for c in ("#111518", "#FFFFFF", "#0F6A63", "#FAFBFC"):
+            svg = svg.replace(f'fill="{c}"', 'fill="currentColor"')
+            svg = svg.replace(f'stroke="{c}"', 'stroke="currentColor"')
     if cls:
         svg = svg.replace("<svg ", f'<svg class="{cls}" ', 1)
     if label:
@@ -127,9 +128,9 @@ header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdro
 .bar{display:flex;align-items:center;justify-content:space-between;gap:18px;height:72px}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .logo{display:flex;align-items:center;text-decoration:none;color:var(--ink)}
-.brandmark{width:34px;height:34px;flex:none;color:var(--accent)}
+.brandmark{width:38px;height:38px;flex:none;color:var(--accent)}
 .brandmark svg{width:100%;height:100%}
-.brandmark.inverse{color:#fff}
+.logo{gap:10px}
 .wordmark{font-size:20px;letter-spacing:-.035em;font-weight:700;color:inherit}
 @media(max-width:640px){.wordmark{font-size:19px}}
 nav.main{display:flex;gap:24px;align-items:center}
@@ -327,17 +328,66 @@ footer a{display:block;padding:5px 0;color:#C7D3DD;text-decoration:none;font-siz
 footer a:hover{color:#fff}
 .fbot{margin-top:36px;padding-top:20px;border-top:1px solid #1D2E3E;font-size:13px;color:#8FA0AF;
 display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+/* persistent contact actions */
+.header-icon,.contact-icon{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;
+width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);
+text-decoration:none;transition:transform .16s,box-shadow .16s,border-color .16s}
+.header-icon:hover,.contact-icon:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:var(--line-2)}
+.header-icon svg,.contact-icon svg{width:21px;height:21px}
+.header-icon.whatsapp,.contact-icon.whatsapp{color:#14825A}
+.header-icon.whatsapp svg,.contact-icon.whatsapp svg{width:24px;height:24px}
+.contact-dock{position:fixed;right:20px;bottom:20px;z-index:75;display:flex;align-items:center;gap:10px}
+.contact-dock .contact-icon{width:50px;height:50px;border-radius:17px;box-shadow:0 8px 24px rgba(14,27,42,.16)}
+.chat-launch{background:var(--accent);color:#fff;border:0}
+.chat-launch svg{width:23px;height:23px}
+.chat-state{position:absolute;right:0;bottom:calc(100% + 9px);display:inline-flex;align-items:center;gap:7px;
+white-space:nowrap;background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 10px;
+font-size:12px;font-weight:650;color:var(--ink-2);box-shadow:0 5px 16px rgba(14,27,42,.10)}
+.online-dot{width:8px;height:8px;background:#16A36A;border-radius:50%;box-shadow:0 0 0 3px rgba(22,163,106,.12)}
+.chat-state.offline .online-dot{background:#89949F;box-shadow:none}
+.chat-panel{position:fixed;right:20px;bottom:92px;z-index:90;width:min(390px,calc(100vw - 32px));
+max-height:min(640px,calc(100dvh - 120px));background:#fff;border:1px solid var(--line);border-radius:20px;
+box-shadow:0 22px 64px rgba(12,22,32,.24);display:flex;flex-direction:column;overflow:hidden}
+.chat-panel[hidden]{display:none}
+.chat-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 18px;background:#F6FAF9;border-bottom:1px solid var(--line)}
+.chat-head-copy{display:flex;align-items:center;gap:11px;min-width:0}
+.chat-head-mark{width:38px;height:38px;flex:none}
+.chat-head h2{font-size:16px;letter-spacing:-.01em}
+.chat-head .chat-sub{font-size:12px;color:var(--ink-3);margin-top:3px}
+.chat-close{border:0;border-radius:10px;background:transparent;color:var(--ink-2);font-size:23px;width:38px;height:38px;cursor:pointer}
+.chat-close:hover{background:var(--alt-2)}
+.chat-messages{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:11px;min-height:210px}
+.chat-message{max-width:88%;padding:11px 13px;border-radius:15px;background:var(--alt);color:var(--ink-2);font-size:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-message.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:5px}
+.chat-message.assistant{align-self:flex-start;border-bottom-left-radius:5px}
+.chat-tools{padding:0 16px 12px;display:flex;flex-wrap:wrap;gap:7px}
+.chat-chip{border:1px solid var(--line-2);background:#fff;color:var(--ink-2);border-radius:99px;padding:7px 10px;
+font:inherit;font-size:12px;cursor:pointer}
+.chat-chip:hover{border-color:var(--accent);color:var(--accent)}
+.chat-chip:disabled{opacity:.48;cursor:not-allowed}
+.chat-form{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);background:#fff}
+.chat-form input{min-width:0;border-radius:12px;padding:11px 12px}
+.chat-send{flex:none;width:44px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer;font-size:18px}
+.chat-send:disabled{opacity:.5;cursor:wait}
+.chat-foot{padding:0 16px 13px;font-size:11px;color:var(--ink-3)}
+.chat-links{display:flex;gap:14px;padding:0 16px 13px;font-size:12px;font-weight:650}
+.chat-links a{color:var(--accent);text-decoration:none}
+.chat-links a:hover{text-decoration:underline}
 /* sticky mobile */
 .sticky{position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;grid-template-columns:repeat(3,1fr);gap:1px;
 background:var(--line);border-top:1px solid var(--line-2);padding-bottom:env(safe-area-inset-bottom)}
 .sticky a{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px 8px;text-decoration:none;
 font-weight:650;font-size:14.5px;background:#fff;color:var(--ink);text-align:center}
 .sticky a.q{background:var(--accent);color:#fff}
-.sticky a.w{background:#25D366;color:#052E16}
-@media(max-width:860px){.sticky{display:grid}.wa{display:none}body{padding-bottom:calc(56px + env(safe-area-inset-bottom))}}
-.wa{position:fixed;right:16px;bottom:76px;z-index:70;background:#25D366;color:#052E16;text-decoration:none;
-padding:13px 19px;border-radius:100px;font-weight:650;font-size:15px;box-shadow:0 10px 26px rgba(0,0,0,.22)}
-@media(min-width:861px){.wa{bottom:20px}}
+.sticky a.w{background:#ECF8F2;color:#14825A}
+.sticky a.contact-action{font-size:0;gap:0}
+.sticky a.contact-action svg{width:21px;height:21px}
+.sticky a.w svg{width:24px;height:24px}
+@media(max-width:860px){.sticky{display:grid}.contact-dock{right:15px;bottom:calc(78px + env(safe-area-inset-bottom));}
+.contact-dock>.contact-icon:not(.chat-launch){display:none}.contact-dock .contact-icon{width:54px;height:54px;border-radius:18px}
+.chat-panel{left:12px;right:12px;bottom:calc(142px + env(safe-area-inset-bottom));width:auto;max-height:calc(100dvh - 168px)}
+body{padding-bottom:calc(56px + env(safe-area-inset-bottom))}}
+@media(max-width:640px){.header-icon{width:38px;height:38px;border-radius:12px}.hact{gap:8px}.brandmark{width:35px;height:35px}.wordmark{font-size:18px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto}}
 """
 
@@ -394,6 +444,12 @@ def head(title, desc, path, ld=None, noindex=False):
 def call_svg():
     return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7A2 2 0 0 1 22 16.9Z"/></svg>'
 
+def whatsapp_svg():
+    return '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2.2A13.7 13.7 0 0 0 4.2 22.8L2.5 29.5l6.9-1.8A13.7 13.7 0 1 0 16 2.2Zm0 24.8a11.1 11.1 0 0 1-5.7-1.6l-.4-.2-4 .9 1-3.9-.3-.4A11.1 11.1 0 1 1 16 27Zm6.1-8.3c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.9 8.9 0 0 1-2.6-1.6 9.7 9.7 0 0 1-1.8-2.3c-.2-.3 0-.5.2-.7l.5-.6c.2-.2.2-.3.3-.5s0-.4 0-.6-.7-1.7-1-2.3-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.8 1.2 3.2 1.4 3.4a13.1 13.1 0 0 0 5 4.4c.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.8-.7 2-1.4s.3-1.3.2-1.4-.2-.2-.5-.3Z"/></svg>'
+
+def chat_svg():
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 20l.9-4.5a9 9 0 0 1-.9-4A8.5 8.5 0 0 1 11.5 3h.5a8.5 8.5 0 0 1 8.5 8.5Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>'
+
 def header(active=""):
     links = "".join(
         f'<a href="{h}"' + (' aria-current="page"' if h == active else "")
@@ -403,10 +459,11 @@ def header(active=""):
     mlinks = "".join(f'<a href="{h}">{html.escape(t)}</a>' for t, h in NAV)
     return f"""<header>
   <div class="wrap bar">
-    <a class="logo" href="/" aria-label="UrbanLoop home">{brand_svg("urbanloop-monogram-accent.svg", "brandmark")}<span class="wordmark">{html.escape(BRAND)}</span><span class="sr">{html.escape(TAGLINE)}. Home.</span></a>
+    <a class="logo" href="/" aria-label="UrbanLoop home">{brand_svg("urbanloop-app-mark.svg", "brandmark", preserve_colors=True)}<span class="wordmark">{html.escape(BRAND)}</span><span class="sr">{html.escape(TAGLINE)}. Home.</span></a>
     <nav class="main">{links}</nav>
     <div class="hact">
-      <a class="calllink" href="{PHONE_HREF}">{call_svg()}<span>{PHONE_TXT}</span></a>
+      <a class="header-icon" href="{PHONE_HREF}" aria-label="Call UrbanLoop" title="Call UrbanLoop">{call_svg()}</a>
+      {(f'<a class="header-icon whatsapp" href="https://wa.me/{WHATSAPP}" aria-label="Message UrbanLoop on WhatsApp" title="Message us on WhatsApp" rel="noopener">{whatsapp_svg()}</a>' if WHATSAPP else '')}
       <a class="btn sm" href="/request-quote/">Request a Trip Quote</a>
       <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mnav"><span></span><span></span><span></span></button>
     </div>
@@ -414,7 +471,7 @@ def header(active=""):
   <div id="mnav">{mlinks}
     <div class="mcta">
       <a class="btn wide" href="/request-quote/">Request a Trip Quote</a>
-      {(f'<a class="btn wide" style="background:#25D366;color:#052E16" href="https://wa.me/{WHATSAPP}">WhatsApp us</a>' if WHATSAPP else '')}
+      {(f'<a class="btn wide" style="background:#E7F4EE;color:#126E4D" href="https://wa.me/{WHATSAPP}" aria-label="Message UrbanLoop on WhatsApp" rel="noopener">{whatsapp_svg()}<span class="sr">Message us on WhatsApp</span></a>' if WHATSAPP else '')}
       <a class="btn ghost wide" href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a>
     </div>
   </div>
@@ -422,11 +479,18 @@ def header(active=""):
 <main id="main-content">"""
 
 def footer():
-    wa = (f'<a class="wa" href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp</a>' if WHATSAPP else "")
-    sticky = ('<div class="sticky">'
+    wa = (f'<a class="contact-icon whatsapp" href="https://wa.me/{WHATSAPP}" aria-label="Message UrbanLoop on WhatsApp" title="Message us on WhatsApp" rel="noopener">{whatsapp_svg()}</a>' if WHATSAPP else "")
+    call = f'<a class="contact-icon" href="{PHONE_HREF}" aria-label="Call UrbanLoop" title="Call UrbanLoop">{call_svg()}</a>'
+    chat = (
+      '<button class="contact-icon chat-launch" id="chat-launch" type="button" aria-label="Open 24/7 AI chat assistant" '
+      'aria-expanded="false" aria-controls="urbanloop-chat">' + chat_svg() + '</button>'
+      '<span class="chat-state offline" id="chat-state" aria-live="polite"><span class="online-dot"></span>'
+      '<span id="chat-state-label">Checking chat</span></span>')
+    dock = f'<div class="contact-dock" aria-label="Contact UrbanLoop">{chat}{wa}{call}</div>'
+    sticky = ('<div class="sticky" aria-label="Quick contact">'
               '<a class="q" href="/request-quote/">Request Quote</a>'
-              + (f'<a class="w" href="https://wa.me/{WHATSAPP}" rel="noopener">WhatsApp</a>' if WHATSAPP else "")
-              + f'<a href="{PHONE_HREF}">{call_svg()}&nbsp;Call customer care</a></div>')
+              + (f'<a class="w contact-action" href="https://wa.me/{WHATSAPP}" aria-label="Message UrbanLoop on WhatsApp" rel="noopener">{whatsapp_svg()}<span class="sr">WhatsApp</span></a>' if WHATSAPP else "")
+              + f'<a class="contact-action" href="{PHONE_HREF}" aria-label="Call UrbanLoop">{call_svg()}<span class="sr">Call UrbanLoop</span></a></div>')
     def col(t, items):
         return f'<div><h3 class="fh">{t}</h3>' + "".join(
             f'<a href="{h}">{html.escape(n)}</a>' for n, h in items) + '</div>'
@@ -434,7 +498,7 @@ def footer():
 <footer><div class="wrap">
 <div class="fgrid">
   <div>
-    <div class="logo" style="color:#fff;margin-bottom:12px">{brand_svg("urbanloop-monogram-light.svg", "brandmark inverse")}<span class="wordmark">{html.escape(BRAND)}</span></div>
+    <div class="logo" style="color:#fff;margin-bottom:12px">{brand_svg("urbanloop-app-mark.svg", "brandmark", preserve_colors=True)}<span class="wordmark">{html.escape(BRAND)}</span></div>
     <p style="font-size:14.5px;color:#9FB0BE;max-width:36ch">UrbanLoop helps groups arrange private transport across India. We check the route, vehicle option and date before sending a quotation.</p>
     <p style="margin-top:14px"><a href="{PHONE_HREF}" style="font-weight:600;color:#fff">{call_svg()}&nbsp;Call customer care</a></p>
   </div>
@@ -458,11 +522,63 @@ def footer():
   <span>Private group transport &middot; Quotation on request</span>
 </div>
 </div></footer>
-{wa}{sticky}
+{dock}
+<section class="chat-panel" id="urbanloop-chat" role="dialog" aria-modal="false" aria-labelledby="chat-title" hidden>
+  <div class="chat-head"><div class="chat-head-copy">{brand_svg("urbanloop-app-mark.svg", "chat-head-mark", preserve_colors=True)}
+    <div><h2 id="chat-title">UrbanLoop AI Assistant</h2><p class="chat-sub" id="chat-panel-state">Available 24/7 for trip questions</p></div></div>
+    <button class="chat-close" id="chat-close" type="button" aria-label="Close chat">&times;</button></div>
+  <div class="chat-messages" id="chat-messages" aria-live="polite" aria-relevant="additions text">
+    <div class="chat-message assistant">Hi! I can help with group travel, vehicle options and how to request a quote. What would you like to know?</div>
+  </div>
+  <div class="chat-tools" id="chat-tools">
+    <button class="chat-chip" type="button">How do quotes work?</button>
+    <button class="chat-chip" type="button">Can you arrange outstation travel?</button>
+    <button class="chat-chip" type="button">What vehicle suits my group?</button>
+  </div>
+  <div class="chat-links"><a href="/request-quote/">Plan a trip</a>
+    {(f'<a href="https://wa.me/{WHATSAPP}" rel="noopener">Message us on WhatsApp</a>' if WHATSAPP else '')}
+    <a href="{PHONE_HREF}">Call us</a></div>
+  <form class="chat-form" id="chat-form"><label class="sr" for="chat-input">Ask UrbanLoop a question</label>
+    <input id="chat-input" name="message" maxlength="600" autocomplete="off" placeholder="Ask a trip question…" required>
+    <button class="chat-send" id="chat-send" type="submit" aria-label="Send message">&#8593;</button></form>
+  <p class="chat-foot">AI assistant · Don’t share payment details or sensitive personal information.</p>
+</section>
+{sticky}
 <script>
 (function(){{
   var b=document.getElementById('burger'), m=document.getElementById('mnav');
   if(b&&m){{b.addEventListener('click',function(){{var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o);}});}}
+  var launch=document.getElementById('chat-launch'), panel=document.getElementById('urbanloop-chat');
+  var close=document.getElementById('chat-close'), form=document.getElementById('chat-form');
+  var input=document.getElementById('chat-input'), messages=document.getElementById('chat-messages');
+  var state=document.getElementById('chat-state'), stateLabel=document.getElementById('chat-state-label');
+  var panelState=document.getElementById('chat-panel-state'), send=document.getElementById('chat-send');
+  var history=[];
+  function openChat(){{panel.hidden=false;launch.setAttribute('aria-expanded','true');input.focus();}}
+  function closeChat(){{panel.hidden=true;launch.setAttribute('aria-expanded','false');launch.focus();}}
+  function addMessage(role,text){{var el=document.createElement('div');el.className='chat-message '+role;el.textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight;return el;}}
+  async function checkChat(){{
+    try{{var r=await fetch('/api/chat',{{headers:{{'accept':'application/json'}}}});var d=await r.json();
+      if(d.configured){{state.classList.remove('offline');stateLabel.textContent='Online 24/7';panelState.textContent='Online now · AI trip assistant';input.disabled=false;send.disabled=false;document.querySelectorAll('.chat-chip').forEach(function(x){{x.disabled=false;}});}}
+      else{{state.classList.add('offline');stateLabel.textContent='AI setup in progress';panelState.textContent='AI assistant setup in progress';input.disabled=true;send.disabled=true;document.querySelectorAll('.chat-chip').forEach(function(x){{x.disabled=true;}});messages.querySelector('.chat-message.assistant').textContent='Our AI assistant is being connected. In the meantime, you can reach us on WhatsApp or by phone using the links below.';}}
+    }}catch(e){{state.classList.add('offline');stateLabel.textContent='Chat unavailable';panelState.textContent='Chat is temporarily unavailable';input.disabled=true;send.disabled=true;document.querySelectorAll('.chat-chip').forEach(function(x){{x.disabled=true;}});}}
+  }}
+  async function ask(question){{
+    var q=(question||'').trim();if(!q||send.disabled)return;
+    addMessage('user',q);history.push({{role:'user',content:q}});input.value='';send.disabled=true;
+    var pending=addMessage('assistant','One moment…');
+    try{{var r=await fetch('/api/chat',{{method:'POST',headers:{{'content-type':'application/json','accept':'application/json'}},body:JSON.stringify({{message:q,history:history.slice(0,-1).slice(-6)}})}});
+      var d=await r.json();if(!r.ok)throw new Error(d.error||'chat_unavailable');
+      pending.textContent=d.reply;history.push({{role:'assistant',content:d.reply}});
+    }}catch(e){{pending.textContent='I can’t answer in chat just now. You can still reach us directly on WhatsApp or by phone, or send your trip through the quote form.';}}
+    send.disabled=false;input.focus();messages.scrollTop=messages.scrollHeight;
+  }}
+  if(launch&&panel){{launch.addEventListener('click',function(){{panel.hidden?openChat():closeChat();}});}}
+  if(close)close.addEventListener('click',closeChat);
+  if(form)form.addEventListener('submit',function(e){{e.preventDefault();ask(input.value);}});
+  document.querySelectorAll('.chat-chip').forEach(function(chip){{chip.addEventListener('click',function(){{ask(chip.textContent);}});}});
+  document.addEventListener('keydown',function(e){{if(e.key==='Escape'&&panel&&!panel.hidden)closeChat();}});
+  checkChat();
 }})();
 </script>
 </body>

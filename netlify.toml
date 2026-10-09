@@ -4,7 +4,7 @@
   publish = "app/site"
 
 [functions]
-  directory = "website/urbania/netlify/functions"
+  directory = "netlify/functions"
   node_bundler = "esbuild"
 
 [[redirects]]
@@ -15,6 +15,11 @@
 [[redirects]]
   from = "/api/trip/*"
   to = "/.netlify/functions/trip?ref=:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/chat"
+  to = "/.netlify/functions/chat"
   status = 200
 
 [[redirects]]
